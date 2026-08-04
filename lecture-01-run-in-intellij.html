@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lecture 1: Run a Kotlin Program in IntelliJ</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="glossary.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="crumb" href="lecture-01-expressions-values.html">Back to Lecture 1 readings</a>
+      <p class="topic-kicker">Lecture 1 | Reading 2 | Necessary</p>
+      <h1>Run a Kotlin Program in IntelliJ</h1>
+      <p class="subtitle">Running asks IntelliJ to start at <code>main</code> and show what the program does.</p>
+      <div class="meta">
+        <span class="status-badge required">Necessary</span>
+        <span class="pill">2 minutes</span>
+        <span class="pill">Tool skill: Run button</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page layout">
+    <section>
+      <article class="reading-block">
+        <h2>Find a Green Triangle</h2>
+        <p>IntelliJ shows a green triangle when it knows how to run the current Kotlin file. You can use either of the two locations below. Both start the same <code>main</code> function.</p>
+        <div class="image-row" aria-label="Two IntelliJ Run button locations">
+          <figure class="screenshot-card">
+            <img src="assets/intellij-run-toolbar.png" alt="IntelliJ top toolbar showing Current File followed by the green Run triangle.">
+            <figcaption>At the top: click the green triangle next to <code>Current File</code>.</figcaption>
+          </figure>
+          <figure class="screenshot-card">
+            <img src="assets/intellij-run-gutter.png" alt="IntelliJ editor showing a green Run triangle beside fun main.">
+            <figcaption>In the editor: click the green triangle beside <code>fun main</code>.</figcaption>
+          </figure>
+        </div>
+
+        <h2>Read the Output</h2>
+        <p>Suppose the file contains this program:</p>
+        <pre><code>fun main() {
+    println("Kotlin is running")
+}</code></pre>
+        <p>After you click Run, IntelliJ opens the Run area near the bottom of the window. Look there for <code>Kotlin is running</code>. The text in the editor is the program; the text in the Run area is output produced by that program.</p>
+
+        <h2>Run, Observe, Revise</h2>
+        <p>Running is part of writing a program, not only something done at the end. Make one small change, run again, and compare the new output with what you predicted. If the triangle is missing, first check that the file contains <code>fun main()</code> with a body in curly braces.</p>
+
+        <div class="practice">
+          <h2>Practice</h2>
+          <ol>
+            <li>Where are the two Run buttons shown above?</li>
+            <li>If you change the argument to <code>"Second run"</code>, what output should you expect?</li>
+            <li>What function does IntelliJ start when you run this file?</li>
+          </ol>
+          <details class="answer">
+            <summary>Check your answers</summary>
+            <div>
+              <p>1. One is in the top toolbar; the other is beside <code>fun main</code> in the editor.</p>
+              <p>2. The Run area should show <code>Second run</code>.</p>
+              <p>3. IntelliJ starts the <code>main</code> function.</p>
+            </div>
+          </details>
+        </div>
+      </article>
+
+      <nav class="lesson-nav">
+        <a href="lecture-01-what-is-a-function.html">Previous: Functions</a>
+        <a href="lecture-01-what-is-an-import.html">Next: Imports</a>
+      </nav>
+    </section>
+
+    <aside class="panel">
+      <h2>Microskill</h2>
+      <p>Click Run, then distinguish the program in the editor from its output below.</p>
+      <h3>Useful Habit</h3>
+      <p>Predict the output before you click. Running then checks your prediction.</p>
+    </aside>
+  </main>
+</body>
+</html>

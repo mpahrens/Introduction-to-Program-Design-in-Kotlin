@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lecture 1 Optional: Comparing Strings</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="glossary.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="crumb" href="lecture-01-expressions-values.html">Back to Lecture 1 readings</a>
+      <p class="topic-kicker">Lecture 1 | Optional reading</p>
+      <h1>Comparing Strings</h1>
+      <p class="subtitle">String comparisons produce Boolean values, but capitalization and character ordering affect the result.</p>
+      <div class="meta">
+        <span class="status-badge optional">Optional</span>
+        <span class="pill">2-3 minutes</span>
+        <span class="pill">Microskills: ==, &lt;, compareTo</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page layout">
+    <section>
+      <article class="reading-block">
+        <h2>Equality Is Exact</h2>
+        <p>The <code>==</code> operator asks whether two String values contain the same characters in the same order. The comparison is case-sensitive.</p>
+        <pre><code>"Ada" == "Ada"   // true
+"Ada" == "ada"   // false
+"Ada" != "Grace" // true</code></pre>
+        <p>Each comparison is an <span class="term" data-term="expression">expression</span> that produces a <span class="term" data-term="boolean">Boolean</span> value.</p>
+
+        <h2>Ordering Uses Character Order</h2>
+        <p>Kotlin can also compare Strings with <code>&lt;</code> and <code>&gt;</code>. This resembles dictionary order, but computer character ordering also distinguishes uppercase and lowercase characters.</p>
+        <pre><code>"ant" &lt; "bee"   // true</code></pre>
+        <p>For human-facing text, you may want to ignore capitalization. The <code>compareTo</code> method can do that with a named argument:</p>
+        <pre><code>"Ada".compareTo("ada", ignoreCase = true)   // 0</code></pre>
+        <p>A result of zero means the Strings compare as equal under the chosen rule. The phrase <code>ignoreCase = true</code> names the argument, making its purpose visible.</p>
+
+        <h2>Choose the Comparison That Matches the Question</h2>
+        <p>Use <code>==</code> when exact characters matter. Use a case-insensitive operation when capitalization should not matter. Programming requires stating which meaning of "same" the problem needs.</p>
+
+        <div class="practice">
+          <h2>Practice</h2>
+          <ol>
+            <li>Predict <code>"Kotlin" == "kotlin"</code>.</li>
+            <li>What type does a String equality expression produce?</li>
+            <li>What does a zero result from case-insensitive <code>compareTo</code> mean?</li>
+          </ol>
+          <details class="answer">
+            <summary>Check your answers</summary>
+            <div>
+              <p>1. It produces <code>false</code> because capitalization differs.</p>
+              <p>2. It produces a <code>Boolean</code>.</p>
+              <p>3. The two Strings compare as equal when capitalization is ignored.</p>
+            </div>
+          </details>
+        </div>
+      </article>
+
+      <nav class="lesson-nav">
+        <a href="lecture-01-reading-library-paths.html">Previous: Library Paths</a>
+        <a href="lecture-02-functions-tests-helpers.html">Next: Lecture 2</a>
+      </nav>
+    </section>
+
+    <aside class="panel">
+      <h2>Optional Idea</h2>
+      <p>"Same text" can mean exact characters or the same letters regardless of capitalization. The program must make that choice explicit.</p>
+    </aside>
+  </main>
+</body>
+</html>

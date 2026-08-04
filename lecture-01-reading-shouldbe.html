@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lecture 1: Read a shouldBe Example</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="glossary.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="crumb" href="lecture-01-expressions-values.html">Back to Lecture 1 readings</a>
+      <p class="topic-kicker">Lecture 1 | Reading 4 | Necessary</p>
+      <h1>Read a <code>shouldBe</code> Example</h1>
+      <p class="subtitle">A test is an executable example: it records what an expression should produce and lets the computer compare.</p>
+      <div class="meta">
+        <span class="status-badge required">Necessary</span>
+        <span class="pill">3 minutes</span>
+        <span class="pill">Vocabulary: test, expected, approximate</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page layout">
+    <section>
+      <article class="reading-block">
+        <h2>Actual on the Left, Expected on the Right</h2>
+        <p>In this course, a <span class="term" data-term="test">test</span> is also a small example of intended behavior. Read this line from left to right:</p>
+        <pre><code>4 * 3 shouldBe 12</code></pre>
+        <p>Kotlin computes the expression on the left. The value on the right is the expected answer. If both sides match, the test passes. If they differ, the test fails and IntelliJ reports the mismatch.</p>
+        <pre><code>7 - 2 shouldBe 5   // passes
+7 - 2 shouldBe 6   // fails</code></pre>
+        <p>A failed test is useful information. It means the computed result and the stated expectation do not agree. Either the program or the expectation needs attention.</p>
+
+        <h2>Some Decimal Answers Are Approximate</h2>
+        <p>A <code>Double</code> stores a decimal number with limited precision. For a repeating decimal, we often test a small acceptable range instead of one exact value.</p>
+        <pre><code>2.0 / 3.0 shouldBe (0.667 plusOrMinus 0.001)</code></pre>
+        <p>This expectation accepts a result within <code>0.001</code> of <code>0.667</code>. Read it as, "two thirds should be approximately 0.667." The parentheses keep the expected value and its <span class="term" data-term="tolerance">tolerance</span> together.</p>
+
+        <div class="practice">
+          <h2>Practice</h2>
+          <ol>
+            <li>In <code>9 + 4 shouldBe 13</code>, which side is computed?</li>
+            <li>Would <code>9 + 4 shouldBe 14</code> pass or fail?</li>
+            <li>What does <code>plusOrMinus 0.01</code> add to a decimal expectation?</li>
+          </ol>
+          <details class="answer">
+            <summary>Check your answers</summary>
+            <div>
+              <p>1. Kotlin computes <code>9 + 4</code> on the left.</p>
+              <p>2. It fails because <code>9 + 4</code> produces <code>13</code>, not <code>14</code>.</p>
+              <p>3. It adds a tolerance: a small range of values close enough to the expected decimal.</p>
+            </div>
+          </details>
+        </div>
+      </article>
+
+      <nav class="lesson-nav">
+        <a href="lecture-01-what-is-an-import.html">Previous: Imports</a>
+        <a href="lecture-01-values-and-types.html">Next: Values and Types</a>
+      </nav>
+    </section>
+
+    <aside class="panel">
+      <h2>Microskill</h2>
+      <p>Identify the computed expression and expected value in a <code>shouldBe</code> test.</p>
+      <h3>Course Language</h3>
+      <p>Tests are examples. They make a claim about what code should do.</p>
+    </aside>
+  </main>
+</body>
+</html>

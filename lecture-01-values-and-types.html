@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lecture 1: Values Have Types</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="glossary.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="crumb" href="lecture-01-expressions-values.html">Back to Lecture 1 readings</a>
+      <p class="topic-kicker">Lecture 1 | Reading 5 | Necessary</p>
+      <h1>Values Have Types</h1>
+      <p class="subtitle">A type tells Kotlin what kind of value it is working with and which operations make sense for that value.</p>
+      <div class="meta">
+        <span class="status-badge required">Necessary</span>
+        <span class="pill">2-3 minutes</span>
+        <span class="pill">Vocabulary: value, type, Boolean</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page layout">
+    <section>
+      <article class="reading-block">
+        <h2>Four Types to Recognize</h2>
+        <p>A <span class="term" data-term="value">value</span> is a piece of data a program uses or computes. Every value has a <span class="term" data-term="type">type</span>, a category that tells Kotlin what the value means and what can be done with it.</p>
+        <pre><code>12          // Int
+12.5        // Double
+"twelve"    // String
+true        // Boolean</code></pre>
+        <p>An <code>Int</code> is a whole number. A <code>Double</code> is a number that can have a decimal part. A <code>String</code> is text enclosed in quotation marks. A <span class="term" data-term="boolean">Boolean</span> is either <code>true</code> or <code>false</code>.</p>
+
+        <h2>Appearance Matters</h2>
+        <p>The values <code>12</code>, <code>12.0</code>, and <code>"12"</code> look related to a person, but Kotlin gives them different types. The decimal point makes <code>12.0</code> a <code>Double</code>. The quotation marks make <code>"12"</code> a <code>String</code>.</p>
+        <p>Types prevent nonsensical operations. Adding two numbers makes sense. Asking whether one number is smaller than another makes sense. Kotlin uses the types involved to decide whether an operation is allowed and what kind of value it produces.</p>
+        <pre><code>12 + 3       // produces the Int value 15
+12 &lt; 20      // produces the Boolean value true</code></pre>
+
+        <div class="practice">
+          <h2>Practice</h2>
+          <ol>
+            <li>Name the type of <code>8</code>, <code>8.0</code>, <code>"8.0"</code>, and <code>false</code>.</li>
+            <li>What type of value does <code>10 &gt; 4</code> produce?</li>
+            <li>What one piece of punctuation distinguishes <code>6</code> from <code>6.0</code>?</li>
+          </ol>
+          <details class="answer">
+            <summary>Check your answers</summary>
+            <div>
+              <p>1. <code>Int</code>, <code>Double</code>, <code>String</code>, and <code>Boolean</code>.</p>
+              <p>2. It produces a <code>Boolean</code>.</p>
+              <p>3. The decimal point makes <code>6.0</code> a <code>Double</code>.</p>
+            </div>
+          </details>
+        </div>
+      </article>
+
+      <nav class="lesson-nav">
+        <a href="lecture-01-reading-shouldbe.html">Previous: Read shouldBe</a>
+        <a href="lecture-01-arithmetic-expressions.html">Next: Arithmetic Expressions</a>
+      </nav>
+    </section>
+
+    <aside class="panel">
+      <h2>Microskill</h2>
+      <p>Classify a small Kotlin value as an <code>Int</code>, <code>Double</code>, <code>String</code>, or <code>Boolean</code>.</p>
+      <h3>Small Distinction</h3>
+      <p><code>5</code> is a number. <code>"5"</code> is one-character text.</p>
+    </aside>
+  </main>
+</body>
+</html>

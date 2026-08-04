@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lecture 1: What Is an Import?</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="glossary.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="crumb" href="lecture-01-expressions-values.html">Back to Lecture 1 readings</a>
+      <p class="topic-kicker">Lecture 1 | Reading 3 | Necessary</p>
+      <h1>What Is an Import?</h1>
+      <p class="subtitle">An import makes a useful name from another part of Kotlin or another library available in the current file.</p>
+      <div class="meta">
+        <span class="status-badge required">Necessary</span>
+        <span class="pill">2-3 minutes</span>
+        <span class="pill">Vocabulary: import, library</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page layout">
+    <section>
+      <article class="reading-block">
+        <h2>Code Can Be Reused</h2>
+        <p>Programmers do not write every tool from the beginning. A <span class="term" data-term="library">library</span> is a collection of code prepared for reuse. Kotlin includes a math library, and this course also uses a testing library named Kotest.</p>
+
+        <h2>Bring One Name into the File</h2>
+        <p>An <span class="term" data-term="import">import</span> line makes a library name available in the current Kotlin file. Import lines go near the top, before function definitions.</p>
+        <pre><code>import kotlin.math.sqrt
+
+fun main() {
+    println(sqrt(81.0))
+}</code></pre>
+        <p>The imported name is <code>sqrt</code>, a function that computes a square root. Once it is imported, the program can call <code>sqrt(81.0)</code> by its short name.</p>
+
+        <h2>An Import Does Not Run the Function</h2>
+        <p>The import says that the name may be used. It does not call <code>sqrt</code> and does not print anything. The function call inside <code>main</code> does the computation; <code>println</code> displays the result.</p>
+        <p>You are not expected to memorize long library paths. At first, the important microskill is recognizing an import and finding the usable name at its end.</p>
+
+        <div class="practice">
+          <h2>Practice</h2>
+          <ol>
+            <li>Which line makes <code>sqrt</code> available?</li>
+            <li>Which line actually calls <code>sqrt</code>?</li>
+            <li>Would the import line by itself display a number?</li>
+          </ol>
+          <details class="answer">
+            <summary>Check your answers</summary>
+            <div>
+              <p>1. <code>import kotlin.math.sqrt</code> makes the name available.</p>
+              <p>2. <code>println(sqrt(81.0))</code> contains the call to <code>sqrt</code>.</p>
+              <p>3. No. An import makes a name available; it does not call or print anything.</p>
+            </div>
+          </details>
+        </div>
+      </article>
+
+      <nav class="lesson-nav">
+        <a href="lecture-01-run-in-intellij.html">Previous: Run in IntelliJ</a>
+        <a href="lecture-01-reading-shouldbe.html">Next: Read shouldBe</a>
+      </nav>
+    </section>
+
+    <aside class="panel">
+      <h2>Microskill</h2>
+      <p>Recognize an import line and identify the short name it makes available.</p>
+      <h3>Read It As</h3>
+      <p><code>import kotlin.math.sqrt</code> means, "This file will use <code>sqrt</code> from Kotlin's math library."</p>
+    </aside>
+  </main>
+</body>
+</html>

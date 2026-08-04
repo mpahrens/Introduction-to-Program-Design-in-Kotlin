@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lecture 1: What Is a Function?</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="glossary.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="crumb" href="lecture-01-expressions-values.html">Back to Lecture 1 readings</a>
+      <p class="topic-kicker">Lecture 1 | Reading 1 | Necessary</p>
+      <h1>What Is a Function?</h1>
+      <p class="subtitle">A function gives a name to an action or computation so that a program can ask for it by name.</p>
+      <div class="meta">
+        <span class="status-badge required">Necessary</span>
+        <span class="pill">2-3 minutes</span>
+        <span class="pill">Vocabulary: function, body, call, argument</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page layout">
+    <section>
+      <article class="reading-block">
+        <h2>A Named Part of a Program</h2>
+        <p>A <span class="term" data-term="function">function</span> is a named computation or action. This definition creates a function named <code>main</code>:</p>
+        <pre><code>fun main() {
+    println("Ready to begin")
+}</code></pre>
+        <p>The keyword <code>fun</code> tells Kotlin that a function is being defined. The name comes next. The parentheses will eventually hold information the function needs. The curly braces enclose the <span class="term" data-term="function-body">function body</span>: the <span class="term" data-term="statement">statements</span> to perform when the function runs.</p>
+
+        <h2><code>main</code> Is the Starting Function</h2>
+        <p>A file can define many functions. When we run a simple Kotlin program, Kotlin starts with the specially named <code>main</code> function. The name matters: changing it to <code>start</code> would create an ordinary function, not the program's starting place.</p>
+
+        <h2>Calling Another Function</h2>
+        <p>The line inside <code>main</code> is a <span class="term" data-term="call">function call</span>. It asks the existing <code>println</code> function to run. The text inside the parentheses is an <span class="term" data-term="argument">argument</span>: a value supplied to the function.</p>
+        <pre><code>println("Ready to begin")
+// name     argument</code></pre>
+        <p>Here, <code>println</code> displays its argument and then moves to a new line. Defining a function describes what it does. Calling a function asks it to do that work now.</p>
+
+        <div class="practice">
+          <h2>Practice</h2>
+          <ol>
+            <li>In the example above, what is the name of the starting function?</li>
+            <li>Which punctuation marks enclose the function body?</li>
+            <li>In <code>println("Welcome")</code>, what is the argument?</li>
+          </ol>
+          <details class="answer">
+            <summary>Check your answers</summary>
+            <div>
+              <p>1. The starting function is named <code>main</code>.</p>
+              <p>2. Curly braces, <code>{</code> and <code>}</code>, enclose the body.</p>
+              <p>3. The argument is the String value <code>"Welcome"</code>.</p>
+            </div>
+          </details>
+        </div>
+      </article>
+
+      <nav class="lesson-nav">
+        <a href="lecture-01-expressions-values.html">Lecture 1 contents</a>
+        <a href="lecture-01-run-in-intellij.html">Next: Run in IntelliJ</a>
+      </nav>
+    </section>
+
+    <aside class="panel">
+      <h2>Microskill</h2>
+      <p>Identify a function definition, its body, and a function call.</p>
+      <h3>Keep In Mind</h3>
+      <p><code>main</code> is a function with a special job: it is where this program starts.</p>
+    </aside>
+  </main>
+</body>
+</html>

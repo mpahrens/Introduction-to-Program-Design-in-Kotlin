@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lecture 1: Use Kotlin's Math Library</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="glossary.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="crumb" href="lecture-01-expressions-values.html">Back to Lecture 1 readings</a>
+      <p class="topic-kicker">Lecture 1 | Reading 9 | Necessary</p>
+      <h1>Use Kotlin's Math Library</h1>
+      <p class="subtitle">Kotlin's math library supplies familiar constants and operations that can be combined into larger expressions.</p>
+      <div class="meta">
+        <span class="status-badge required">Necessary</span>
+        <span class="pill">2-3 minutes</span>
+        <span class="pill">Microskills: import, PI, pow</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page layout">
+    <section>
+      <article class="reading-block">
+        <h2>Import the Names You Need</h2>
+        <p>The math library includes the constant <code>PI</code> and the method <code>pow</code> for raising a number to a power. Import them at the top of the file:</p>
+        <pre><code>import kotlin.math.PI
+import kotlin.math.pow</code></pre>
+        <p><code>PI</code> is a <code>Double</code> value. The <code>pow</code> method is called on a <code>Double</code> using dot notation. Its argument is the exponent.</p>
+        <pre><code>3.0.pow(2)   // 9.0
+2.0.pow(3)   // 8.0</code></pre>
+
+        <h2>Build a Formula from Named Pieces</h2>
+        <p>For example, the area of a circle is pi times the radius squared. A Kotlin program can name the radius, then use that name in the formula:</p>
+        <pre><code>val radius = 2.5
+val area = PI * radius.pow(2)
+println(area)</code></pre>
+        <p>The formula is one expression built from smaller expressions: <code>PI</code>, <code>radius</code>, and <code>radius.pow(2)</code>. Naming the inputs and result makes the structure visible.</p>
+
+        <h2>Keep Units and Types in Mind</h2>
+        <p>Geometry formulas commonly use <code>Double</code> values because measurements may have decimal parts. Kotlin will compute the formula, but it cannot know whether a number represents centimeters, meters, or something else. Meaningful names and surrounding documentation carry that information.</p>
+
+        <div class="practice">
+          <h2>Practice</h2>
+          <ol>
+            <li>What value does <code>4.0.pow(2)</code> produce?</li>
+            <li>Which import makes <code>PI</code> available?</li>
+            <li>Write an expression for pi times <code>diameter</code>.</li>
+          </ol>
+          <details class="answer">
+            <summary>Check your answers</summary>
+            <div>
+              <p>1. It produces <code>16.0</code>.</p>
+              <p>2. <code>import kotlin.math.PI</code>.</p>
+              <p>3. <code>PI * diameter</code>.</p>
+            </div>
+          </details>
+        </div>
+      </article>
+
+      <nav class="lesson-nav">
+        <a href="lecture-01-string-objects.html">Previous: String Objects</a>
+        <a href="lecture-02-functions-tests-helpers.html">Next: Lecture 2</a>
+      </nav>
+    </section>
+
+    <aside class="panel">
+      <h2>Microskill</h2>
+      <p>Import <code>PI</code> and <code>pow</code>, then use them in an expression with named inputs.</p>
+      <h3>Read It As</h3>
+      <p><code>radius.pow(2)</code> means "radius raised to the second power."</p>
+    </aside>
+  </main>
+</body>
+</html>

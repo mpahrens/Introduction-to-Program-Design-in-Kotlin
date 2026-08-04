@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lecture 1: What Is a String Object?</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="glossary.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="crumb" href="lecture-01-expressions-values.html">Back to Lecture 1 readings</a>
+      <p class="topic-kicker">Lecture 1 | Reading 8 | Necessary</p>
+      <h1>What Is a String Object?</h1>
+      <p class="subtitle">A String is a text value with information and useful operations attached to it.</p>
+      <div class="meta">
+        <span class="status-badge required">Necessary</span>
+        <span class="pill">3 minutes</span>
+        <span class="pill">Vocabulary: object, property, method, index</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page layout">
+    <section>
+      <article class="reading-block">
+        <h2>Text Is More Than Characters</h2>
+        <p>A String is an <span class="term" data-term="object">object</span>: a value that carries information and operations together. Dot notation asks the object for one of those pieces.</p>
+        <pre><code>val language = "Kotlin"
+
+language.length
+language.uppercase()
+language.substring(1, 4)</code></pre>
+
+        <h2>Properties Hold Information</h2>
+        <p>A <span class="term" data-term="property">property</span> is information available on an object. The <code>length</code> property tells how many characters are in a String. It uses no parentheses:</p>
+        <pre><code>"Kotlin".length   // 6</code></pre>
+
+        <h2>Methods Perform Operations</h2>
+        <p>A <span class="term" data-term="method">method</span> is a <span class="term" data-term="function">function</span> attached to an object. A method call uses parentheses, which may contain arguments.</p>
+        <pre><code>"Kotlin".uppercase()        // "KOTLIN"
+"Kotlin".substring(1, 4)    // "otl"</code></pre>
+        <p>Character positions are called <span class="term" data-term="index">indexes</span>, and String indexes begin at 0. For <code>substring(1, 4)</code>, position 1 is included but position 4 is not. It takes indexes 1, 2, and 3.</p>
+        <pre><code>K o t l i n
+0 1 2 3 4 5</code></pre>
+        <p>String methods produce values. They do not print unless their result is passed to <code>println</code>.</p>
+
+        <div class="practice">
+          <h2>Practice</h2>
+          <ol>
+            <li>Is <code>length</code> a property or a method?</li>
+            <li>Predict <code>"program".substring(0, 3)</code>.</li>
+            <li>Which expression produces an uppercase version of <code>"hello"</code>?</li>
+          </ol>
+          <details class="answer">
+            <summary>Check your answers</summary>
+            <div>
+              <p>1. <code>length</code> is a property; it has no call parentheses.</p>
+              <p>2. It produces <code>"pro"</code>.</p>
+              <p>3. <code>"hello".uppercase()</code>.</p>
+            </div>
+          </details>
+        </div>
+      </article>
+
+      <nav class="lesson-nav">
+        <a href="lecture-01-immutable-val.html">Previous: Immutable val</a>
+        <a href="lecture-01-kotlin-math.html">Next: Kotlin Math</a>
+      </nav>
+    </section>
+
+    <aside class="panel">
+      <h2>Microskill</h2>
+      <p>Use dot notation to read a String property or call a String method.</p>
+      <h3>Visual Clue</h3>
+      <p>A method call has parentheses. A property access such as <code>.length</code> does not.</p>
+    </aside>
+  </main>
+</body>
+</html>

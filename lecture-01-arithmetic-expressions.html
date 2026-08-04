@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lecture 1: Arithmetic Expressions in Kotlin</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="glossary.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="crumb" href="lecture-01-expressions-values.html">Back to Lecture 1 readings</a>
+      <p class="topic-kicker">Lecture 1 | Reading 6 | Necessary</p>
+      <h1>Arithmetic Expressions in Kotlin</h1>
+      <p class="subtitle">An arithmetic expression combines number values with operators to produce a new number value.</p>
+      <div class="meta">
+        <span class="status-badge required">Necessary</span>
+        <span class="pill">3 minutes</span>
+        <span class="pill">Vocabulary: expression, operator, modulo</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page layout">
+    <section>
+      <article class="reading-block">
+        <h2>Expressions Produce Values</h2>
+        <p>An <span class="term" data-term="expression">expression</span> is code that produces a value. A number by itself is an expression, and arithmetic can combine smaller expressions into a larger one.</p>
+        <pre><code>18 + 7
+6 * 5
+(10 - 4) * 3</code></pre>
+        <p>The symbols <code>+</code>, <code>-</code>, <code>*</code>, and <code>/</code> are <span class="term" data-term="operator">operators</span>. Parentheses group the part that should be computed first, just as they do in mathematics.</p>
+
+        <h2>The Number Types Affect Division</h2>
+        <p>When both values are <code>Int</code>s, division produces an <code>Int</code> and discards any fractional part. When a <code>Double</code> is involved, the result can include a decimal part.</p>
+        <pre><code>17 / 5       // 3
+17.0 / 5.0   // 3.4</code></pre>
+        <p>This is not rounding: integer division keeps the whole-number quotient.</p>
+
+        <h2>Remainder Is Also Called Modulo</h2>
+        <p>The <code>%</code> operator produces the remainder after division. It is also called <strong>modulo</strong>.</p>
+        <pre><code>17 % 5       // 2
+24 % 6       // 0</code></pre>
+        <p>A remainder of zero means the first number is evenly divisible by the second.</p>
+
+        <div class="practice">
+          <h2>Practice</h2>
+          <ol>
+            <li>Predict <code>(7 + 3) * 2</code>.</li>
+            <li>Predict <code>19 / 4</code> and <code>19.0 / 4.0</code>.</li>
+            <li>Which expression tests the remainder when 31 is divided by 10?</li>
+          </ol>
+          <details class="answer">
+            <summary>Check your answers</summary>
+            <div>
+              <p>1. The result is <code>20</code>.</p>
+              <p>2. <code>19 / 4</code> produces <code>4</code>; <code>19.0 / 4.0</code> produces <code>4.75</code>.</p>
+              <p>3. Write <code>31 % 10</code>; it produces <code>1</code>.</p>
+            </div>
+          </details>
+        </div>
+      </article>
+
+      <nav class="lesson-nav">
+        <a href="lecture-01-values-and-types.html">Previous: Values and Types</a>
+        <a href="lecture-01-immutable-val.html">Next: Immutable val</a>
+      </nav>
+    </section>
+
+    <aside class="panel">
+      <h2>Microskill</h2>
+      <p>Predict the value and type produced by a small arithmetic expression.</p>
+      <h3>Read <code>%</code> As</h3>
+      <p>"The remainder when the left value is divided by the right value."</p>
+    </aside>
+  </main>
+</body>
+</html>

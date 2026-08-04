@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lecture 1: Immutable Names with val</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="glossary.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="crumb" href="lecture-01-expressions-values.html">Back to Lecture 1 readings</a>
+      <p class="topic-kicker">Lecture 1 | Reading 7 | Necessary</p>
+      <h1>Immutable Names with <code>val</code></h1>
+      <p class="subtitle">A <code>val</code> gives a useful name to a value. That name keeps referring to the same value.</p>
+      <div class="meta">
+        <span class="status-badge required">Necessary</span>
+        <span class="pill">2-3 minutes</span>
+        <span class="pill">Vocabulary: immutable, initialize, reassign</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page layout">
+    <section>
+      <article class="reading-block">
+        <h2>Name a Result</h2>
+        <p>Programs become easier to read when important values have names. In Kotlin, <code>val</code> creates a name and <span class="term" data-term="initialize">initializes</span> it with a value.</p>
+        <pre><code>val credits: Int = 4
+val courseName: String = "Calculus I"</code></pre>
+        <p>Read the first line as, "Let <code>credits</code> be the <code>Int</code> value 4." The colon introduces the name's type. Kotlin can often infer that type, so this shorter version also works:</p>
+        <pre><code>val credits = 4
+val courseName = "Calculus I"</code></pre>
+
+        <h2><code>val</code> Names Are Immutable</h2>
+        <p>An <span class="term" data-term="immutable">immutable</span> name cannot be <span class="term" data-term="reassign">reassigned</span> after it has been initialized. This code is therefore an error:</p>
+        <pre><code>val credits = 4
+credits = 5   // error: val cannot be reassigned</code></pre>
+        <p>Immutability gives the reader a useful guarantee: every later use of <code>credits</code> refers to the value chosen on its <code>val</code> line. In a functional style, stable names make calculations easier to follow.</p>
+
+        <h2>Use the Name in Later Expressions</h2>
+        <pre><code>val pagesRead = 18
+val pagesRemaining = 30 - pagesRead
+println(pagesRemaining)</code></pre>
+        <p>The later expression uses the value named <code>pagesRead</code>. It does not change that value.</p>
+
+        <div class="practice">
+          <h2>Practice</h2>
+          <ol>
+            <li>What type does Kotlin infer for <code>val floor = 3</code>?</li>
+            <li>Why is <code>floor = 4</code> an error after that line?</li>
+            <li>Write a <code>val</code> named <code>temperature</code> initialized to <code>21.5</code>.</li>
+          </ol>
+          <details class="answer">
+            <summary>Check your answers</summary>
+            <div>
+              <p>1. Kotlin infers <code>Int</code>.</p>
+              <p>2. A <code>val</code> name is immutable and cannot be reassigned.</p>
+              <p>3. <code>val temperature = 21.5</code> or <code>val temperature: Double = 21.5</code>.</p>
+            </div>
+          </details>
+        </div>
+      </article>
+
+      <nav class="lesson-nav">
+        <a href="lecture-01-arithmetic-expressions.html">Previous: Arithmetic</a>
+        <a href="lecture-01-string-objects.html">Next: String Objects</a>
+      </nav>
+    </section>
+
+    <aside class="panel">
+      <h2>Microskill</h2>
+      <p>Create a local immutable name with <code>val</code> and use it in a later expression.</p>
+      <h3>Design Benefit</h3>
+      <p>A stable name lets you reason by substitution: wherever the name appears, it means its initialized value.</p>
+    </aside>
+  </main>
+</body>
+</html>
