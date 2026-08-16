@@ -266,6 +266,113 @@ addGlossaryEntries("Extra Graph Lesson: Arrays and Matrices", "extra-kotlin-arra
   ["range", "Range", "An ordered sequence of values between endpoints, often used to control a loop."]
 ]);
 
+const CS1101_RESOURCE_LINKS = {
+  kotlinFunctions: ["Kotlin Documentation: Functions", "https://kotlinlang.org/docs/functions.html"],
+  kotlinPackages: ["Kotlin Documentation: Packages and imports", "https://kotlinlang.org/docs/packages.html"],
+  kotlinTypes: ["Kotlin Documentation: Types overview", "https://kotlinlang.org/docs/types-overview.html"],
+  kotlinStrings: ["Kotlin Documentation: Strings", "https://kotlinlang.org/docs/strings.html"],
+  kotlinEquality: ["Kotlin Documentation: Equality", "https://kotlinlang.org/docs/equality.html"],
+  kotlinControlFlow: ["Kotlin Documentation: Control flow", "https://kotlinlang.org/docs/control-flow.html"],
+  kotlinDataClasses: ["Kotlin Documentation: Data classes", "https://kotlinlang.org/docs/data-classes.html"],
+  kotlinEnums: ["Kotlin Documentation: Enum classes", "https://kotlinlang.org/docs/enum-classes.html"],
+  kotlinSealed: ["Kotlin Documentation: Sealed classes and interfaces", "https://kotlinlang.org/docs/sealed-classes.html"],
+  kotlinCasts: ["Kotlin Documentation: Type checks and casts", "https://kotlinlang.org/docs/typecasts.html"],
+  kotlinCollections: ["Kotlin Documentation: Collections overview", "https://kotlinlang.org/docs/collections-overview.html"],
+  kotlinCollectionOps: ["Kotlin Documentation: Collection operations", "https://kotlinlang.org/docs/collection-operations.html"],
+  kotlinLambdas: ["Kotlin Documentation: Higher-order functions and lambdas", "https://kotlinlang.org/docs/lambdas.html"],
+  kotlinArrays: ["Kotlin Documentation: Arrays", "https://kotlinlang.org/docs/arrays.html"],
+  kotlinRanges: ["Kotlin Documentation: Ranges and progressions", "https://kotlinlang.org/docs/ranges.html"],
+  kotlinMath: ["Kotlin API: kotlin.math", "https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.math/"],
+  intellijRun: ["IntelliJ IDEA Help: Run applications", "https://www.jetbrains.com/help/idea/running-applications.html"],
+  kotest: ["Kotest Documentation: Core matchers", "https://kotest.io/docs/assertions/core-matchers.html"],
+  designRecipe: ["Northeastern CS2500: The Design Recipe", "https://course.khoury.northeastern.edu/cs2500/design_recipe.html"],
+  recursion: ["Wikipedia: Recursion (computer science)", "https://en.wikipedia.org/wiki/Recursion_(computer_science)"],
+  binaryTree: ["Wikipedia: Binary tree", "https://en.wikipedia.org/wiki/Binary_tree"],
+  binarySearchTree: ["Wikipedia: Binary search tree", "https://en.wikipedia.org/wiki/Binary_search_tree"],
+  tree: ["Wikipedia: Tree (data structure)", "https://en.wikipedia.org/wiki/Tree_(data_structure)"],
+  graph: ["Wikipedia: Graph theory", "https://en.wikipedia.org/wiki/Graph_theory"],
+  graphTraversal: ["Wikipedia: Graph traversal", "https://en.wikipedia.org/wiki/Graph_traversal"],
+  adjacencyMatrix: ["Wikipedia: Adjacency matrix", "https://en.wikipedia.org/wiki/Adjacency_matrix"]
+};
+
+const CS1101_STATIC_READING_RESOURCES = {
+  "lecture-01-what-is-a-function.html": ["kotlinFunctions"],
+  "lecture-01-run-in-intellij.html": ["intellijRun"],
+  "lecture-01-what-is-an-import.html": ["kotlinPackages"],
+  "lecture-01-reading-library-paths.html": ["kotlinPackages"],
+  "lecture-01-reading-shouldbe.html": ["kotest"],
+  "lecture-01-values-and-types.html": ["kotlinTypes"],
+  "lecture-01-arithmetic-expressions.html": ["kotlinTypes"],
+  "lecture-01-immutable-val.html": ["kotlinTypes"],
+  "lecture-01-string-objects.html": ["kotlinStrings"],
+  "lecture-01-kotlin-math.html": ["kotlinMath"],
+  "lecture-01-comparing-strings.html": ["kotlinEquality", "kotlinStrings"],
+  "lecture-01-why-foundations-matter.html": ["kotlinTypes"]
+};
+
+function resourcesForReading(readingId, fileName) {
+  if (fileName && CS1101_STATIC_READING_RESOURCES[fileName]) {
+    return CS1101_STATIC_READING_RESOURCES[fileName];
+  }
+
+  if (!readingId) return [];
+  if (readingId.startsWith("l02-")) {
+    return readingId === "l02-tests-stubs" || readingId === "l02-debug-coverage"
+      ? ["kotest", "designRecipe"]
+      : ["kotlinFunctions", "designRecipe"];
+  }
+  if (readingId.startsWith("l03-")) return ["kotlinEnums", "kotlinControlFlow"];
+  if (readingId.startsWith("l04-")) return ["kotlinDataClasses"];
+  if (readingId.startsWith("l05-")) return ["kotlinControlFlow"];
+  if (readingId.startsWith("l06-")) return ["kotlinSealed"];
+  if (readingId.startsWith("l07-")) return ["kotlinCasts", "kotlinSealed"];
+  if (readingId.startsWith("l08-") || readingId.startsWith("l09-")) return ["recursion"];
+  if (readingId.startsWith("l10-") || readingId.startsWith("l11-") || readingId.startsWith("l13-")) return ["kotlinCollections", "kotlinCollectionOps"];
+  if (readingId.startsWith("l12-")) return ["kotlinCollections", "kotlinCollectionOps"];
+  if (readingId.startsWith("l13c-")) return ["kotlinLambdas", "kotlinCollectionOps"];
+  if (readingId.startsWith("l14-")) return ["binaryTree"];
+  if (readingId.startsWith("l15-") || readingId.startsWith("l16-")) return ["binarySearchTree"];
+  if (readingId.startsWith("l17-") || readingId.startsWith("l18-")) return ["tree"];
+  if (readingId.startsWith("l19-") || readingId.startsWith("l20-")) return ["recursion", "tree"];
+  if (readingId.startsWith("l21-") || readingId.startsWith("l22-") || readingId.startsWith("l23-")) return ["kotlinControlFlow"];
+  if (readingId.startsWith("l24-") || readingId.startsWith("l25-")) return ["graph", "graphTraversal"];
+  if (readingId === "extra-ranges") return ["kotlinRanges"];
+  if (readingId.startsWith("extra-")) return ["kotlinArrays", "adjacencyMatrix"];
+  return ["kotlinFunctions"];
+}
+
+function supplementaryResourcesMarkup(readingId, fileName) {
+  const resourceItems = resourcesForReading(readingId, fileName)
+    .map((key) => CS1101_RESOURCE_LINKS[key])
+    .filter(Boolean)
+    .map(([label, href]) => `<li><a href="${href}" target="_blank" rel="noopener noreferrer">${label}</a></li>`)
+    .join("");
+
+  if (!resourceItems) return "";
+  return `
+    <section class="supplementary-resources">
+      <h2>Supplementary and External Resources</h2>
+      <ul>${resourceItems}</ul>
+    </section>
+  `;
+}
+
+function renderStaticSupplementaryResources() {
+  const readingBlock = document.querySelector(".reading-block");
+  if (!readingBlock || readingBlock.querySelector(".supplementary-resources")) return;
+
+  const fileName = window.location.pathname.split("/").pop();
+  const markup = supplementaryResourcesMarkup(null, fileName);
+  if (!markup) return;
+
+  const practice = readingBlock.querySelector(".practice");
+  if (practice) {
+    practice.insertAdjacentHTML("beforebegin", markup);
+  } else {
+    readingBlock.insertAdjacentHTML("beforeend", markup);
+  }
+}
+
 function applyGlossaryTerms() {
   document.querySelectorAll(".term[data-term]").forEach((element) => {
     const entry = CS1101_GLOSSARY[element.dataset.term];
@@ -314,4 +421,5 @@ function renderGlossaryList() {
 document.addEventListener("DOMContentLoaded", () => {
   applyGlossaryTerms();
   renderGlossaryList();
+  renderStaticSupplementaryResources();
 });

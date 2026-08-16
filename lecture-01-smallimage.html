@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lecture 1: SmallImage Library</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="glossary.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="crumb" href="lecture-01-expressions-values.html">Back to Lecture 1 readings</a>
+      <p class="topic-kicker">Lecture 1 | Optional reading</p>
+      <h1>Make Images with SmallImage</h1>
+      <p class="subtitle">SmallImage represents an image as a Kotlin value. You can construct images, combine them, transform them, and inspect the result while debugging.</p>
+      <div class="meta">
+        <span class="status-badge optional">Optional</span>
+        <span class="pill">5-7 minutes</span>
+        <span class="pill">Microskills: install a plugin, build an Image, inspect a value</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page layout">
+    <section>
+      <article class="reading-block">
+        <h2>Load SmallImage into IntelliJ</h2>
+        <p>SmallImage is supplied by an IntelliJ plugin. The plugin can turn an image on your clipboard into Kotlin code and set up the supporting library files for the project.</p>
+        <ol>
+          <li><a href="assets/small-image-literal-plugin-0.3.1.zip" download>Download the SmallImage plugin zip file</a>.</li>
+          <li>In IntelliJ's top menu bar, choose <strong>Help</strong>, then <strong>Find Action</strong>.</li>
+          <li>Search for <strong>Install Plugin from Disk</strong>, choose it, and select the zip file you downloaded. Follow IntelliJ's restart prompt if it appears.</li>
+          <li>Copy an image to your clipboard. In a Kotlin file, right-click where you want the value and choose <strong>Paste Image Literal</strong>.</li>
+        </ol>
+        <p>Using <strong>Paste Image Literal</strong> adds the SmallImage library at <code>src/edu/wpi/intro/SmallImage.kt</code> and saves the pasted image under <code>resources/smallimage.images/</code>. The library's package is <code>edu.wpi.intro</code>; a file that uses its image functions normally begins with:</p>
+        <pre><code>import edu.wpi.intro.*</code></pre>
+
+        <h2>Images Are Values</h2>
+        <p>In this library, the <code>Image</code> type describes simple values that can be given and returned from functions similar to String or Int. Each operation below returns a new <code>Image</code> value. Giving intermediate images names makes a picture-building expression easier to read and inspect.</p>
+
+        <h2>Create an initial Image</h2>
+          <h3>Paste an Image Literal from your clipboard</h3>
+          <p>Go to the internet or your photos app and copy an image to your computer's clipboard (right-click, copy).</p>
+          <p>For example, type <code>val myImg =</code>, place the cursor immediately to the right of the equals sign, then right-click and choose <strong>Paste Image Literal</strong>. The pasted image gets a randomly picked id string and IntelliJ completes the value definition for you:</p>
+          <pre><code>val myImg = img("734b8a20-66c2-44b7-836e-5305bdedde39")</code></pre>
+          <p>The plugin saves the clipboard image as <code>734b8a20-66c2-44b7-836e-5305bdedde39.png</code> in <code>resources/smallimage.images/</code>. The <code>img</code> call loads that saved image and produces the <code>Image</code> value named <code>myImg</code>.</p>
+        <h3>Use functions to create image values</h3>
+        <h3><code>rectangle</code></h3>
+        <p><code>rectangle(width, height, mode, color)</code> creates a rectangle. Width and height are positive pixel counts. The mode is <code>"solid"</code> or <code>"outline"</code>; the color can be a name such as <code>"tomato"</code> or a <code>Color</code> value.</p>
+        <pre><code>val banner = rectangle(180, 40, "solid", "tomato")
+val border = rectangle(180, 40, "outline", "black")</code></pre>
+
+        <h3><code>emptyImage</code></h3>
+        <p><code>emptyImage(width, height)</code> makes a transparent image of the requested positive size. It is useful as a blank starting canvas or a spacer.</p>
+        <pre><code>val spacer = emptyImage(24, 40)</code></pre>
+
+        <h2>Arrange Images</h2>
+        <h3><code>above</code></h3>
+        <p><code>above(image1, image2, ...)</code> stacks one or more images from top to bottom. Its optional <code>horizontal</code> argument is <code>"left"</code>, <code>"center"</code>, or <code>"right"</code>.</p>
+        <pre><code>val centeredStack = above(
+    rectangle(120, 24, "solid", "gold"),
+    rectangle(80, 24, "solid", "navy")
+)</code></pre>
+        <p>Without the optional argument, the images are centered horizontally.</p>
+        <pre><code>val stacked = above(
+    rectangle(120, 24, "solid", "gold"),
+    rectangle(80, 24, "solid", "navy"),
+    horizontal = "left"
+)</code></pre>
+
+        <h3><code>beside</code></h3>
+        <p><code>beside(image1, image2, ...)</code> places one or more images from left to right. Its optional <code>vertical</code> argument is <code>"top"</code>, <code>"center"</code>, or <code>"bottom"</code>.</p>
+        <pre><code>val sideBySide = beside(
+    rectangle(36, 60, "solid", "blue"),
+    rectangle(36, 60, "solid", "white"),
+    rectangle(36, 60, "solid", "red")
+)</code></pre>
+        <p>Without the optional argument, the images are centered vertically.</p>
+        <pre><code>val flag = beside(
+    rectangle(36, 60, "solid", "blue"),
+    rectangle(36, 60, "solid", "white"),
+    rectangle(36, 60, "solid", "red"),
+    vertical = "center"
+)</code></pre>
+
+        <h3><code>overlay</code></h3>
+        <p><code>overlay(top, bottom)</code> centers the first image on top of the second. The returned image is large enough to contain both images.</p>
+        <pre><code>val sign = overlay(
+    rectangle(80, 20, "solid", "white"),
+    rectangle(140, 70, "solid", "navy")
+)</code></pre>
+
+        <h2>Transform an Image</h2>
+        <h3><code>flipHorizontal</code> and <code>flipVertical</code></h3>
+        <p><code>flipHorizontal(image)</code> mirrors an image left-to-right. <code>flipVertical(image)</code> mirrors it top-to-bottom. Both return a new image with the same dimensions as the original.</p>
+        <pre><code>val reflectedLeftToRight = flipHorizontal(flag)
+val reflectedTopToBottom = flipVertical(flag)</code></pre>
+
+        <h3><code>rotate</code></h3>
+        <p><code>rotate(degrees, image)</code> rotates an image counterclockwise. The result expands when necessary so the rotated image is not clipped.</p>
+        <pre><code>val turned = rotate(90.0, flag)</code></pre>
+
+        <div class="callout"><strong>Composition habit:</strong> The output of one image function is an <code>Image</code>, so it can become an input to another one. For example, <code>rotate(90.0, overlay(top, bottom))</code> first overlays the two images, then rotates the combined result.</div>
+
+        <h2>View an Image While Debugging</h2>
+        <p>Images are values, so IntelliJ can show them when execution stops at a breakpoint. Put a breakpoint on a line after the image has been created, then start the program with <strong>Debug</strong> rather than Run.</p>
+        <pre><code>val answer: Image = overlay(
+    rectangle(60, 60, "solid", "gold"),
+    rectangle(100, 80, "solid", "navy")
+)
+println(answer.width) // Set a breakpoint here.</code></pre>
+        <p>When the debugger stops, find <code>answer</code> in the Variables pane. Next to its <code>BufferedImage</code> value, click <strong>Show image</strong>. IntelliJ opens a preview of the image value.</p>
+        <figure class="screenshot-card">
+          <img src="assets/smallimage-debug-show-image.png" alt="IntelliJ debug Variables pane showing an answer BufferedImage value with a Show image link.">
+          <figcaption>Use <strong>Show image</strong> next to an <code>Image</code> value in the debugger.</figcaption>
+        </figure>
+      </article>
+
+      <nav class="lesson-nav">
+        <a href="lecture-01-comparing-strings.html">Previous: Comparing Strings</a>
+        <a href="lecture-02-functions-tests-helpers.html">Next: Lecture 2</a>
+      </nav>
+    </section>
+
+    <aside class="panel">
+      <h2>Microskill</h2>
+      <p>Use a library function to produce an <code>Image</code>, then inspect that value in IntelliJ's debugger.</p>
+      <h3>Function Map</h3>
+      <ul>
+        <li>Create: <code>rectangle</code>, <code>emptyImage</code></li>
+        <li>Arrange: <code>above</code>, <code>beside</code>, <code>overlay</code></li>
+        <li>Transform: <code>flipHorizontal</code>, <code>flipVertical</code>, <code>rotate</code></li>
+      </ul>
+    </aside>
+  </main>
+</body>
+</html>

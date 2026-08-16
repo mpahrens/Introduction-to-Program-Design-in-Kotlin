@@ -439,8 +439,192 @@ pre code {
   padding-top: 18px;
 }
 
+.supplementary-resources {
+  border-top: 1px solid var(--line);
+  margin-top: 24px;
+  padding-top: 18px;
+}
+
+.supplementary-resources h2 {
+  color: var(--blue);
+}
+
+.supplementary-resources ul {
+  margin: 0;
+  padding-left: 1.3rem;
+}
+
+.supplementary-resources li + li {
+  margin-top: 8px;
+}
+
+.supplementary-resources a {
+  font-weight: 750;
+}
+
 .practice h2 {
   color: var(--rose);
+}
+
+.practice-problem {
+  margin-bottom: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 22px;
+  background: var(--paper);
+}
+
+.practice-problem h2 {
+  margin: 12px 0 10px;
+  color: var(--green);
+  font-size: 1.35rem;
+}
+
+.practice-problem-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.practice-of {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.94rem;
+}
+
+.difficulty {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+  font-size: 0.88rem;
+  font-weight: 750;
+}
+
+.difficulty-icon {
+  position: relative;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  background: var(--green);
+}
+
+.difficulty-green .difficulty-icon {
+  border-radius: 50%;
+}
+
+.difficulty-blue .difficulty-icon {
+  background: var(--blue);
+}
+
+.difficulty-black .difficulty-icon,
+.difficulty-double-black .difficulty-icon {
+  width: 13px;
+  height: 13px;
+  margin: 2px;
+  background: var(--ink);
+  transform: rotate(45deg);
+}
+
+.difficulty-double-black .difficulty-icon {
+  margin-right: 9px;
+}
+
+.difficulty-double-black .difficulty-icon::after {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  width: 13px;
+  height: 13px;
+  background: var(--ink);
+  content: "";
+}
+
+.practice-details {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin-top: 12px;
+  background: rgba(36, 95, 150, 0.05);
+}
+
+.practice-details.hint {
+  background: rgba(185, 130, 22, 0.1);
+}
+
+.practice-details summary {
+  padding: 10px 13px;
+  cursor: pointer;
+  color: var(--blue);
+  font-weight: 750;
+}
+
+.practice-details p {
+  border-top: 1px solid var(--line);
+  margin: 0;
+  padding: 12px 13px;
+}
+
+.practice-solution {
+  margin: 0 13px 13px;
+}
+
+.difficulty-list {
+  display: grid;
+  gap: 10px;
+  padding-left: 0;
+  list-style: none;
+}
+
+.problem-index {
+  display: grid;
+  gap: 28px;
+}
+
+.problem-index-reading {
+  border-top: 1px solid var(--line);
+  padding-top: 22px;
+}
+
+.problem-index-reading:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.problem-index-reading > h2 {
+  margin: 0 0 14px;
+  color: var(--green);
+  font-size: 1.35rem;
+}
+
+.problem-index-problems {
+  display: grid;
+  gap: 10px;
+}
+
+.problem-index-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px 16px;
+  background: var(--paper);
+}
+
+.problem-index-row h3 {
+  margin: 0 0 4px;
+  font-size: 1.02rem;
+}
+
+.problem-index-row p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.93rem;
 }
 
 .practice ol {
@@ -519,5 +703,9 @@ pre code {
 
   .reading-time {
     grid-column: 2;
+  }
+
+  .problem-index-row {
+    grid-template-columns: 1fr;
   }
 }

@@ -129,6 +129,8 @@ function renderReading(set, reading) {
 
           <div class="callout"><strong>Notice:</strong> ${reading.notice}</div>
 
+          ${supplementaryResourcesMarkup(reading.id, reading.file)}
+
           <div class="practice">
             <h2>Practice</h2>
             <ol>
