@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lecture 1: Create a Kotlin Project in IntelliJ</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="glossary.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="crumb" href="lecture-01-expressions-values.html">Back to Lecture 1 readings</a>
+      <p class="topic-kicker">Lecture 1 | Reading 1 | Necessary</p>
+      <h1>Create a Kotlin Project in IntelliJ</h1>
+      <p class="subtitle">A Kotlin project gives IntelliJ a place to organize your source files, libraries, and program output.</p>
+      <div class="meta">
+        <span class="status-badge required">Necessary</span>
+        <span class="pill">4 minutes</span>
+        <span class="pill">Tool skill: create a project and Kotlin file</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page layout">
+    <section>
+      <article class="reading-block">
+        <h2>Start a Kotlin Project</h2>
+        <ol>
+          <li>Open IntelliJ IDEA and choose <strong>New Project</strong>.</li>
+          <li>Choose <strong>Kotlin</strong> as the language.</li>
+          <li>In the JDK area, choose <strong>Download JDK</strong> and select version <strong>26</strong>.</li>
+          <li>Choose a meaningful project name and folder location, then create the project. IntelliJ saves the whole project and its code files in that location, so choose a folder you will recognize later.</li>
+        </ol>
+        <p>The JDK is the software IntelliJ uses to compile and run Kotlin programs. The project wizard can download it for you, so you do not need to locate it separately.</p>
+
+        <figure class="screenshot-card">
+          <img src="assets/intellij-new-kotlin-project.png" alt="IntelliJ New Project window with Kotlin selected, project name and location fields, JDK 26 selected, and Download JDK highlighted.">
+          <figcaption>Select <strong>Kotlin</strong>, give the project a recognizable name and location, then choose or download JDK 26.</figcaption>
+        </figure>
+
+        <h2>Put Source Code in <code>src</code></h2>
+        <p>The <code>src</code> folder is where the project keeps your Kotlin source code. Put the files you write for this course there.</p>
+        <ol>
+          <li>In IntelliJ's Project tool window, find the <code>src</code> folder.</li>
+          <li>Right-click <code>src</code>, choose <strong>New</strong>, then choose <strong>Kotlin File</strong>.</li>
+          <li>Give the file a useful name, such as <code>Warmup</code>. IntelliJ creates a file named <code>Warmup.kt</code>.</li>
+        </ol>
+        <figure class="screenshot-card">
+          <img src="assets/intellij-add-kotlin-file.png" alt="IntelliJ Project tool window showing the src folder's New menu and the Kotlin Class/File option.">
+          <figcaption>Right-click <code>src</code>, choose <strong>New</strong>, then choose <strong>Kotlin Class/File</strong>.</figcaption>
+        </figure>
+        <figure class="screenshot-card">
+          <img src="assets/intellij-create-warmup-file.png" alt="IntelliJ New Kotlin Class/File dialog with Warmup as the name and File selected.">
+          <figcaption>Enter a useful name such as <code>Warmup</code>, select <strong>File</strong>, and confirm to create <code>Warmup.kt</code>.</figcaption>
+        </figure>
+        <p>In this course, a <code>.kt</code> file contains loose, top-level definitions: functions, names made with <code>val</code>, and type definitions. We will not organize our programs around Object-Oriented Programming like Kotlin or Java classes.</p>
+        <pre><code>
+        fun welcome(name: String): String = "Welcome, $name!"
+        fun main() {
+          println(welcome("CS1101"))
+        }
+        </code></pre>
+        <p>Both definitions above can appear directly in <code>Warmup.kt</code>; neither needs to be inside a class.</p>
+
+        <div class="practice">
+          <h2>Practice</h2>
+          <ol>
+            <li>Which language should you choose when creating this course's project?</li>
+            <li>Which JDK version should you download?</li>
+            <li>Where should a new Kotlin source file be added?</li>
+            <li>What file ending should a new Kotlin file have?</li>
+          </ol>
+          <details class="answer">
+            <summary>Check your answers</summary>
+            <div>
+              <p>1. Choose <code>Kotlin</code>.</p>
+              <p>2. Download JDK version <code>26</code>.</p>
+              <p>3. Add it in the project's <code>src</code> folder.</p>
+              <p>4. A Kotlin source file ends in <code>.kt</code>.</p>
+            </div>
+          </details>
+        </div>
+      </article>
+
+      <nav class="lesson-nav">
+        <a href="lecture-01-expressions-values.html">Lecture 1 contents</a>
+        <a href="lecture-01-what-is-a-function.html">Next: What Is a Function?</a>
+      </nav>
+    </section>
+
+    <aside class="panel">
+      <h2>Microskill</h2>
+      <p>Create a Kotlin project with JDK 26, then add a <code>.kt</code> file inside <code>src</code>.</p>
+      <h3>Keep In Mind</h3>
+      <p><code>src</code> holds source code. A <code>.kt</code> file can hold functions and type definitions without being a class file.</p>
+    </aside>
+  </main>
+</body>
+</html>

@@ -11,13 +11,13 @@
   <header class="site-header">
     <div class="header-inner">
       <a class="crumb" href="lecture-01-expressions-values.html">Back to Lecture 1 readings</a>
-      <p class="topic-kicker">Lecture 1 | Reading 4 | Necessary</p>
+      <p class="topic-kicker">Lecture 1 | Reading 5 | Necessary</p>
       <h1>Read a <code>shouldBe</code> Example</h1>
       <p class="subtitle">A test is an executable example: it records what an expression should produce and lets the computer compare.</p>
       <div class="meta">
         <span class="status-badge required">Necessary</span>
-        <span class="pill">3 minutes</span>
-        <span class="pill">Vocabulary: test, expected, approximate</span>
+        <span class="pill">5 minutes</span>
+        <span class="pill">Microskills: install Kotest, read exact and approximate tests</span>
       </div>
     </div>
   </header>
@@ -25,6 +25,19 @@
   <main class="page layout">
     <section>
       <article class="reading-block">
+        <h2>Install Kotest</h2>
+        <p>Tests in this course use the Kotest assertion library. Add it to each new project before using <code>shouldBe</code>, <code>plusOrMinus</code>, or <code>assertSoftly</code>.</p>
+        <ol>
+          <li>Open the project settings.</li>
+          <li>Choose <strong>Modules</strong>.</li>
+          <li>Add a library from Maven.</li>
+          <li>Enter <code>io.kotest:kotest-assertions-core-jvm:5.5.0</code>, then add or download the library.</li>
+        </ol>
+        <p>Kotest should now appear in the project's <strong>External Libraries</strong> section. At the top of a Kotlin file that uses these assertions, import the names you need:</p>
+        <pre><code>import io.kotest.assertions.assertSoftly
+import io.kotest.matchers.doubles.plusOrMinus
+import io.kotest.matchers.shouldBe</code></pre>
+
         <h2>Actual on the Left, Expected on the Right</h2>
         <p>In this course, a <span class="term" data-term="test">test</span> is also a small example of intended behavior. Read this line from left to right:</p>
         <pre><code>4 * 3 shouldBe 12</code></pre>
@@ -38,12 +51,23 @@
         <pre><code>2.0 / 3.0 shouldBe (0.667 plusOrMinus 0.001)</code></pre>
         <p>This expectation accepts a result within <code>0.001</code> of <code>0.667</code>. Read it as, "two thirds should be approximately 0.667." The parentheses keep the expected value and its <span class="term" data-term="tolerance">tolerance</span> together.</p>
 
+        <h2>Group Several Checks with <code>assertSoftly</code></h2>
+        <p><code>assertSoftly</code> groups related checks. If more than one check fails, it reports all of the failures together instead of stopping at the first one.</p>
+        <pre><code>assertSoftly {
+    4 * 3 shouldBe 12
+    "map".uppercase() shouldBe "MAP"
+    2.0 / 3.0 shouldBe (0.667 plusOrMinus 0.001)
+}</code></pre>
+        <p>The ordinary <code>shouldBe</code> checks exact equality. Use <code>plusOrMinus</code> only when a <code>Double</code> result is expected to be close to a value rather than exactly equal to it.</p>
+
         <div class="practice">
           <h2>Practice</h2>
           <ol>
             <li>In <code>9 + 4 shouldBe 13</code>, which side is computed?</li>
             <li>Would <code>9 + 4 shouldBe 14</code> pass or fail?</li>
             <li>What does <code>plusOrMinus 0.01</code> add to a decimal expectation?</li>
+            <li>Where should Kotest appear after it is installed?</li>
+            <li>Why might a file use <code>assertSoftly</code>?</li>
           </ol>
           <details class="answer">
             <summary>Check your answers</summary>
@@ -51,6 +75,8 @@
               <p>1. Kotlin computes <code>9 + 4</code> on the left.</p>
               <p>2. It fails because <code>9 + 4</code> produces <code>13</code>, not <code>14</code>.</p>
               <p>3. It adds a tolerance: a small range of values close enough to the expected decimal.</p>
+              <p>4. It should appear under <strong>External Libraries</strong>.</p>
+              <p>5. It groups related checks and reports all of their failures together.</p>
             </div>
           </details>
         </div>
@@ -64,7 +90,7 @@
 
     <aside class="panel">
       <h2>Microskill</h2>
-      <p>Identify the computed expression and expected value in a <code>shouldBe</code> test.</p>
+      <p>Install Kotest, then identify exact, approximate, and grouped expectations.</p>
       <h3>Course Language</h3>
       <p>Tests are examples. They make a claim about what code should do.</p>
     </aside>
