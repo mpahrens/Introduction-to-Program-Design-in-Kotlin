@@ -65,23 +65,44 @@ const CS1101_READING_SETS_DATA = (() => {
       "Recognize a structure that can be understood by solving the same kind of problem on a smaller part.",
       ["recursion", "recursive-data", "base-case"],
       "Some information is naturally nested: folders contain folders, documents contain sections, and a family tree contains smaller family trees. A recursive design mirrors that shape instead of pretending the structure is flat.",
-      "Future topics use recursive structure in file systems, web-page trees, compiler syntax trees, and many algorithms. The same pattern of a simple stopping case plus a smaller subproblem helps a program handle an arbitrarily large structure.",
-      "Project folder\n- report\n- images\n  - chart\n  - logo",
-      "To count files, a program can count the direct files and then use the same question on every nested folder. The task repeats on smaller pieces until a folder has no nested folders.",
-      "The value of recursion is not that it is clever. It is that the structure of the information suggests a repeatable plan.",
-      [Q("Why are folders a recursive structure?", "A folder may contain smaller folders of the same kind."), Q("Where might a compiler use recursive structure?", "When representing a nested expression or program as a syntax tree."), Q("What must eventually happen in a recursive process?", "It must reach a simple stopping case.")]
+      "As an advanced example, a mobile photo-feed app can keep recently viewed images in memory so scrolling stays smooth. When memory is full, a cache discards the least recently viewed image. Implementing the cache recursively using a doubly linked list enabled quickly adding a just-viewed image to the front and removing the oldest image from the back.",
+      `// front -> [1] <-> [2] <-> [3] <- end 
+      
+/** recursively defined doubly-linked list */
+sealed interface ImageDoublyLinkedList {
+    data object Empty : ImageDoublyLinkedList
+    data class Node(
+        val previous : ImageDoublyLinkedList,
+        val value : Image,
+        val next : ImageDoublyLinkedList
+    ) : ImageDoublyLinkedList
+}
+
+typealias idempty = ImageDoublyLinkedList.Empty
+typealias idnode = ImageDoublyLinkedList.Node
+
+sealed interface Cache {
+    data object Empty : Cache
+    data class NonEmpty(
+        val front : idnode,
+        val end : idnode
+    ) : Cache
+}`,
+      "A photo-feed cache can be empty, or it can be a <code>Cache.NonEmpty</code> value with direct references to its front and end nodes. Each <code>idnode</code> stores one image value and links toward both the previous and next nodes. The most recently viewed image belongs at <code>front</code>; when the cache is full, the least recently viewed image at <code>end</code> is the one to discard.",
+      "The value of recursion is not that it is clever. It is that the structure of the information suggests a repeatable plan. The links in a doubly linked list make it possible to travel or update the cache from either end.",
+      [Q("What value does an <code>idnode</code> store?", "One Image value of a cached image."), Q("Which two nodes does <code>Cache.NonEmpty</code> keep direct references to?", "Its <code>front</code> node and its <code>end</code> node."), Q("When the cache is full, which image should an cache discard?", "The least recently viewed image at the <code>end</code> of the list.")]
     ),
     l10: W(
       "l10-why-decomposition-matters", "lecture-10-why-decomposition-matters.html", "Why this matters: Breaking Problems into Parts",
-      "Decomposition helps programmers turn a large question into smaller results that can be understood, tested, and combined.",
-      "Name the smaller questions hidden inside a larger computing task.",
-      ["decomposition", "helper-function", "accumulator"],
-      "Many real tasks are too large to solve comfortably in one thought. Breaking a task into named pieces gives each piece a purpose and lets the final answer explain how those pieces fit together.",
-      "This habit reappears in algorithms, data analysis, software design, and debugging. Smaller parts can be checked independently, which makes it easier to locate a mistaken assumption or improve one step without disturbing the rest.",
-      "Travel estimate\nfind total distance\nfind travel speed\ncombine them to estimate time",
-      "The final estimate depends on two understandable results. If it looks wrong, a programmer can examine distance and speed separately before questioning the final combination.",
-      "A useful part has a meaningful job. Splitting a task into arbitrary tiny fragments can hide the idea instead of clarifying it.",
-      [Q("Why does decomposition help with debugging?", "Each smaller result can be checked separately."), Q("What two subresults might a shopping-cart total need?", "For example, item subtotal and tax."), Q("When is a smaller part worth naming?", "When it represents a recognizable idea or can be checked independently.")]
+      "Types let a program move through a sequence of small, reusable transformations instead of solving everything at once.",
+      "Trace how one function's output type becomes the next function's input type.",
+      ["decomposition", "helper-function", "type"],
+      "Imagine a campus weather screen that begins with a <code>TempList</code> and must display a sentence such as <code>\"This week's average temperature was 71.4 degrees.\"</code> A small utility can summarize the temperatures, another can compute an average, and another can format the answer as text. Each utility has one focused job and can be reused whenever a program has the type of data it expects.",
+      "A programmer composes those utilities to make the weather screen. Each intermediate result has a type, and the output type of one step must fit the input type of the next. This lets a program travel from its initial data to a distant final result in understandable stages.",
+      "TempList\n  -- summarize --&gt; TemperatureSummary(total: Int, count: Int)\n  -- average --&gt; Double\n  -- formatAverageTemperature --&gt; String\n\n\"This week's average temperature was 71.4 degrees.\"",
+      "The <code>summarize</code> utility understands a <code>TempList</code> and produces a <code>TemperatureSummary</code>. The <code>average</code> utility only needs that summary and produces a decimal value. The formatting utility only needs the decimal value and produces the sentence for the screen. No one utility needs to know the whole application goal; the programmer connects their type-compatible results.",
+      "A reusable utility has a focused promise about its input and output. The application, not the library, decides which utilities to connect and in what order.",
+      [Q("What type does <code>summarize</code> produce?", "<code>TemperatureSummary</code>, containing a total and a count."), Q("What type does <code>average</code> produce?", "<code>Double</code>."), Q("Why can the formatting utility be separate from the <code>TempList</code> utility?", "It only needs the decimal average, so it does not need to know how temperatures were stored or summarized.")]
     ),
     "l11-13": W(
       "l11-why-lists-matter", "lecture-11-why-lists-matter.html", "Why this matters: Collections of Data",
@@ -95,30 +116,18 @@ const CS1101_READING_SETS_DATA = (() => {
       "Collections invite questions about patterns across many values: Which items match? How many are there? What is the total or average?",
       [Q("Why might a web site represent search results as a collection?", "A search can find any number of matching items."), Q("What is one useful question about a collection of measurements?", "For example, which measurement is largest or what the average is."), Q("Why keep a collection instead of unrelated separate values?", "A collection lets one operation work consistently across all related items.")]
     ),
-    "l13-challenge": W(
-      "l13c-why-functions-as-inputs-matter", "lecture-13-why-functions-as-inputs-matter.html", "Why this matters: Rules as Data",
-      "Treating a rule as a value lets one general process adapt to many situations without being rewritten each time.",
-      "Recognize when a program should receive a rule or action as input instead of choosing one fixed rule itself.",
-      ["higher-order-function", "function-type", "predicate"],
-      "Some programs repeat the same overall process while the rule changes. A survey tool, for example, can collect answers in the same way while using a different rule to decide which answers need follow-up.",
-      "This idea appears later in event handling, sorting, simulations, testing, and configurable systems. Giving a process a rule makes the process reusable while leaving its behavior open to deliberate variation.",
-      "Notification rule\nsend a reminder when an assignment is due soon\nchange the rule for a different course or deadline",
-      "The notification system can keep the same scheduling machinery while receiving a different rule for each context. The rule is information the system can use, not a hard-coded decision it must always make.",
-      "A general process should receive a rule when the process stays the same but the meaning of a match or action may change.",
-      [Q("Why might a sorting tool accept a comparison rule?", "Different users may need the same items ordered in different ways."), Q("What stays the same in a configurable notification system?", "The machinery for scheduling and sending notifications."), Q("What can change?", "The rule that decides when to notify.")]
-    ),
-    l14: W(
-      "l14-why-trees-matter", "lecture-14-why-trees-matter.html", "Why this matters: Hierarchical Information",
-      "Trees represent information with levels, letting a program describe whole structures made of smaller contained structures.",
-      "Recognize a hierarchy that is easier to understand as parent-and-child relationships than as one flat list.",
-      ["binary-tree", "node", "leaf"],
-      "Hierarchies are everywhere: a document has headings and subheadings, an organization has managers and reports, and a game scene has objects containing smaller objects. A tree makes those relationships explicit.",
-      "Future computing topics use trees in file systems, compilers, search indexes, user-interface layouts, and decision systems. A tree shape gives a program a systematic way to visit or rebuild every part of a hierarchy.",
-      "Document outline\nChapter\n  Section\n    Paragraph\n  Section",
-      "Each part belongs beneath another part except the top-level chapter. A program can display the outline, count sections, or find a heading by following the same parent-and-child structure.",
-      "A hierarchy is not merely a list with indentation. The connections between parents and children are information the program needs.",
-      [Q("Why is a document outline naturally a tree?", "Each heading can contain smaller subheadings."), Q("Name another hierarchy a program might model.", "For example, a file system, an organization chart, or a menu."), Q("What does a tree preserve that a flat list might lose?", "Which items contain or belong beneath other items.")]
-    ),
+  l14: W(
+    "l14-why-trees-matter", "lecture-14-why-trees-matter.html", "Why this matters: Merkle Trees and Tamper Evidence",
+    "Merkle trees use binary-tree structure and cryptographic hashes to summarize a large collection of data with one root value.",
+    "Explain how a change to one piece of data affects a Merkle tree's root hash.",
+    ["merkle-tree", "cryptographic-hash", "binary-tree", "leaf"],
+    "A <strong>Merkle tree</strong> is a binary tree built from cryptographic hashes. Each leaf holds a hash of one data item, and each inner node holds a hash made from its two child hashes. The root hash acts like a compact fingerprint for the entire collection.",
+    "A blockchain can store one Merkle root for all transactions in a block. To check that one transaction belongs in that block, a verifier needs the transaction and only the neighboring hashes along its path to the root, not every transaction in the block. Changing even one transaction changes its leaf hash and then changes every hash above it, including the root. This makes Merkle trees useful for tamper-evident records and other cryptographic verification systems.",
+    "H = a cryptographic hash function\n\nroot = H(left, right)\nleft = H(H(A), H(B))\nright = H(H(C), H(D))\n\nleaves: H(A), H(B), H(C), H(D)",
+    "A, B, C, and D can be transactions. The bottom hashes summarize individual transactions; each higher hash summarizes two lower hashes. A verifier can recompute a path from one transaction to the root and compare the result with the trusted root hash.",
+    "A Merkle tree does not make the transaction data secret. Instead, it makes an unexpected change visible because that change produces a different root hash.",
+    [Q("What does each leaf hash represent?", "One data item, such as one transaction."), Q("What happens to the root hash when transaction B changes?", "It changes, because B's leaf hash and every hash above it change."), Q("Why does a Merkle proof not need every transaction in a block?", "It needs only the transaction and the neighboring hashes on that transaction's path to the root.")]
+  ),
     "l15-16": W(
       "l15-why-search-trees-matter", "lecture-15-why-search-trees-matter.html", "Why this matters: Efficient Search",
       "Search-tree organization helps a program rule out large parts of ordered information instead of examining every item one by one.",
@@ -237,10 +246,29 @@ const CS1101_READING_SETS_DATA = (() => {
       ["expression", "return-type", "decomposition"],
       "Once the template identifies the desired answer, work backward: ask what values are needed for that answer, then ask what expressions can produce those values from the parameters. Name important subcomputations with local <code>val</code>s.",
       "Local names make the body read like the plan. They also let a programmer inspect one subresult at a time when an answer is surprising.",
-      "fun shippingCost(weightKg: Double, express: Boolean): Double {\n    val base = if (weightKg <= 1.0) 5.0 else 5.0 + (weightKg - 1.0) * 1.5\n    val expressSurcharge = if (express) 6.0 else 0.0\n    return base + expressSurcharge\n}",
-      "The desired answer is total shipping cost, so the return line adds two named pieces. <code>base</code> comes from the weight input. <code>expressSurcharge</code> comes from the express input. Each local name makes one part of the plan visible.",
+      `// 1. Start with the value the function must return.
+fun shippingCost(weightKg: Double, express: Boolean): Double {
+    val overallCost = ???
+    return overallCost
+}
+
+// 2. Ask what values are needed to make that answer.
+fun shippingCost(weightKg: Double, express: Boolean): Double {
+    val baseCost = ???
+    val expressSurcharge = ???
+    val overallCost = baseCost + expressSurcharge
+    return overallCost
+}
+
+// 3. Work from each named value back to the input that determines it.
+fun shippingCost(weightKg: Double, express: Boolean): Double {
+    val baseCost = if (weightKg <= 1.0) 5.0 else 5.0 + (weightKg - 1.0) * 1.5
+    val expressSurcharge = if (express) 6.0 else 0.0
+    return baseCost + expressSurcharge
+}`,
+      "First, name the desired answer: <code>overallCost</code>. Next, ask what values must be combined to produce it: <code>baseCost</code> and <code>expressSurcharge</code>. Finally, work backward to the inputs: <code>weightKg</code> determines the base cost, and <code>express</code> determines the surcharge. The completed version can return the final sum directly because the two intermediate values already have meaningful names.",
       "The return expression must produce the type promised by the signature. Here, both local values and their sum are <code>Double</code>s.",
-      [Q("What does the final return expression combine?", "The base cost and the express surcharge."), Q("Which local value depends on <code>express</code>?", "<code>expressSurcharge</code>."), Q("Why use local names instead of one long expression?", "They make the meaningful subcomputations easier to read and inspect.")]
+      [Q("What should <code>overallCost</code> represent in the first stage?", "The total shipping cost that the function promises to return."), Q("Which two named values are combined to make <code>overallCost</code>?", "<code>baseCost</code> and <code>expressSurcharge</code>."), Q("Why use local names instead of one long expression?", "They make meaningful subcomputations easier to read, inspect, and connect back to the inputs.")]
     ),
     R(
       "l02-debug-coverage", "lecture-02-debug-and-coverage.html", "Debug and Grow the Test Set", "necessary",
@@ -464,15 +492,15 @@ val semesterStart: Season = Season.FALL`,
           "A data class defines one kind of value by naming the pieces carried together.",
           "Define a product-data type with a Kotlin data class.",
           ["data-class", "field", "constructor"],
-          "A <strong>data class</strong> combines several fields into one value. Each field has a name and type. Together, the fields describe all the information needed for one instance.",
+          "Product types combines several fields into one value. Kotlin product types are made using a <strong>data class</strong> consisting of a type/constructor name and where each field has a name and type. Together, the fields describe all the information needed for one object value.",
           "This is product data: making one value requires a value for every field. Grouping related fields prevents long collections of unrelated local names.",
           `data class Book(
     val title: String,
     val pages: Int,
     val format: String
 )`,
-          "Every <code>Book</code> has a title, page count, and format. The field names document what each position means, and their types limit what can be stored there.",
-          "The class definition creates a new type. It does not yet create a particular book value.",
+          "Every <code>Book</code> object value has a title, page count, and format. The field names document what each position means, and their types limit what can be stored there.",
+          "The data class type definition creates a new type. It does not yet create a particular book object value.",
           [
             Q("How many fields does <code>Book</code> have?", "Three."),
             Q("What is the type of <code>pages</code>?", "<code>Int</code>."),
@@ -888,7 +916,7 @@ val supplies = CardPayment("4821")`,
           "Distinguish product data from sum data in a problem statement.",
           ["sum-type", "data-class", "variant"],
           "A data class is often called <strong>product data</strong>: constructing one value requires all its fields. A sealed family is sum data: constructing one value requires choosing one variant.",
-          "The distinction guides design. Use product data for facts that coexist, and sum data for alternatives with different shapes.",
+          "The distinction guides design. Use product data for facts that coexist at the same time. Use sum data for mutually-exclusive alternatives with different shapes.",
           `data class Coordinate(val x: Int, val y: Int)
 
 sealed interface Result {
@@ -970,17 +998,20 @@ sealed interface Result {
           ["recursive-data", "sum-type", "node"],
           "<strong>Recursive data</strong> contains a smaller value of the same type. A custom list is a sum type with an empty variant and a node variant whose <code>rest</code> field is another list.",
           "The definition represents any finite length because each node can point to another node, eventually ending in Empty.",
-          `sealed interface WordList
-data object Empty: WordList
-data class WordNode(val first: String, val rest: WordList): WordList
+          `sealed interface StringList {
+    data object Empty : StringList
+    data class Node(val first : String, val rest : StringList) : StringList
+}
+typealias sempty = StringList.Empty
+typealias snode = StringList.Node
 
-val twoWords = WordNode("design", WordNode("data", Empty))`,
-          "The outer node stores <code>\"design\"</code>. Its rest is a one-word list, whose rest is Empty.",
+val twoWords = snode("design", snode("data", sempty))`,
+          "The outer node stores <code>\"design\"</code>. Its rest is a one-string list, whose rest is <code>sempty</code>.",
           "The recursive field must have the shared list type, not only the node type, so it can eventually contain Empty.",
           [
-            Q("What are the two variants?", "<code>Empty</code> and <code>WordNode</code>."),
-            Q("What is the type of <code>rest</code>?", "<code>WordList</code>."),
-            Q("How many words are in <code>twoWords</code>?", "Two.")
+            Q("What are the two variants?", "<code>StringList.Empty</code> and <code>StringList.Node</code>, abbreviated as <code>sempty</code> and <code>snode</code>."),
+            Q("What is the type of <code>rest</code>?", "<code>StringList</code>."),
+            Q("How many strings are in <code>twoWords</code>?", "Two.")
           ]
         ),
         R(
@@ -988,23 +1019,23 @@ val twoWords = WordNode("design", WordNode("data", Empty))`,
           "lecture-09-recursive-list-template.html",
           "Follow the Empty-or-Node Template",
           "necessary",
-          "A function over a recursive list has one branch for Empty and one for WordNode.",
+          "A function over a recursive list has one branch for sempty and one for snode.",
           "Write the structural template for a custom recursive list.",
           ["template", "recursive-data", "case-analysis"],
           "A <strong>template</strong> is a reusable outline derived from the data definition. For a list, case analysis separates Empty from Node. In the Node branch, the inventory includes the first item and a recursive call on the rest.",
           "Following the template ensures that every data variant is handled and that the recursive call follows the recursive field.",
-          `fun wordCount(words: WordList): Int {
+          `fun wordCount(words: StringList): Int {
     return when (words) {
-        Empty -&gt; 0
-        is WordNode -&gt; 1 + wordCount(words.rest)
+        sempty -&gt; 0
+        is snode -&gt; 1 + wordCount(words.rest)
     }
 }`,
-          "Empty contributes zero words. A node contributes one for its first field plus the count of its rest.",
-          "The recursive call belongs on <code>words.rest</code> because that is the field whose type is <code>WordList</code>.",
+          "sempty contributes zero strings. A snode contributes one for its first field plus the count of its rest.",
+          "The recursive call belongs on <code>words.rest</code> because that is the field whose type is <code>StringList</code>.",
           [
-            Q("What does the Empty branch return?", "<code>0</code>."),
+            Q("What does the sempty branch return?", "<code>0</code>."),
             Q("Which field is passed recursively?", "<code>words.rest</code>."),
-            Q("Why does the Node branch add 1?", "It counts the current node's first word.")
+            Q("Why does the snode branch add 1?", "It counts the current node's first string.")
           ]
         ),
         R(
@@ -1017,14 +1048,14 @@ val twoWords = WordNode("design", WordNode("data", Empty))`,
           ["predicate", "template", "recursion"],
           "Many list functions share the same Empty-or-Node template. An 'any' query combines with OR, an 'all' query combines with AND, a map constructs one output node per input node, a filter may keep or skip a node, and a fold combines items into one result.",
           "Recognizing the pattern narrows the design choices before writing details.",
-          `fun anyShort(words: WordList): Boolean {
+          `fun anyShort(words: StringList): Boolean {
     return when (words) {
-        Empty -&gt; false
-        is WordNode -&gt; words.first.length &lt; 4 || anyShort(words.rest)
+        sempty -&gt; false
+        is snode -&gt; words.first.length &lt; 4 || anyShort(words.rest)
     }
 }`,
-          "The Empty answer for an 'any' question is false. A Node answers true if its own word is short or if any word in the rest is short.",
-          "Choose the base value that is neutral for the combining operator: false for OR, true for AND, and zero for addition.",
+          "The sempty answer for an 'any' question is false. A snode answers true if its own string is short or if any string in the rest is short.",
+          "Choose the base value that is neutral for the combining operator: false for OR, true for AND, an empty list for map/filter, and zero for addition (typically).",
           [
             Q("Which pattern does <code>anyShort</code> use?", "An 'any' query."),
             Q("Why is the Empty answer false?", "An empty list contains no matching item."),
@@ -1046,6 +1077,8 @@ val twoWords = WordNode("design", WordNode("data", Empty))`,
 = 3 + (2 + countDownSum(1))
 = 3 + (2 + (1 + countDownSum(0)))
 = 3 + (2 + (1 + 0))
+= 3 + (2 + 1)
+= 3 + 3
 = 6`,
           "The calls expand downward while inputs shrink. Addition waits until the base answer is known, then completes on the return path.",
           "Keep parentheses while tracing so the pending operations remain visible.",
@@ -1063,8 +1096,8 @@ val twoWords = WordNode("design", WordNode("data", Empty))`,
       lecture: "Lecture 10",
       title: "List Helpers and Averages",
       minutes: 8,
-      summary: "Three necessary readings decompose averages into totals, counts, conversions, and filters. The optional reading considers empty input.",
-      cardSummary: "Short readings on decomposing averages, numeric conversion, and filtered list calculations.",
+      summary: "Three necessary readings decompose averages into totals and counts, use focused helpers, and make an explicit decision for empty input. The optional reading explores decimal conversion and filtered averages.",
+      cardSummary: "Short readings on decomposing averages, helper functions, empty input, numeric conversion, and filtered list calculations.",
       goal: "Students arrive able to work backward from an average and name the helper results needed to compute it.",
       nextHref: "lecture-11-13-built-in-lists.html",
       nextLabel: "Lectures 11-13 reading set",
@@ -1077,14 +1110,14 @@ val twoWords = WordNode("design", WordNode("data", Empty))`,
           "Average is not one list operation: it combines a total with the number of items.",
           "Work backward from an average formula to its two required subresults.",
           ["decomposition", "helper-function", "expression"],
-          "To compute an average, first determine the total of the values and the number of values. The final expression divides those two results.",
+          "You may think, because the input is a list, you should immediately jump to doing case-analysis with a when expression. However, to compute an average, first determine the total of the values and the number of values. The final expression divides those two results.",
           "Working backward from the return value reveals the subproblems before recursion is written.",
           `fun averageTemperature(readings: TempList): Double {
     val total = temperatureTotal(readings)
     val count = temperatureCount(readings)
     return total.toDouble() / count
 }`,
-          "The main function names the two conceptual pieces. Separate helpers can follow the recursive list template to compute each piece.",
+          "The main function names the two conceptual pieces that are numerical (arithmetic) rather than recursive. Separate helpers should follow the recursive list template to compute each numerical piece.",
           "The final return line should read like the mathematical definition of average.",
           [
             Q("What two results are required?", "A total and a count."),
@@ -1117,31 +1150,10 @@ val twoWords = WordNode("design", WordNode("data", Empty))`,
           ]
         ),
         R(
-          "l10-conversion-filter",
-          "lecture-10-conversion-and-filtered-averages.html",
-          "Convert before Division and Filter Both Pieces",
-          "necessary",
-          "Decimal averages need Double division, and filtered averages must use a matching filtered total and count.",
-          "Use toDouble and keep filtered numerator and denominator consistent.",
-          ["numeric-conversion", "predicate", "helper-function"],
-          "<code>toDouble()</code> converts an <code>Int</code> value to a <code>Double</code> before division. For a filtered average, both the total and count must describe the same selected items.",
-          "Filtering only the numerator or only the denominator creates a number, but not the requested average.",
-          `val warmTotal: Int = totalAtLeast(readings, 70)
-val warmCount: Int = countAtLeast(readings, 70)
-val warmAverage = warmTotal.toDouble() / warmCount`,
-          "Both helpers use the same threshold. Converting the total makes the division produce a decimal result.",
-          "Write the selection rule once in the purpose statement, then make sure every helper uses that same rule.",
-          [
-            Q("Why call <code>toDouble()</code>?", "To get decimal division instead of integer division."),
-            Q("Which values belong in <code>warmCount</code>?", "Only readings at least 70."),
-            Q("What goes wrong if count includes every reading?", "The numerator and denominator describe different groups.")
-          ]
-        ),
-        R(
           "l10-empty-average",
           "lecture-10-empty-average-design.html",
           "What Should an Empty Average Mean?",
-          "optional",
+          "necessary",
           "An empty list has a total of zero and a count of zero, so the average needs an explicit design decision.",
           "Identify and document an edge case before division.",
           ["base-case", "nullable", "function-signature"],
@@ -1157,6 +1169,27 @@ val warmAverage = warmTotal.toDouble() / warmCount`,
             Q("What input triggers <code>null</code>?", "<code>count == 0</code>."),
             Q("Is zero automatically the average of an empty list?", "No.")
           ]
+        ),
+        R(
+          "l10-conversion-filter",
+          "lecture-10-conversion-and-filtered-averages.html",
+          "Convert before Division and Filter Both Pieces",
+          "optional",
+          "Decimal averages need Double division, and filtered averages must use a matching filtered total and count.",
+          "Use toDouble and keep filtered numerator and denominator consistent.",
+          ["numeric-conversion", "predicate", "helper-function"],
+          "<code>toDouble()</code> converts an <code>Int</code> value to a <code>Double</code> before division. For a filtered average, both the total and count must describe the same selected items.",
+          "Filtering only the numerator or only the denominator creates a number, but not the requested average.",
+          `val warmTotal: Int = totalAtLeast(readings, 70)
+val warmCount: Int = countAtLeast(readings, 70)
+val warmAverage = warmTotal.toDouble() / warmCount`,
+          "Both helpers use the same threshold. Converting the total makes the division produce a decimal result.",
+          "Write the selection rule once in the purpose statement, then make sure every helper uses that same rule.",
+          [
+            Q("Why call <code>toDouble()</code>?", "To get decimal division instead of integer division."),
+            Q("Which values belong in <code>warmCount</code>?", "Only readings at least 70."),
+            Q("What goes wrong if count includes every reading?", "The numerator and denominator describe different groups.")
+          ]
         )
       ]
     },
@@ -1166,12 +1199,36 @@ val warmAverage = warmTotal.toDouble() / warmCount`,
       lecture: "Lectures 11-13",
       title: "Kotlin's Immutable Lists",
       minutes: 16,
-      summary: "Six necessary readings introduce List types and the core list functions. The optional reading studies how multi-step list pipelines change types.",
-      cardSummary: "Short readings on List<T>, function references, predicates, map, fold, and nullable searches.",
+      summary: "Six necessary readings introduce List types and the core list functions. Three optional readings introduce function types, lambda syntax, and multi-step list pipelines.",
+      cardSummary: "Short readings on function types, List<T>, function references, predicates, map, fold, nullable searches, and lambda syntax.",
       goal: "Students arrive able to choose a built-in list operation from the desired input and output types.",
-      nextHref: "lecture-13-challenge-lambdas.html",
-      nextLabel: "Lecture 13 challenge reading set",
+      nextHref: "lecture-14-binary-trees.html",
+      nextLabel: "Lecture 14 reading set",
       readings: [
+        R(
+          "l11-function-type",
+          "lecture-11-function-types.html",
+          "Read a Function Type",
+          "optional",
+          "A function type describes the input types and output type of a function value.",
+          "Read and match a Kotlin function type.",
+          ["function-type", "higher-order-function", "parameter"],
+          "The type <code>(Int) -&gt; Int</code> describes a function that receives one Int and returns one Int. A function can be stored in a name, passed as an argument, or returned like other values.",
+          "Function types let one general algorithm receive the small behavior that varies.",
+          `fun adjustScores(
+    scores: List&lt;Int&gt;,
+    adjustment: (Int) -&gt; Int
+): List&lt;Int&gt; {
+    return scores.map(adjustment)
+}`,
+          "The parameter <code>adjustment</code> is a function value. <code>map</code> calls it on every score.",
+          "Count the types before and after the arrow: inputs are on the left, the result is on the right.",
+          [
+            Q("How many inputs does <code>adjustment</code> receive?", "One."),
+            Q("What type does it return?", "<code>Int</code>."),
+            Q("What is the result type of <code>adjustScores</code>?", "<code>List&lt;Int&gt;</code>.")
+          ]
+        ),
         R(
           "l11-list-type",
           "lecture-11-list-types-and-listof.html",
@@ -1225,13 +1282,15 @@ val highTrails = elevations.filter(::isHigh)`,
           ["predicate", "higher-order-function", "boolean"],
           "The functions <code>any</code>, <code>all</code>, and <code>filter</code> each apply a predicate to list elements. <code>any</code> asks whether at least one matches. <code>all</code> asks whether every element matches. <code>filter</code> returns a list containing the matches.",
           "The output type distinguishes the questions: Boolean for <code>any</code> and <code>all</code>, List for <code>filter</code>.",
-          `val heights = listOf(420, 610, 575)
+          `fun isHigh(height: Int): Boolean = height &gt; 600
 
-heights.any { it &gt; 600 }      // true
-heights.all { it &gt; 300 }      // true
-heights.filter { it &gt; 500 }   // [610, 575]`,
-          "The same basic predicate shape can support three different questions. The list itself remains unchanged.",
-          "Translate the problem statement carefully: 'which' suggests filter, 'does any' suggests any, and 'does every' suggests all.",
+val heights = listOf(420, 610, 575)
+
+heights.any(::isHigh)      // true
+heights.all(::isHigh)      // false
+heights.filter(::isHigh)   // [610]`,
+          "The same named predicate can support three different questions. <code>::isHigh</code> passes the function to each list operation without calling it yet. The list itself remains unchanged.",
+          "Translate the problem statement carefully: 'which' suggests filter, 'does any' suggests any, and 'does every' suggests all. Use <code>::</code> when passing a named helper function.",
           [
             Q("Which operation returns a List?", "<code>filter</code>."),
             Q("What does <code>all</code> return for an empty list?", "<code>true</code>."),
@@ -1248,12 +1307,12 @@ heights.filter { it &gt; 500 }   // [610, 575]`,
           ["higher-order-function", "generic-type", "function-type"],
           "<code>map</code> transforms a list. Its input function receives one element and returns the corresponding output element. The result list has the same length but may have a different element type.",
           "Map is the built-in form of the recursive pattern that constructs exactly one output node for each input node.",
-          `val heights = listOf(420, 610, 575)
-val labels: List&lt;String&gt; = heights.map { height -&gt;
-    height.toString() + " ft"
-}`,
-          "Each Int becomes a String label. Three input elements produce three output elements, and <code>heights</code> is not changed.",
-          "Predict the result type from the lambda's return expression, not from the original element type.",
+          `fun formatHeight(height: Int): String = height.toString() + " ft"
+
+val heights = listOf(420, 610, 575)
+val labels: List&lt;String&gt; = heights.map(::formatHeight)`,
+          "Each Int is passed to <code>formatHeight</code>, which produces a String label. Three input elements produce three output elements, and <code>heights</code> is not changed.",
+          "Predict the result type from the named helper's return type, not from the original element type. <code>::formatHeight</code> passes the helper to <code>map</code>.",
           [
             Q("What is the element type of <code>labels</code>?", "<code>String</code>."),
             Q("How many labels are produced?", "Three."),
@@ -1270,11 +1329,11 @@ val labels: List&lt;String&gt; = heights.map { height -&gt;
           ["fold", "accumulator", "higher-order-function"],
           "<code>fold</code> starts with an explicit initial accumulator and combines each element into it. <code>reduce</code> uses the first list element as the initial result, so it requires a nonempty list.",
           "These operations implement many summaries: totals, joined text, largest values, and custom product results.",
-          `val heights = listOf(420, 610, 575)
-val total = heights.fold(0) { sum, height -&gt;
-    sum + height
-}`,
-          "The accumulator <code>sum</code> begins at 0. Each step adds one height, and the final accumulated Int is returned.",
+          `fun addToTotal(total: Int, height: Int): Int = total + height
+
+val heights = listOf(420, 610, 575)
+val total = heights.fold(0, ::addToTotal)`,
+          "The accumulator begins at 0. <code>fold</code> passes the current total and one height to <code>addToTotal</code> at each step, and the final accumulated Int is returned.",
           "Choose an initial value that matches the result type and acts as the correct starting answer.",
           [
             Q("What is the initial accumulator?", "<code>0</code>."),
@@ -1292,14 +1351,43 @@ val total = heights.fold(0) { sum, height -&gt;
           ["nullable", "predicate", "return-type"],
           "A type followed by <code>?</code> is <strong>nullable</strong>. A value of type <code>String?</code> may contain a String or <code>null</code>. Kotlin's <code>find</code> uses a nullable result because a list may have no matching element.",
           "The return type makes the missing-answer possibility visible instead of inventing a misleading ordinary value.",
-          `val trails = listOf("Pine", "Lake", "Ridge")
-val result: String? = trails.find { it.startsWith("Z") }`,
-          "No trail starts with Z, so <code>result</code> is <code>null</code>. A different predicate could produce the first matching String.",
+          `fun startsWithZ(trail: String): Boolean = trail.startsWith("Z")
+
+val trails = listOf("Pine", "Lake", "Ridge")
+val result: String? = trails.find(::startsWithZ)`,
+          "No trail starts with Z, so <code>result</code> is <code>null</code>. <code>::startsWithZ</code> passes the predicate to <code>find</code>; a different predicate could produce the first matching String.",
           "Code using a nullable value must decide what to do in both the present and absent cases.",
           [
             Q("What are the two kinds of values allowed by <code>String?</code>?", "A String or <code>null</code>."),
             Q("What does <code>find</code> return when several items match?", "The first matching item."),
             Q("What value is stored in <code>result</code>?", "<code>null</code>.")
+          ]
+        ),
+        R(
+          "l11-lambda-syntax",
+          "lecture-11-lambda-syntax.html",
+          "Write a Lambda with a Named Parameter or it",
+          "optional",
+          "A lambda is a small unnamed function that can name its one parameter explicitly or use Kotlin's implicit name it.",
+          "Read and write a one-parameter lambda in both forms.",
+          ["lambda", "parameter", "function-type"],
+          "A <strong>lambda</strong> is an unnamed function expression inside curly braces. When a lambda has one parameter, you can write a name followed by <code>-&gt;</code>, or omit that name and use Kotlin's implicit parameter <code>it</code>.",
+          "Both forms are useful. An explicit name can make a longer calculation clearer. <code>it</code> keeps a short, obvious calculation compact. Choose the form that makes the meaning easiest to read.",
+          `val heights = listOf(420, 610, 575)
+
+val labelsWithName = heights.map { height -&gt;
+    height.toString() + " ft"
+}
+
+val labelsWithIt = heights.map {
+    it.toString() + " ft"
+}`,
+          "Both calls to <code>map</code> produce the same List of String labels. In the first lambda, <code>height</code> is the explicitly named Int parameter. In the second, <code>it</code> is Kotlin's implicit name for that one Int parameter.",
+          "Use <code>it</code> only when the lambda has exactly one parameter. A lambda with two or more parameters must name them explicitly.",
+          [
+            Q("What is the parameter name in the first lambda?", "<code>height</code>."),
+            Q("What does <code>it</code> represent in the second lambda?", "One Int element from <code>heights</code>."),
+            Q("When can a lambda use <code>it</code>?", "When it has exactly one parameter.")
           ]
         ),
         R(
@@ -1326,140 +1414,12 @@ val result: String? = trails.find { it.startsWith("Z") }`,
       ]
     },
     {
-      id: "l13-challenge",
-      hub: "lecture-13-challenge-lambdas.html",
-      lecture: "Lecture 13 Challenge",
-      title: "Functions as Inputs",
-      minutes: 11,
-      summary: "Four necessary readings cover function types, lambdas, it, and data-class copy. The optional reading combines many predicates.",
-      cardSummary: "Short readings on function types, lambda syntax, it, copy, and predicate pipelines.",
-      goal: "Students arrive able to pass behavior into a list-processing function and immutably update selected fields.",
-      nextHref: "lecture-14-binary-trees.html",
-      nextLabel: "Lecture 14 reading set",
-      readings: [
-        R(
-          "l13c-function-type",
-          "lecture-13-function-types.html",
-          "Read a Function Type",
-          "necessary",
-          "A function type describes the input types and output type of a function value.",
-          "Read and match a Kotlin function type.",
-          ["function-type", "higher-order-function", "parameter"],
-          "The type <code>(Int) -&gt; Int</code> describes a function that receives one Int and returns one Int. A function can be stored in a name, passed as an argument, or returned like other values.",
-          "Function types let one general algorithm receive the small behavior that varies.",
-          `fun adjustScores(
-    scores: List&lt;Int&gt;,
-    adjustment: (Int) -&gt; Int
-): List&lt;Int&gt; {
-    return scores.map(adjustment)
-}`,
-          "The parameter <code>adjustment</code> is a function value. <code>map</code> calls it on every score.",
-          "Count the types before and after the arrow: inputs are on the left, the result is on the right.",
-          [
-            Q("How many inputs does <code>adjustment</code> receive?", "One."),
-            Q("What type does it return?", "<code>Int</code>."),
-            Q("What is the result type of <code>adjustScores</code>?", "<code>List&lt;Int&gt;</code>.")
-          ]
-        ),
-        R(
-          "l13c-lambda",
-          "lecture-13-lambda-expressions.html",
-          "Write a Lambda Expression",
-          "necessary",
-          "A lambda is an unnamed function expression written inside curly braces.",
-          "Write and pass a lambda with an explicit parameter.",
-          ["lambda", "function-type", "expression"],
-          "A <strong>lambda</strong> is a function expression without a declared name. Parameters appear before <code>-&gt;</code>, and the final expression becomes the returned value.",
-          "Lambdas are useful when a short behavior is needed in only one place.",
-          `val boosted = adjustScores(
-    listOf(70, 82, 91),
-    { score -&gt; score + 5 }
-)`,
-          "The lambda receives each score and produces a score five points larger. Its inferred type is <code>(Int) -&gt; Int</code>.",
-          "The lambda does not run when it is written. The receiving function decides when and how often to call it.",
-          [
-            Q("What is the lambda parameter?", "<code>score</code>."),
-            Q("What value does it return for 70?", "<code>75</code>."),
-            Q("How many times will map call it?", "Once per list element.")
-          ]
-        ),
-        R(
-          "l13c-it",
-          "lecture-13-lambda-it.html",
-          "Use it for One Lambda Parameter",
-          "necessary",
-          "Kotlin supplies the name it when a lambda has exactly one unnamed parameter.",
-          "Read and write a one-parameter lambda using it.",
-          ["lambda", "parameter", "higher-order-function"],
-          "When a lambda has one parameter, Kotlin allows the parameter name and arrow to be omitted. The implicit parameter is named <code>it</code>.",
-          "The shortcut keeps very small predicates and transformations compact, but an explicit name is often clearer for a longer body.",
-          `val passing = listOf(70, 82, 91).filter { it &gt;= 75 }
-val doubled = listOf(2, 4, 6).map { it * 2 }`,
-          "In each expression, <code>it</code> refers to the current list element. The first lambda returns a Boolean; the second returns an Int.",
-          "<code>it</code> is not a special global variable. It exists only inside an eligible lambda.",
-          [
-            Q("What does <code>it</code> mean in the filter?", "The current score."),
-            Q("What type does the filter lambda return?", "<code>Boolean</code>."),
-            Q("When might an explicit name be better?", "When the lambda is long or the role of the element is unclear.")
-          ]
-        ),
-        R(
-          "l13c-copy",
-          "lecture-13-data-class-copy.html",
-          "Update Product Data with copy",
-          "necessary",
-          "The copy method creates a new data-class value while changing only named fields.",
-          "Use copy to immutably update one field.",
-          ["data-class", "copy", "immutable"],
-          "Every Kotlin data class receives a <code>copy</code> method. It constructs a new value using all existing fields except those replaced by named arguments.",
-          "Copy is concise functional updating: the original value stays available, and the changed field is explicit.",
-          `data class Game(val title: String, val price: Int, val rating: Int)
-
-val original = Game("Orbit", 30, 8)
-val sale = original.copy(price = 24)`,
-          "<code>sale</code> keeps the title and rating from <code>original</code>, but its price is 24. The original price remains 30.",
-          "Named arguments make copy independent of field order and show exactly what changes.",
-          [
-            Q("Which field changes?", "<code>price</code>."),
-            Q("What is <code>sale.rating</code>?", "<code>8</code>."),
-            Q("Does copy mutate <code>original</code>?", "No.")
-          ]
-        ),
-        R(
-          "l13c-predicates",
-          "lecture-13-list-of-predicates.html",
-          "Apply a List of Predicates",
-          "optional",
-          "Predicates can themselves be stored in a list and combined into a configurable filter.",
-          "Represent and apply multiple predicate functions.",
-          ["predicate", "function-type", "fold"],
-          "A predicate has a function type such as <code>(Game) -&gt; Boolean</code>. A list of predicates represents several rules as data. A fold can keep applying each rule to the current list.",
-          "This separates the filtering engine from the collection of rules chosen for one use.",
-          `val rules: List&lt;(Game) -&gt; Boolean&gt; = listOf(
-    { it.price &lt;= 25 },
-    { it.rating &gt;= 7 }
-)
-
-val selected = rules.fold(games) { current, rule -&gt;
-    current.filter(rule)
-}`,
-          "The accumulator is the list that has passed all rules so far. Each predicate narrows it again.",
-          "The element type of <code>rules</code> is a function type, not Game.",
-          [
-            Q("What does each item in <code>rules</code> return?", "A Boolean."),
-            Q("What is the fold accumulator?", "The current filtered list of games."),
-            Q("Must a game satisfy both rules to remain?", "Yes.")
-          ]
-        )
-      ]
-    },
-    {
       id: "l14",
       hub: "lecture-14-binary-trees.html",
       lecture: "Lecture 14",
       title: "Binary Trees",
       minutes: 11,
-      summary: "Four necessary readings introduce binary tree data, its template, two recursive answers, and immutable rebuilding. The optional reading builds paths.",
+      summary: "Four necessary readings introduce binary tree data, its template, two recursive answers, and immutable rebuilding.",
       cardSummary: "Short readings on leaf/node data, two recursive calls, combining answers, and rebuilding trees.",
       goal: "Students arrive able to follow a recursive design where every node contains two recursive subtrees.",
       nextHref: "lecture-15-16-binary-search-trees.html",
@@ -1570,30 +1530,6 @@ data class Question(
             Q("What happens to End?", "It remains End."),
             Q("Is the original tree mutated?", "No.")
           ]
-        ),
-        R(
-          "l14-path",
-          "lecture-14-build-a-tree-path.html",
-          "Build a Path Result",
-          "optional",
-          "A path search adds the current node to a successful recursive path and ignores unsuccessful branches.",
-          "Interpret an empty list as no path and prepend a found node.",
-          ["binary-tree", "nullable", "recursion"],
-          "A path function must distinguish 'found a path' from 'did not find one.' One simple design uses an empty list for failure and a nonempty list for a found path.",
-          "When a subtree returns a path, the current node can be added as recursion returns.",
-          `val childPath = pathTo(tree.yes, target)
-return if (childPath.isNotEmpty()) {
-    listOf(tree.prompt) + childPath
-} else {
-    pathTo(tree.no, target)
-}`,
-          "The function searches the yes branch first. If that path succeeds, the current prompt is prepended. Otherwise it tries the no branch.",
-          "Document whether the path is ordered from root to target or target to root.",
-          [
-            Q("What represents failure in this design?", "An empty list."),
-            Q("Where is the current prompt added?", "At the front of a successful child path."),
-            Q("When is the no branch searched?", "When the yes branch returns an empty path.")
-          ]
         )
       ]
     },
@@ -1619,14 +1555,18 @@ return if (childPath.isNotEmpty()) {
           ["invariant", "binary-tree", "node"],
           "An <strong>invariant</strong> is a property intended to remain true throughout a data structure. In a number search tree, every value in the left subtree is smaller than the node value and every value in the right subtree is larger.",
           "The shape alone does not make a binary tree searchable. The invariant provides the information that lets a function skip a branch.",
-          `// At every Entry:
-// left ids are smaller
-// right ids are larger
-data class Entry(
-    val id: Int,
-    val left: StudentBST,
-    val right: StudentBST
-): StudentBST`,
+          `sealed interface StudentBST {
+    data object Leaf : StudentBST
+
+    // At every Entry:
+    // left ids are smaller
+    // right ids are larger
+    data class Entry(
+        val id: Int,
+        val left: StudentBST,
+        val right: StudentBST
+    ) : StudentBST
+}`,
           "The comment is part of the data definition's meaning. Constructors and insertion functions must preserve it.",
           "An invariant is a promise made by all valid values, not a check Kotlin performs automatically.",
           [
@@ -1937,13 +1877,28 @@ fun totalItemCount(item: MenuItem): Int {
           "Some functions discover the destination deep in a tree and then add information from each ancestor as recursion returns. A nullable child answer distinguishes success from failure.",
           "This style naturally builds root-to-target totals and paths without passing the path downward.",
           `fun labelsTo(item: MenuItem, target: String): List&lt;String&gt;? {
-    if (item.label == target) return listOf(item.label)
-    val childPath = item.children
-        .mapNotNull { labelsTo(it, target) }
-        .firstOrNull()
-    return childPath?.let { listOf(item.label) + it }
+    if (item.label == target) {
+        return listOf(item.label)
+    }
+
+    val pathFromAChild = item.children.fold&lt;List&lt;String&gt;?&gt;(null) { pathSoFar, child -&gt;
+        if (pathSoFar != null) {
+            pathSoFar
+        } else {
+            val childPath = labelsTo(child, target)
+
+            if (childPath != null) {
+                val pathFromThisItem = listOf(item.label) + childPath
+                pathFromThisItem
+            } else {
+                null
+            }
+        }
+    }
+
+    return pathFromAChild
 }`,
-          "A found child path is prefixed with the current label. If no child returns a path, the result remains null.",
+          "The fold keeps a path found so far, beginning with null. Until it finds a non-null child path, it asks the next child to search. When a child succeeds, the current label is added to the front; later fold steps keep that successful path unchanged.",
           "Be consistent about path direction. This design produces root first and target last.",
           [
             Q("What represents no path?", "<code>null</code>."),
@@ -2032,7 +1987,7 @@ return visit(child, totalSoFar + itemCost)`,
       lecture: "Lectures 21-23",
       title: "Mutation and Loops",
       minutes: 16,
-      summary: "Six necessary readings introduce reassignable state, mutable objects and lists, effects, lookup, and loops. The optional reading collects assignment shortcuts.",
+      summary: "Six necessary readings introduce reassignable state, mutable objects and lists, effects, lookup, and loops. Two optional readings cover assignment shortcuts and counting with ranges.",
       cardSummary: "Short readings on var, mutable fields and lists, effects, find, for loops, and while loops.",
       goal: "Students arrive able to distinguish values that change over time from functional results and trace the order of state-changing steps.",
       nextHref: "lecture-24-25-graphs-cycles.html",
@@ -2094,10 +2049,14 @@ ari.points = 7`,
           ["nullable", "predicate", "not-null-assertion"],
           "The list method <code>find</code> returns the first matching element or <code>null</code>. The operator <code>!!</code> is a <strong>not-null assertion</strong>: it extracts the ordinary value when present and crashes if the value is null.",
           "The assertion is appropriate only when a documented invariant or earlier validation guarantees the item exists.",
-          `fun lookupPlayer(name: String): Player {
+          `data class Player(val name: String, var points: Int)
+
+val roster: MutableList&lt;Player&gt; = mutableListOf()
+
+fun lookupPlayer(name: String): Player {
     return roster.find { it.name == name }!!
 }`,
-          "The predicate searches by name. The function promises a non-null Player, so <code>!!</code> converts the nullable find result under the assumption that the player exists.",
+          "The predicate searches by name. Notice that <code>roster</code> is not a parameter of <code>lookupPlayer</code>: it is a top-level variable, so the function reads it from global scope. The function promises a non-null Player, so <code>!!</code> converts the nullable find result under the assumption that the player exists.",
           "Do not use <code>!!</code> merely to silence Kotlin. State why null is impossible or design a nullable result.",
           [
             Q("What does find return when no player matches?", "<code>null</code>."),
@@ -2113,9 +2072,9 @@ ari.points = 7`,
           "An effect changes state outside a function's returned value, and only statements before return can run.",
           "Identify a function's effects and unreachable statements.",
           ["side-effect", "mutation", "statement"],
-          "A <strong>side effect</strong> is an observable change beyond returning a value, such as updating a variable, changing a list, or printing. Purpose statements can document effects with an <code>@effect</code> line.",
+          "A <strong>side effect</strong> is an observable change beyond returning a value, such as updating a variable, changing a list, or printing. Document a function's side effect in its comment so a reader knows what state it changes as well as what value it returns.",
           "Statements run in order. Once <code>return</code> executes, the function ends immediately, so later mutation is unreachable.",
-          `/** @effect adds one point to the named player */
+          `/** Adds one point to the named player and returns the new point total. */
 fun awardPoint(name: String): Int {
     val player = lookupPlayer(name)
     player.points = player.points + 1
@@ -2138,14 +2097,14 @@ fun awardPoint(name: String): Int {
           "Trace a for loop over a list and identify its loop variable.",
           ["for-loop", "mutable-list", "statement"],
           "A <strong>for loop</strong> binds a loop variable to each element in order and executes the body. It is an imperative alternative to operations such as <code>map</code> or <code>fold</code> when effects or mutable accumulators are intended.",
-          "The loop variable is a new local name for the current element.",
+          "The loop variable is a new local name for the current element. A <code>for</code> loop is a statement: it does not automatically produce the next accumulated answer. In this example, <code>total</code> must therefore be a <code>var</code> that the loop updates. With <code>fold</code>, each step returns the next total, and <code>fold</code> passes that returned value to the next step, so no external mutation is needed.",
           `var total = 0
 for (player in roster) {
     total = total + player.points
 }
 println(total)`,
-          "The body runs once per Player. Each iteration adds that player's points to the mutable total.",
-          "State the loop invariant informally: after each iteration, total contains the points from all players processed so far.",
+          "The body runs once per Player. Each iteration reads the old value of the mutable total and stores the new total back in that same variable. A fold would return the new total from its combining function instead of assigning it back to a variable.",
+          "State the loop invariant informally: after each iteration, total contains the points from all players processed so far. Choose <code>fold</code> when a returned accumulated answer fits the job; use a <code>for</code> loop with mutation when the work is naturally a sequence of state-changing statements.",
           [
             Q("What is the loop variable?", "<code>player</code>."),
             Q("How many times does the body run?", "Once for each roster element."),
@@ -2160,15 +2119,15 @@ println(total)`,
           "A while loop repeats while its Boolean condition remains true; input can update the condition's state.",
           "Trace a sentinel-controlled while loop using readln.",
           ["while-loop", "boolean", "side-effect"],
-          "A <strong>while loop</strong> checks a Boolean condition before every iteration. A sentinel is a special input value, such as <code>\"done\"</code>, that ends the repetition.",
-          "The loop body must update something involved in the condition or the loop may never stop.",
+          "A <strong>while loop</strong> checks a Boolean condition before every iteration. A sentinel is a special input value, such as <code>\"done\"</code>, that ends the repetition. Use <code>while</code> when the stopping condition is unpredictable or needs a more complex test, rather than when you simply need to visit every element of linear data.",
+          "A <code>for</code> loop fits data such as a list when the program should visit each element in order. A <code>while</code> loop fits repetition controlled by changing state, input, or a condition whose answer is only known while the program runs. The loop body must update something involved in the condition or the loop may never stop.",
           `var command = readln().trim()
 while (command != "done") {
     println("received: " + command)
     command = readln().trim()
 }`,
           "Input is read once before the loop and again at the end of each iteration. Entering <code>done</code> makes the next condition false.",
-          "Identify initialization, condition, and update as three separate parts of a while-loop design.",
+          "Identify initialization, condition, and update as three separate parts of a while-loop design. Prefer <code>while</code> here because there is no known list to traverse and the number of commands depends on when the user enters the sentinel.",
           [
             Q("What is the sentinel?", "<code>\"done\"</code>."),
             Q("Why is readln called inside the loop?", "To update command for the next condition check."),
@@ -2196,6 +2155,35 @@ attempts++
             Q("Rewrite <code>points += 5</code> explicitly.", "<code>points = points + 5</code>."),
             Q("What does <code>attempts++</code> add?", "One."),
             Q("Can these operators be used on a val Int name?", "No, because the name would need reassignment.")
+          ]
+        ),
+        R(
+          "l23-ranges",
+          "lecture-23-for-ranges-and-step.html",
+          "Count with Ranges and step",
+          "optional",
+          "A Kotlin range gives a for loop a sequence of numbers, and step controls how far the count moves each time.",
+          "Read range-based for loops that count upward, exclude an endpoint, or skip values with step.",
+          ["range", "step", "for-loop"],
+          "A <strong>range</strong> is a sequence of numbers that a <code>for</code> loop can visit. Use a range when you know the numeric values to count through. This is still a predictable sequence, so it fits <code>for</code> rather than <code>while</code>.",
+          "The operator <code>..</code> includes both endpoints: <code>1..4</code> gives 1, 2, 3, and 4. Use <code>until</code> when the final endpoint should be excluded: <code>0 until 4</code> gives 0, 1, 2, and 3. Use <code>step</code> to move by more than one value, and <code>downTo</code> to count backward.",
+          `for (minute in 0 until 4) {
+    println("Minute " + minute)
+}
+
+for (evenNumber in 2..10 step 2) {
+    println(evenNumber)
+}
+
+for (countdown in 5 downTo 1) {
+    println(countdown)
+}`,
+          "The first loop runs four times, for 0 through 3. The second visits only the even numbers because its step is 2. The final loop starts at 5 and visits successively smaller values until it reaches 1.",
+          "Choose the range carefully: <code>..</code> includes its ending value, while <code>until</code> does not. A range-based <code>for</code> loop describes the values to visit; it does not require you to update a counter manually.",
+          [
+            Q("Which values does <code>3..5</code> contain?", "3, 4, and 5."),
+            Q("Which values does <code>3 until 5</code> contain?", "3 and 4."),
+            Q("What does <code>10 downTo 4 step 3</code> visit?", "10, 7, and 4.")
           ]
         )
       ]

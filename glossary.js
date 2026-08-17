@@ -215,13 +215,18 @@ addGlossaryEntries("Lectures 11-13: Built-in Lists", "lecture-11-list-types-and-
   ["accumulator", "Accumulator", "A value that carries a partial result through repeated steps or recursive calls."]
 ]);
 
-addGlossaryEntries("Lecture 13 Challenge: Lambda Expressions", "lecture-13-lambda-expressions.html", [
+addGlossaryEntries("Lectures 11-13: Lambda Syntax", "lecture-11-lambda-syntax.html", [
   ["lambda", "Lambda", "An unnamed function expression written inside curly braces."]
 ]);
 
 addGlossaryEntries("Lecture 14: Binary Tree Data", "lecture-14-binary-tree-data.html", [
   ["binary-tree", "Binary tree", "Recursive data in which each node has at most two child subtrees."],
   ["leaf", "Leaf", "A tree endpoint with no recursive child subtrees."]
+]);
+
+addGlossaryEntries("Lecture 14: Why this matters: Merkle Trees and Tamper Evidence", "lecture-14-why-trees-matter.html", [
+  ["cryptographic-hash", "Cryptographic hash", "A fixed-size fingerprint computed from data; changing the data is expected to produce a different hash."],
+  ["merkle-tree", "Merkle tree", "A binary tree of cryptographic hashes whose root summarizes all of the data at its leaves."]
 ]);
 
 addGlossaryEntries("Lectures 15-16: Search-Tree Invariants", "lecture-15-search-tree-invariants.html", [
@@ -266,6 +271,10 @@ addGlossaryEntries("Extra Graph Lesson: Arrays and Matrices", "extra-kotlin-arra
   ["range", "Range", "An ordered sequence of values between endpoints, often used to control a loop."]
 ]);
 
+addGlossaryEntries("Lectures 21-23: Count with Ranges and step", "lecture-23-for-ranges-and-step.html", [
+  ["step", "step", "A Kotlin range operation that changes the amount by which a progression advances between values."]
+]);
+
 const CS1101_RESOURCE_LINKS = {
   kotlinFunctions: ["Kotlin Documentation: Functions", "https://kotlinlang.org/docs/functions.html"],
   kotlinPackages: ["Kotlin Documentation: Packages and imports", "https://kotlinlang.org/docs/packages.html"],
@@ -283,6 +292,8 @@ const CS1101_RESOURCE_LINKS = {
   kotlinArrays: ["Kotlin Documentation: Arrays", "https://kotlinlang.org/docs/arrays.html"],
   kotlinRanges: ["Kotlin Documentation: Ranges and progressions", "https://kotlinlang.org/docs/ranges.html"],
   kotlinMath: ["Kotlin API: kotlin.math", "https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.math/"],
+  bitcoinMerkle: ["Bitcoin Developer Guide: Merkle Trees", "https://developer.bitcoin.org/devguide/block_chain.html"],
+  ethereumMerkle: ["Ethereum.org: Merkle Patricia Tries", "https://ethereum.org/developers/docs/data-structures-and-encoding/patricia-merkle-trie/"],
   intellijRun: ["IntelliJ IDEA Help: Run applications", "https://www.jetbrains.com/help/idea/running-applications.html"],
   kotest: ["Kotest Documentation: Core matchers", "https://kotest.io/docs/assertions/core-matchers.html"],
   designRecipe: ["Northeastern CS2500: The Design Recipe", "https://course.khoury.northeastern.edu/cs2500/design_recipe.html"],
@@ -327,13 +338,17 @@ function resourcesForReading(readingId, fileName) {
   if (readingId.startsWith("l06-")) return ["kotlinSealed"];
   if (readingId.startsWith("l07-")) return ["kotlinCasts", "kotlinSealed"];
   if (readingId.startsWith("l08-") || readingId.startsWith("l09-")) return ["recursion"];
+  if (readingId === "l10-why-decomposition-matters") return ["kotlinFunctions", "kotlinTypes", "kotlinPackages"];
+  if (readingId === "l11-function-type") return ["kotlinLambdas", "kotlinFunctions"];
+  if (readingId === "l11-lambda-syntax") return ["kotlinLambdas", "kotlinCollectionOps"];
   if (readingId.startsWith("l10-") || readingId.startsWith("l11-") || readingId.startsWith("l13-")) return ["kotlinCollections", "kotlinCollectionOps"];
   if (readingId.startsWith("l12-")) return ["kotlinCollections", "kotlinCollectionOps"];
-  if (readingId.startsWith("l13c-")) return ["kotlinLambdas", "kotlinCollectionOps"];
+  if (readingId === "l14-why-trees-matter") return ["bitcoinMerkle", "ethereumMerkle"];
   if (readingId.startsWith("l14-")) return ["binaryTree"];
   if (readingId.startsWith("l15-") || readingId.startsWith("l16-")) return ["binarySearchTree"];
   if (readingId.startsWith("l17-") || readingId.startsWith("l18-")) return ["tree"];
   if (readingId.startsWith("l19-") || readingId.startsWith("l20-")) return ["recursion", "tree"];
+  if (readingId === "l23-ranges") return ["kotlinRanges"];
   if (readingId.startsWith("l21-") || readingId.startsWith("l22-") || readingId.startsWith("l23-")) return ["kotlinControlFlow"];
   if (readingId.startsWith("l24-") || readingId.startsWith("l25-")) return ["graph", "graphTraversal"];
   if (readingId === "extra-ranges") return ["kotlinRanges"];
