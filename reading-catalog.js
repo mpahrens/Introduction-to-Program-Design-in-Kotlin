@@ -732,15 +732,14 @@ val city = learner.address.city`,
           ["short-circuit", "boolean-operator", "call"],
           "<strong>Short-circuiting</strong> means Kotlin stops evaluating a Boolean expression once the final answer is already known. For <code>&amp;&amp;</code>, a false left side decides the result. For <code>||</code>, a true left side decides it.",
           "This behavior can avoid unnecessary work and can protect a later expression that is only safe under an earlier condition.",
-          `val names = listOf&lt;String&gt;()
-
-names.isNotEmpty() &amp;&amp; names[0].startsWith("A")`,
-          "Because the list is empty, <code>names.isNotEmpty()</code> is false. Kotlin does not evaluate <code>names[0]</code>, so the unsafe access is avoided.",
+          `fun startsWithCapitalA(name: String): Boolean =
+    name.isNotEmpty() &amp;&amp; name.substring(0, 1) == "A"`,
+          "When <code>name</code> is empty, <code>name.isNotEmpty()</code> is false. Kotlin does not evaluate <code>name.substring(0, 1)</code>, so the unsafe call is avoided. When the name is nonempty, Kotlin evaluates the substring and checks whether its first character is <code>&quot;A&quot;</code>.",
           "The word operators <code>and</code> and <code>or</code> do not short-circuit in the same way as <code>&amp;&amp;</code> and <code>||</code>.",
           [
             Q("When does the right side of <code>false &amp;&amp; ...</code> run?", "It does not run."),
             Q("When does the right side of <code>true || ...</code> run?", "It does not run."),
-            Q("Why is the example safe for an empty list?", "The false left guard prevents evaluation of <code>names[0]</code>.")
+            Q("Why is the example safe for an empty string?", "The false left guard prevents evaluation of <code>name.substring(0, 1)</code>.")
           ]
         )
       ]

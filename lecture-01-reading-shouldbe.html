@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Lecture 1: Read a shouldBe Example</title>
+  <title>Lecture 1: Unit Testing with Kotest's shouldBe</title>
   <link rel="stylesheet" href="styles.css">
   <script src="glossary.js" defer></script>
 </head>
@@ -12,7 +12,7 @@
     <div class="header-inner">
       <a class="crumb" href="lecture-01-expressions-values.html">Back to Lecture 1 readings</a>
       <p class="topic-kicker">Lecture 1 | Reading 5 | Necessary</p>
-      <h1>Read a <code>shouldBe</code> Example</h1>
+      <h1>Unit Testing with Kotest's <code>shouldBe</code></h1>
       <p class="subtitle">A test is an executable example: it records what an expression should produce and lets the computer compare.</p>
       <div class="meta">
         <span class="status-badge required">Necessary</span>
@@ -30,7 +30,12 @@
         <ol>
           <li>Open the project settings.</li>
           <li>Choose <strong>Modules</strong>.</li>
-          <li>Add a library from Maven.</li>
+          <li>Add a library from Maven.
+            <figure class="screenshot-card">
+              <img src="assets/intellij-add-library-from-maven.png" alt="IntelliJ Project Settings window with Libraries selected and the add-library menu showing From Maven highlighted.">
+              <figcaption>In the Libraries panel, use the <strong>+</strong> button and choose <strong>From Maven</strong>.</figcaption>
+            </figure>
+          </li>
           <li>Enter <code>io.kotest:kotest-assertions-core-jvm:5.5.0</code>, then add or download the library.</li>
         </ol>
         <p>Kotest should now appear in the project's <strong>External Libraries</strong> section. At the top of a Kotlin file that uses these assertions, import the names you need:</p>
