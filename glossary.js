@@ -148,7 +148,8 @@ addGlossaryEntries("Lecture 2: Function Design Recipe", "lecture-02-function-sig
   ["inventory", "Input inventory", "A planning list of what each function input represents and the operations or subproblems it suggests."],
   ["code-coverage", "Code coverage", "The extent to which tests exercise the important branches and cases in a program."],
   ["helper-function", "Helper function", "A function that solves a smaller named subproblem for another function."],
-  ["decomposition", "Decomposition", "Breaking a problem into smaller, focused subproblems."]
+  ["decomposition", "Decomposition", "Breaking a problem into smaller, focused subproblems."],
+  ["if-expression", "if expression", "A Kotlin expression that chooses one result when a Boolean condition is true and another result when it is false."]
 ]);
 
 addGlossaryEntries("Lectures 3-4: Enum Classes", "lecture-03-enum-classes.html", [
@@ -328,6 +329,7 @@ function resourcesForReading(readingId, fileName) {
 
   if (!readingId) return [];
   if (readingId.startsWith("l02-")) {
+    if (readingId === "l02-if-expressions") return ["kotlinControlFlow"];
     return readingId === "l02-tests-stubs" || readingId === "l02-debug-coverage"
       ? ["kotest", "designRecipe"]
       : ["kotlinFunctions", "designRecipe"];

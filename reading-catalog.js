@@ -293,6 +293,24 @@ fun shippingCost(weightKg: Double, express: Boolean): Double {
       "The inventory named <code>baseCost(weightKg)</code> as a possible subproblem. The helper now gives that idea a signature and separate tests, while <code>shippingCost</code> emphasizes how the two pieces combine.",
       "Keep a calculation inside the main function when extracting it would make the design harder to follow. Extract it when it has a clear name, repeats, or deserves its own examples.",
       [Q("What subproblem does <code>baseCost</code> name?", "The shipping cost determined by package weight before any express surcharge."), Q("Why can a helper be tested independently?", "It has its own inputs, promised result, and focused purpose."), Q("Should every operator become a helper?", "No. A helper should clarify a meaningful concept.")]
+    ),
+    R(
+      "l02-if-expressions", "lecture-02-if-expressions.html", "Choose between Two Results with if", "optional",
+      "An if expression chooses one result when a Boolean condition is true and another when it is false.",
+      "Read and write an if expression with a simple Boolean condition.",
+      ["if-expression", "boolean", "expression"],
+      "An <strong>if expression</strong> asks a Boolean question and chooses a result. It is most useful when a program has two branching cases: one result when the condition is true and one result when it is false.",
+      "For example, <code>age &gt; 21</code> is a simple Boolean expression. Kotlin chooses the first branch when it is true and the <code>else</code> branch when it is false. An <code>if - else if - else</code> chain can handle more than two cases, but a <code>when</code> expression is often cleaner for multiple cases. Later readings introduce <code>when</code> in detail.",
+      `fun ticketLabel(age: Int): String {
+    return if (age &gt; 21) {
+        "adult ticket"
+    } else {
+        "youth ticket"
+    }
+}`,
+      "The condition is <code>age &gt; 21</code>. When it is true, the whole <code>if</code> expression produces <code>\"adult ticket\"</code>; otherwise, it produces <code>\"youth ticket\"</code>. Because both branches produce Strings, the function can return the entire if expression.",
+      "Use one <code>if</code> and <code>else</code> for two cases. An <code>else if</code> chain is possible when there are several cases, but do not add branches that the problem does not need.",
+      [Q("What result does <code>ticketLabel(25)</code> return?", "<code>\"adult ticket\"</code>, because <code>25 &gt; 21</code> is true."), Q("Which branch runs for <code>ticketLabel(18)</code>?", "The <code>else</code> branch."), Q("What Kotlin form will later provide a cleaner structure for several cases?", "A <code>when</code> expression.")]
     )
   ];
 
@@ -303,8 +321,8 @@ fun shippingCost(weightKg: Double, express: Boolean): Double {
       lecture: "Lecture 2",
       title: "Designing Functions",
       minutes: 11,
-      summary: "Four necessary readings separate a function's promise, inputs, result, and examples. The optional reading introduces helpers.",
-      cardSummary: "Short readings on signatures, parameters, returns, tests, stubs, and helper functions.",
+      summary: "Five necessary readings guide a function from purpose and examples through implementation and debugging. Optional readings introduce helpers and simple Boolean branches.",
+      cardSummary: "Short readings on function design, tests, stubs, helpers, and simple if expressions.",
       goal: "Students arrive able to read a function design and understand what each design-recipe step contributes.",
       nextHref: "lecture-03-04-enums-data-classes.html",
       nextLabel: "Lectures 3-4 reading set",
@@ -422,7 +440,7 @@ fun boxLabelArea(width: Double, height: Double): Double {
             Q("What subproblem does it name?", "Computing the area of one rectangle."),
             Q("What does <code>boxLabelArea(3.0, 2.0)</code> return?", "<code>12.0</code>.")
           ]
-        )
+        ),
       ]
     },
     {
