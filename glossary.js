@@ -168,8 +168,8 @@ addGlossaryEntries("Lectures 3-4: Use copy with Named Arguments", "lecture-04-co
   ["copy", "copy", "A data-class function that creates a new object while replacing selected named fields."]
 ]);
 
-addGlossaryEntries("Lectures 3-4: Why this matters: Product Data in Computer Science", "lecture-04-product-types-in-computer-science.html", [
-  ["product-data", "Product data", "A data type that combines every named field into one value; also called a record or struct in many languages."],
+addGlossaryEntries("Lectures 3-4: Why this matters: Compound Data in Computer Science", "lecture-04-product-types-in-computer-science.html", [
+  ["compound-data", "Compound data", "A data type that combines every named field into one value; also called a record or struct in many languages."],
   ["record", "Record", "A structured value that keeps several named facts about one thing together."]
 ]);
 
@@ -244,7 +244,7 @@ addGlossaryEntries("Lectures 17-18: Arbitrary-Arity Trees", "lecture-17-arbitrar
 addGlossaryEntries("Lectures 19-20: Search and Accumulators", "lecture-19-nullable-search-and-elvis.html", [
   ["elvis-operator", "Elvis operator", "The Kotlin operator ?:, which uses the left value unless it is null, then uses the right expression."],
   ["local-function", "Local function", "A function defined inside another function and available only within that enclosing function."],
-  ["pair", "Pair", "A small product value with two components named first and second."]
+  ["pair", "Pair", "A small compound value with two components named first and second."]
 ]);
 
 addGlossaryEntries("Lectures 21-23: Mutation and Loops", "lecture-21-var-and-assignment.html", [
@@ -284,6 +284,7 @@ const CS1101_RESOURCE_LINKS = {
   kotlinEquality: ["Kotlin Documentation: Equality", "https://kotlinlang.org/docs/equality.html"],
   kotlinControlFlow: ["Kotlin Documentation: Control flow", "https://kotlinlang.org/docs/control-flow.html"],
   kotlinDataClasses: ["Kotlin Documentation: Data classes", "https://kotlinlang.org/docs/data-classes.html"],
+  compositeDataType: ["Wikipedia: Composite data type", "https://en.wikipedia.org/wiki/Composite_data_type"],
   kotlinEnums: ["Kotlin Documentation: Enum classes", "https://kotlinlang.org/docs/enum-classes.html"],
   kotlinSealed: ["Kotlin Documentation: Sealed classes and interfaces", "https://kotlinlang.org/docs/sealed-classes.html"],
   kotlinCasts: ["Kotlin Documentation: Type checks and casts", "https://kotlinlang.org/docs/typecasts.html"],
@@ -335,6 +336,7 @@ function resourcesForReading(readingId, fileName) {
       : ["kotlinFunctions", "designRecipe"];
   }
   if (readingId.startsWith("l03-")) return ["kotlinEnums", "kotlinControlFlow"];
+  if (readingId === "l04-data-class") return ["kotlinDataClasses", "compositeDataType"];
   if (readingId.startsWith("l04-")) return ["kotlinDataClasses"];
   if (readingId.startsWith("l05-")) return ["kotlinControlFlow"];
   if (readingId.startsWith("l06-")) return ["kotlinSealed"];
