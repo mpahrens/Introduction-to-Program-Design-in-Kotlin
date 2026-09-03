@@ -65,32 +65,32 @@ const CS1101_READING_SETS_DATA = (() => {
       "Recognize a structure that can be understood by solving the same kind of problem on a smaller part.",
       ["recursion", "recursive-data", "base-case"],
       "Some information is naturally nested: folders contain folders, documents contain sections, and a family tree contains smaller family trees. A recursive design mirrors that shape instead of pretending the structure is flat.",
-      "As an advanced example, a mobile photo-feed app can keep recently viewed images in memory so scrolling stays smooth. When memory is full, a cache discards the least recently viewed image. Implementing the cache recursively using a doubly linked list enabled quickly adding a just-viewed image to the front and removing the oldest image from the back.",
-      `// front -> [1] <-> [2] <-> [3] <- end 
+      "The LinkedList is our basis as the most simple recursive data structure. It can't get any more simpler than one value field and one recursive field. You may never see a LinkedList in a \"real\" program outside of a classroom, but more complex, real-world data structures may have a simple, recursive structure as the best way to reason about them.",
+      `// an event handler system
+      // In event-driven systems, like classic GUI libraries, when a mouse event happen on the screen
+      // the program needs to determine which UI element, for the pixel being clicked, handles the event.
+      // If multiple UI elements overlap, then they need to determine somehow the order and priority of who gets to try and respond to the event first
+      // typically returning a boolean: true if the event is handled and done or false if the next handler needs to do it
       
-/** recursively defined doubly-linked list */
-sealed interface ImageDoublyLinkedList {
-    data object Empty : ImageDoublyLinkedList
-    data class Node(
-        val previous : ImageDoublyLinkedList,
-        val value : Image,
-        val next : ImageDoublyLinkedList
-    ) : ImageDoublyLinkedList
-}
-
-typealias idempty = ImageDoublyLinkedList.Empty
-typealias idnode = ImageDoublyLinkedList.Node
-
-sealed interface Cache {
-    data object Empty : Cache
-    data class NonEmpty(
-        val front : idnode,
-        val end : idnode
-    ) : Cache
-}`,
-      "A photo-feed cache can be empty, or it can be a <code>Cache.NonEmpty</code> value with direct references to its front and end nodes. Each <code>idnode</code> stores one image value and links toward both the previous and next nodes. The most recently viewed image belongs at <code>front</code>; when the cache is full, the least recently viewed image at <code>end</code> is the one to discard.",
-      "The value of recursion is not that it is clever. It is that the structure of the information suggests a repeatable plan. The links in a doubly linked list make it possible to travel or update the cache from either end.",
-      [Q("What value does an <code>idnode</code> store?", "One Image value of a cached image."), Q("Which two nodes does <code>Cache.NonEmpty</code> keep direct references to?", "Its <code>front</code> node and its <code>end</code> node."), Q("When the cache is full, which image should an cache discard?", "The least recently viewed image at the <code>end</code> of the list.")]
+      sealed interface HandlerChain {
+        data object NoHandler : HandlerChain
+        data class Handler(try: ((MouseEvent) -> Boolean), nextHandler HandlerChain)
+      }
+      
+      /** given a mouse event and a chain of UI elements which could potentially handle the mouse click, 
+        * try to handle them in recursively, linked order (stopping at the first one that handles the event).
+        */
+      fun handleMouseEvent(event : MouseEvent, chain : HandlerChain) {
+        when(chain) {
+          is HandlerChain.NoHandler -> error("mouse event unhandled")
+          is HandlerChain.Handler -> if(! chain.try(event)) {
+            handleMouseEvent(event, chain.nextHandler)
+          }
+        }
+      }`,
+      "A datatype provides a recursively linked chain of mouse event handling functions, and we can try each one until one of them produces true for the mouse event.",
+      "The value of recursion is not that it is clever. It is that the structure of the information suggests a repeatable plan. The fact that we want to try the event handlers in order and stop early is baked into the design of the data type.",
+      [Q("What value does an <code>Handler</code> data object store?", "A mouse event handler function"), Q("Why does the data structure imply an order to the handlers?", "Because we have to recurse through them to get to the end."), Q("How does the function stop early in Handler case even though there is a recursive field?", "It decides whether or not to recurse depending on the boolean result of calling the function in the try field")]
     ),
     l10: W(
       "l10-why-decomposition-matters", "lecture-10-why-decomposition-matters.html", "Why this matters: Breaking Problems into Parts",
@@ -1020,14 +1020,14 @@ sealed interface Result {
     data object Empty : StringList
     data class Node(val first : String, val rest : StringList) : StringList
 }
-typealias sempty = StringList.Empty
-typealias snode = StringList.Node
+typealias SLEmpty = StringList.Empty
+typealias SLNode = StringList.Node
 
-val twoWords = snode("design", snode("data", sempty))`,
-          "The outer node stores <code>\"design\"</code>. Its rest is a one-string list, whose rest is <code>sempty</code>.",
+val twoWords = SLNode("design", SLNode("data", SLEmpty))`,
+          "The outer node stores <code>\"design\"</code>. Its rest is a one-string list, whose rest is <code>SLEmpty</code>.",
           "The recursive field must have the shared list type, not only the node type, so it can eventually contain Empty.",
           [
-            Q("What are the two variants?", "<code>StringList.Empty</code> and <code>StringList.Node</code>, abbreviated as <code>sempty</code> and <code>snode</code>."),
+            Q("What are the two variants?", "<code>StringList.Empty</code> and <code>StringList.Node</code>, abbreviated as <code>SLEmpty</code> and <code>SLNode</code>."),
             Q("What is the type of <code>rest</code>?", "<code>StringList</code>."),
             Q("How many strings are in <code>twoWords</code>?", "Two.")
           ]
@@ -1037,23 +1037,23 @@ val twoWords = snode("design", snode("data", sempty))`,
           "lecture-09-recursive-list-template.html",
           "Follow the Empty-or-Node Template",
           "necessary",
-          "A function over a recursive list has one branch for sempty and one for snode.",
+          "A function over a recursive list has one branch for SLEmpty and one for SLNode.",
           "Write the structural template for a custom recursive list.",
           ["template", "recursive-data", "case-analysis"],
           "A <strong>template</strong> is a reusable outline derived from the data definition. For a list, case analysis separates Empty from Node. In the Node branch, the inventory includes the first item and a recursive call on the rest.",
           "Following the template ensures that every data variant is handled and that the recursive call follows the recursive field.",
           `fun wordCount(words: StringList): Int {
     return when (words) {
-        sempty -&gt; 0
-        is snode -&gt; 1 + wordCount(words.rest)
+        SLEmpty -&gt; 0
+        is SLNode -&gt; 1 + wordCount(words.rest)
     }
 }`,
-          "sempty contributes zero strings. A snode contributes one for its first field plus the count of its rest.",
+          "SLEmpty contributes zero strings. A SLNode contributes one for its first field plus the count of its rest.",
           "The recursive call belongs on <code>words.rest</code> because that is the field whose type is <code>StringList</code>.",
           [
-            Q("What does the sempty branch return?", "<code>0</code>."),
+            Q("What does the SLEmpty branch return?", "<code>0</code>."),
             Q("Which field is passed recursively?", "<code>words.rest</code>."),
-            Q("Why does the snode branch add 1?", "It counts the current node's first string.")
+            Q("Why does the SLNode branch add 1?", "It counts the current node's first string.")
           ]
         ),
         R(
@@ -1068,11 +1068,11 @@ val twoWords = snode("design", snode("data", sempty))`,
           "Recognizing the pattern narrows the design choices before writing details.",
           `fun anyShort(words: StringList): Boolean {
     return when (words) {
-        sempty -&gt; false
-        is snode -&gt; words.first.length &lt; 4 || anyShort(words.rest)
+        SLEmpty -&gt; false
+        is SLNode -&gt; words.first.length &lt; 4 || anyShort(words.rest)
     }
 }`,
-          "The sempty answer for an 'any' question is false. A snode answers true if its own string is short or if any string in the rest is short.",
+          "The SLEmpty answer for an 'any' question is false. A SLNode answers true if its own string is short or if any string in the rest is short.",
           "Choose the base value that is neutral for the combining operator: false for OR, true for AND, an empty list for map/filter, and zero for addition (typically).",
           [
             Q("Which pattern does <code>anyShort</code> use?", "An 'any' query."),
