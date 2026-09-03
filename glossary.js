@@ -404,15 +404,68 @@ function applyGlossaryTerms() {
   });
 }
 
+const LECTURE_1_TERMS = [
+  "argument", "boolean", "function-body", "call", "expression", "function", "immutable",
+  "import", "index", "initialize", "library", "method", "object", "operator", "package",
+  "property", "reassign", "statement", "test", "tolerance", "type", "value"
+];
+
+function lectureOrder(title) {
+  const numbers = title.match(/\d+/g);
+  return numbers ? Number(numbers[0]) : Number.MAX_SAFE_INTEGER;
+}
+
+function glossaryMentions() {
+  const mentions = new Map(Object.keys(CS1101_GLOSSARY).map((id) => [id, []]));
+  const addMention = (id, lecture, href) => {
+    const entryMentions = mentions.get(id);
+    if (!entryMentions || entryMentions.some((mention) => mention.lecture === lecture)) return;
+    entryMentions.push({ lecture, href });
+  };
+
+  LECTURE_1_TERMS.forEach((id) => addMention(id, "Lecture 1", "lecture-01-expressions-values.html"));
+  (window.CS1101_READING_SETS || []).forEach((set) => {
+    set.readings.forEach((reading) => {
+      reading.vocabulary.forEach((id) => addMention(id, set.lecture, set.hub));
+    });
+  });
+
+  return mentions;
+}
+
 function renderGlossaryList() {
   const list = document.querySelector("[data-glossary-list]");
   if (!list) return;
 
-  list.replaceChildren();
+  const filter = document.querySelector("[data-glossary-filter]");
+  const sort = document.querySelector("[data-glossary-sort]");
+  const mentions = glossaryMentions();
+  const lectures = [...new Map(
+    [...mentions.values()].flat().map((mention) => [mention.lecture, mention])
+  ).values()].sort((first, second) => lectureOrder(first.lecture) - lectureOrder(second.lecture));
 
-  Object.entries(CS1101_GLOSSARY)
-    .sort(([, first], [, second]) => first.term.localeCompare(second.term))
-    .forEach(([id, entry]) => {
+  lectures.forEach(({ lecture }) => {
+    const option = document.createElement("option");
+    option.value = lecture;
+    option.textContent = lecture;
+    filter.append(option);
+  });
+
+  const updateList = () => {
+    const selectedLecture = filter.value;
+    const sortBy = sort.value;
+    const entries = Object.entries(CS1101_GLOSSARY)
+      .filter(([id]) => selectedLecture === "all" || mentions.get(id).some(({ lecture }) => lecture === selectedLecture))
+      .sort(([firstId, first], [secondId, second]) => {
+        if (sortBy === "lecture") {
+          const lectureDifference = lectureOrder(mentions.get(firstId)[0]?.lecture || "") - lectureOrder(mentions.get(secondId)[0]?.lecture || "");
+          if (lectureDifference) return lectureDifference;
+        }
+        return first.term.localeCompare(second.term);
+      });
+
+    list.replaceChildren();
+    entries.forEach(([id, entry]) => {
       const wrapper = document.createElement("div");
       wrapper.className = "glossary-entry";
       wrapper.id = id;
@@ -426,15 +479,35 @@ function renderGlossaryList() {
       const source = document.createElement("dd");
       source.className = "glossary-source";
       source.append("Introduced in ");
-
       const sourceLink = document.createElement("a");
       sourceLink.href = entry.sourceHref;
       sourceLink.textContent = entry.sourceTitle;
       source.append(sourceLink, ".");
 
-      wrapper.append(term, definition, source);
+      const lecturesMentioned = mentions.get(id);
+      const details = document.createElement("details");
+      details.className = "glossary-mentions";
+      const summary = document.createElement("summary");
+      summary.textContent = `Mentioned in ${lecturesMentioned.length} lecture${lecturesMentioned.length === 1 ? "" : "s"}`;
+      const mentionList = document.createElement("ul");
+      lecturesMentioned.forEach(({ lecture, href }) => {
+        const item = document.createElement("li");
+        const link = document.createElement("a");
+        link.href = href;
+        link.textContent = lecture;
+        item.append(link);
+        mentionList.append(item);
+      });
+      details.append(summary, mentionList);
+
+      wrapper.append(term, definition, source, details);
       list.append(wrapper);
     });
+  };
+
+  filter.addEventListener("change", updateList);
+  sort.addEventListener("change", updateList);
+  updateList();
 }
 
 document.addEventListener("DOMContentLoaded", () => {

@@ -6,6 +6,7 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <title>CS1101 Kotlin Glossary</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="reading-catalog.js" defer></script>
   <script src="glossary.js" defer></script>
 </head>
 <body>
@@ -25,6 +26,21 @@
     <section>
       <article class="reading-block">
         <h2>Defined Terms</h2>
+        <div class="glossary-controls" aria-label="Glossary controls">
+          <label>
+            Filter by lecture
+            <select data-glossary-filter>
+              <option value="all">All lectures</option>
+            </select>
+          </label>
+          <label>
+            Sort terms by
+            <select data-glossary-sort>
+              <option value="alphabetical">Alphabetical order</option>
+              <option value="lecture">First lecture mentioned</option>
+            </select>
+          </label>
+        </div>
         <dl class="glossary-list" data-glossary-list>
           <noscript>Enable JavaScript to view the glossary definitions.</noscript>
         </dl>
