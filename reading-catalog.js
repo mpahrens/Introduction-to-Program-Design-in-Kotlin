@@ -69,12 +69,12 @@ const CS1101_READING_SETS_DATA = (() => {
       `// an event handler system
       // In event-driven systems, like classic GUI libraries, when a mouse event happen on the screen
       // the program needs to determine which UI element, for the pixel being clicked, handles the event.
-      // If multiple UI elements overlap, then they need to determine somehow the order and priority of who gets to try and respond to the event first
+      // If multiple UI elements overlap, then they need to determine the order of who gets to try and respond to the event first
       // typically returning a boolean: true if the event is handled and done or false if the next handler needs to do it
       
       sealed interface HandlerChain {
         data object NoHandler : HandlerChain
-        data class Handler(try: ((MouseEvent) -> Boolean), nextHandler HandlerChain)
+        data class Handler(try : ((MouseEvent) -> Boolean), nextHandler : HandlerChain)
       }
       
       /** given a mouse event and a chain of UI elements which could potentially handle the mouse click, 
