@@ -294,6 +294,11 @@ const CS1101_RESOURCE_LINKS = {
   kotlinArrays: ["Kotlin Documentation: Arrays", "https://kotlinlang.org/docs/arrays.html"],
   kotlinRanges: ["Kotlin Documentation: Ranges and progressions", "https://kotlinlang.org/docs/ranges.html"],
   kotlinMath: ["Kotlin API: kotlin.math", "https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.math/"],
+  kotlinNullSafety: ["Kotlin Documentation: Null safety", "https://kotlinlang.org/docs/null-safety.html"],
+  kotlinIntToDouble: ["Kotlin API: Int.toDouble", "https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/to-double.html"],
+  functionComposition: ["Function composition", "https://en.wikipedia.org/wiki/Function_composition_(computer_science)"],
+  functionalDecomposition: ["Functional decomposition", "https://en.wikipedia.org/wiki/Functional_decomposition"],
+  separationOfConcerns: ["Separation of concerns", "https://en.wikipedia.org/wiki/Separation_of_concerns"],
   bitcoinMerkle: ["Bitcoin Developer Guide: Merkle Trees", "https://developer.bitcoin.org/devguide/block_chain.html"],
   ethereumMerkle: ["Ethereum.org: Merkle Patricia Tries", "https://ethereum.org/developers/docs/data-structures-and-encoding/patricia-merkle-trie/"],
   intellijRun: ["IntelliJ IDEA Help: Run applications", "https://www.jetbrains.com/help/idea/running-applications.html"],
@@ -342,7 +347,11 @@ function resourcesForReading(readingId, fileName) {
   if (readingId.startsWith("l06-")) return ["kotlinSealed"];
   if (readingId.startsWith("l07-")) return ["kotlinCasts", "kotlinSealed"];
   if (readingId.startsWith("l08-") || readingId.startsWith("l09-")) return ["recursion"];
-  if (readingId === "l10-why-decomposition-matters") return ["kotlinFunctions", "kotlinTypes", "kotlinPackages"];
+  if (readingId === "l10-average-pieces") return ["functionComposition"];
+  if (readingId === "l10-empty-average") return ["kotlinNullSafety"];
+  if (readingId === "l10-conversion-filter") return ["kotlinIntToDouble"];
+  if (readingId === "l10-helper-decomposition") return ["functionalDecomposition"];
+  if (readingId === "l10-why-decomposition-matters") return ["separationOfConcerns"];
   if (readingId === "l11-function-type") return ["kotlinLambdas", "kotlinFunctions"];
   if (readingId === "l11-lambda-syntax") return ["kotlinLambdas", "kotlinCollectionOps"];
   if (readingId.startsWith("l10-") || readingId.startsWith("l11-") || readingId.startsWith("l13-")) return ["kotlinCollections", "kotlinCollectionOps"];
