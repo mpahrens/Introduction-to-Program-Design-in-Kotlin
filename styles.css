@@ -315,7 +315,12 @@ h1 {
   font-weight: 700;
 }
 
-.glossary-controls select {
+.glossary-search-control {
+  position: relative;
+}
+
+.glossary-controls select,
+.glossary-controls input {
   min-width: 190px;
   padding: 7px 9px;
   border: 1px solid var(--line);
@@ -323,6 +328,38 @@ h1 {
   background: white;
   color: var(--ink);
   font: inherit;
+}
+
+.glossary-term-options {
+  position: absolute;
+  z-index: 2;
+  top: calc(100% + 3px);
+  left: 0;
+  width: 100%;
+  min-width: 190px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: white;
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.14);
+}
+
+.glossary-term-option {
+  display: block;
+  width: 100%;
+  padding: 8px 9px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.glossary-term-option:hover,
+.glossary-term-option:focus-visible {
+  background: rgba(36, 95, 150, 0.12);
+  outline: none;
 }
 
 .glossary-entry {
@@ -336,6 +373,62 @@ h1 {
   color: var(--green);
   font-size: 1.1rem;
   font-weight: 750;
+}
+
+.glossary-copy-link {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  margin-left: 7px;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 120ms ease, background-color 120ms ease, color 120ms ease;
+}
+
+.glossary-copy-link svg {
+  width: 17px;
+  height: 17px;
+  fill: currentColor;
+}
+
+.glossary-entry:hover .glossary-copy-link,
+.glossary-entry:focus-within .glossary-copy-link {
+  opacity: 1;
+}
+
+.glossary-copy-link:hover,
+.glossary-copy-link:focus-visible {
+  background: rgba(36, 95, 150, 0.12);
+  color: var(--green);
+  outline: none;
+}
+
+.glossary-copy-link[data-copied="true"] {
+  color: var(--green);
+}
+
+.glossary-entry:target {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(36, 95, 150, 0.14);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .glossary-entry dd {

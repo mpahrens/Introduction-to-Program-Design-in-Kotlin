@@ -27,6 +27,22 @@
       <article class="reading-block">
         <h2>Defined Terms</h2>
         <div class="glossary-controls" aria-label="Glossary controls">
+          <div class="glossary-search-control">
+            <label>
+            Find a term
+            <input
+              type="search"
+              data-glossary-search
+              placeholder="Start typing a term"
+              autocomplete="off"
+              role="combobox"
+              aria-controls="glossary-term-options"
+              aria-autocomplete="list"
+              aria-expanded="false"
+            >
+            </label>
+            <div class="glossary-term-options" id="glossary-term-options" role="listbox" hidden></div>
+          </div>
           <label>
             Filter by lecture
             <select data-glossary-filter>

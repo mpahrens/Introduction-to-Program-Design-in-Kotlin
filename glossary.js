@@ -433,12 +433,68 @@ function glossaryMentions() {
   return mentions;
 }
 
+function normalizedSearchText(text) {
+  return text
+    .toLocaleLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function isFuzzyMatch(query, text) {
+  const normalizedQuery = normalizedSearchText(query);
+  if (!normalizedQuery) return true;
+
+  const normalizedText = normalizedSearchText(text);
+  if (normalizedText.includes(normalizedQuery)) return true;
+
+  // Let an abbreviated, in-order spelling such as "fn sig" find "Function signature".
+  return normalizedQuery.split(/\s+/).every((queryWord) =>
+    normalizedText.split(/\s+/).some((textWord) => {
+      let queryIndex = 0;
+      for (const character of textWord) {
+        if (character === queryWord[queryIndex]) queryIndex += 1;
+      }
+      return queryIndex === queryWord.length;
+    })
+  );
+}
+
+function scrollToGlossaryHash() {
+  const id = decodeURIComponent(window.location.hash.slice(1));
+  if (!id) return;
+
+  requestAnimationFrame(() => {
+    document.getElementById(id)?.scrollIntoView({ block: "center" });
+  });
+}
+
+async function copyGlossaryLink(id, button) {
+  const url = new URL(window.location.href);
+  url.hash = id;
+
+  try {
+    await navigator.clipboard.writeText(url.href);
+    button.dataset.copied = "true";
+    button.setAttribute("aria-label", "Glossary link copied");
+    setTimeout(() => {
+      delete button.dataset.copied;
+      button.setAttribute("aria-label", "Copy a link to this glossary entry");
+    }, 1600);
+  } catch {
+    window.prompt("Copy this glossary link:", url.href);
+  }
+}
+
 function renderGlossaryList() {
   const list = document.querySelector("[data-glossary-list]");
   if (!list) return;
 
   const filter = document.querySelector("[data-glossary-filter]");
   const sort = document.querySelector("[data-glossary-sort]");
+  const search = document.querySelector("[data-glossary-search]");
+  const termOptions = document.querySelector("#glossary-term-options");
   const mentions = glossaryMentions();
   const lectures = [...new Map(
     [...mentions.values()].flat().map((mention) => [mention.lecture, mention])
@@ -451,11 +507,43 @@ function renderGlossaryList() {
     filter.append(option);
   });
 
+  const updateTermOptions = () => {
+    const searchText = search.value.trim();
+    const matches = searchText.length < 2
+      ? []
+      : Object.values(CS1101_GLOSSARY)
+        .filter((entry) => isFuzzyMatch(searchText, entry.term))
+        .sort((first, second) => first.term.localeCompare(second.term))
+        .slice(0, 5);
+
+    termOptions.replaceChildren();
+    matches.forEach((entry) => {
+      const option = document.createElement("button");
+      option.className = "glossary-term-option";
+      option.type = "button";
+      option.setAttribute("role", "option");
+      option.textContent = entry.term;
+      option.addEventListener("mousedown", (event) => {
+        event.preventDefault();
+        search.value = entry.term;
+        updateList();
+        search.focus();
+      });
+      termOptions.append(option);
+    });
+
+    const isOpen = matches.length > 0;
+    termOptions.hidden = !isOpen;
+    search.setAttribute("aria-expanded", String(isOpen));
+  };
+
   const updateList = () => {
     const selectedLecture = filter.value;
     const sortBy = sort.value;
+    const searchText = search.value;
     const entries = Object.entries(CS1101_GLOSSARY)
-      .filter(([id]) => selectedLecture === "all" || mentions.get(id).some(({ lecture }) => lecture === selectedLecture))
+      .filter(([id, entry]) => selectedLecture === "all" || mentions.get(id).some(({ lecture }) => lecture === selectedLecture))
+      .filter(([, entry]) => isFuzzyMatch(searchText, entry.term))
       .sort(([firstId, first], [secondId, second]) => {
         if (sortBy === "lecture") {
           const lectureDifference = lectureOrder(mentions.get(firstId)[0]?.lecture || "") - lectureOrder(mentions.get(secondId)[0]?.lecture || "");
@@ -472,6 +560,15 @@ function renderGlossaryList() {
 
       const term = document.createElement("dt");
       term.textContent = entry.term;
+
+      const copyLink = document.createElement("button");
+      copyLink.className = "glossary-copy-link";
+      copyLink.type = "button";
+      copyLink.setAttribute("aria-label", "Copy a link to this glossary entry");
+      copyLink.title = "Copy link to this term";
+      copyLink.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.6 13.4a1 1 0 0 0 1.4 1.4l3.8-3.8a3 3 0 0 0-4.2-4.2l-2.2 2.2a1 1 0 1 0 1.4 1.4L13 8.2a1 1 0 1 1 1.4 1.4l-3.8 3.8Z"/><path d="M13.4 10.6a1 1 0 0 0-1.4-1.4l-3.8 3.8a3 3 0 0 0 4.2 4.2l2.2-2.2a1 1 0 1 0-1.4-1.4L11 15.8a1 1 0 1 1-1.4-1.4l3.8-3.8Z"/></svg><span class="visually-hidden">Copy link</span>';
+      copyLink.addEventListener("click", () => copyGlossaryLink(id, copyLink));
+      term.append(copyLink);
 
       const definition = document.createElement("dd");
       definition.textContent = entry.definition;
@@ -503,10 +600,23 @@ function renderGlossaryList() {
       wrapper.append(term, definition, source, details);
       list.append(wrapper);
     });
+
+    scrollToGlossaryHash();
+    updateTermOptions();
   };
 
   filter.addEventListener("change", updateList);
   sort.addEventListener("change", updateList);
+  search.addEventListener("input", updateList);
+  search.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" || termOptions.hidden) return;
+    termOptions.querySelector("button")?.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+  });
+  search.addEventListener("blur", () => {
+    termOptions.hidden = true;
+    search.setAttribute("aria-expanded", "false");
+  });
+  window.addEventListener("hashchange", scrollToGlossaryHash);
   updateList();
 }
 
