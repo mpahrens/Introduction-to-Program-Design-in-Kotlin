@@ -1,0 +1,84 @@
+/* Shared presentation for the language-transfer reference series. */
+:root { color-scheme: light; --ink: #172c3b; --muted: #526572; --paper: #fff; --line: #cad6dc; --accent: #006b68; --wash: #eef5f5; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+body { margin: 0; color: var(--ink); background: #e8eef0; font: 16px/1.55 system-ui, sans-serif; }
+a { color: #00625f; text-underline-offset: 3px; }
+a:hover { color: #8a3f18; }
+a:focus-visible, button:focus-visible { outline: 3px solid #bf5a20; outline-offset: 4px; }
+.toolbar { max-width: 1160px; margin: auto; padding: 20px 30px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+button { padding: 10px 17px; border: 1px solid var(--accent); border-radius: 5px; background: var(--accent); color: white; font: inherit; font-weight: 650; cursor: pointer; }
+main { max-width: 1100px; margin: 0 auto 48px; }
+.cover, .sheet { background: var(--paper); padding: 40px 48px; margin-bottom: 22px; border: 1px solid var(--line); border-radius: 8px; }
+.cover { border-top: 7px solid var(--accent); }
+.eyebrow, .sheet-number { color: var(--accent); font-size: .78rem; letter-spacing: .13em; text-transform: uppercase; font-weight: 750; }
+h1 { margin: 14px 0 18px; font-size: clamp(2.5rem, 6vw, 4.5rem); line-height: 1.04; letter-spacing: -.05em; }
+h1 span { color: var(--accent); }
+.intro { font-size: 1.12rem; max-width: 780px; }
+.metadata { display: flex; flex-wrap: wrap; gap: 8px 20px; color: var(--muted); font-size: .86rem; border-block: 1px solid var(--line); padding: 12px 0; margin: 24px 0; }
+h2 { margin: 4px 0 10px; font-size: 1.9rem; line-height: 1.2; letter-spacing: -.025em; }
+h3 { font-size: 1.05rem; margin: 22px 0 9px; }
+p { margin: 9px 0 13px; }
+.lede { color: var(--muted); margin-bottom: 20px; }
+.contents { display: grid; grid-template-columns: 1fr 1fr; gap: 0 34px; list-style: none; padding: 0; }
+.contents a { display: flex; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--line); text-decoration: none; }
+.contents span { color: var(--muted); font: .9rem/1.7 ui-monospace, monospace; }
+.pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); border: 1px solid var(--line); border-radius: 5px; overflow: hidden; margin: 10px 0 13px; }
+.example { min-width: 0; background: #f7f8fa; padding: 13px 16px; }
+.example + .example { border-left: 1px solid var(--line); background: #f0f7f5; }
+.language { font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; color: #4e4b70; margin: 0 0 9px; }
+.python .language { color: #00635b; }
+.example p { font-size: .87rem; margin-bottom: 9px; }
+pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; tab-size: 4; font: .82rem/1.55 ui-monospace, SFMono-Regular, Consolas, monospace; }
+code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .91em; }
+pre code { font-size: inherit; }
+p code, li code, td code { background: #edf1f3; padding: 1px 3px; border-radius: 2px; }
+.note { padding: 12px 16px; border-left: 3px solid var(--accent); background: var(--wash); font-size: .9rem; }
+.note strong { color: #005e5b; }
+.sources { font-size: .78rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; margin-top: 20px; }
+.sources a { margin-right: 12px; }
+.steps { padding-left: 22px; }
+.steps li { margin-bottom: 5px; }
+table { width: 100%; border-collapse: collapse; font-size: .88rem; margin: 12px 0; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { background: var(--wash); }
+.footer { padding: 0 12px; color: var(--muted); font-size: .84rem; text-align: center; }
+@media (max-width: 720px) {
+  .toolbar { padding: 14px 16px; font-size: .85rem; }
+  main { margin-inline: 10px; }
+  .cover, .sheet { padding: 26px 20px; }
+  .contents, .pair { grid-template-columns: 1fr; }
+  .example + .example { border-left: 0; border-top: 1px solid var(--line); }
+  h2 { font-size: 1.6rem; }
+}
+@page { size: auto; margin: 12mm; }
+@media print {
+  html { scroll-behavior: auto; }
+  body { background: white; font-size: 9pt; line-height: 1.35; color: #111; }
+  .toolbar, .footer, .screen-only { display: none; }
+  main { max-width: none; margin: 0; }
+  .cover, .sheet { border: 0; border-radius: 0; padding: 0; margin: 0; break-after: page; }
+  .sheet:last-of-type { break-after: auto; }
+  .cover { border-top: 4pt solid #006b68; padding-top: 12pt; }
+  h1 { font-size: 40pt; margin: 14pt 0; }
+  h2 { font-size: 19pt; }
+  h3 { font-size: 10pt; margin: 12pt 0 5pt; break-after: avoid; }
+  .eyebrow, .sheet-number { font-size: 8pt; }
+  .intro { font-size: 12pt; }
+  .metadata { font-size: 9pt; }
+  .lede { margin-bottom: 10pt; }
+  .contents { grid-template-columns: 1fr 1fr; }
+  .contents span { font-size: 9pt; }
+  .pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); break-inside: avoid; margin: 6pt 0 7pt; }
+  .example { padding: 7pt 9pt; background: #f8f8f8; }
+  .example + .example { border-top: 0; border-left: 1px solid var(--line); background: #f4f7f6; }
+  .language { font-size: 7pt; margin-bottom: 5pt; }
+  .example p { font-size: 8pt; }
+  pre { font-size: 7.8pt; line-height: 1.35; }
+  .note { font-size: 8.5pt; padding: 7pt 10pt; break-inside: avoid; }
+  .sources { font-size: 7pt; margin-top: 10pt; padding-top: 6pt; }
+  table { font-size: 8pt; }
+  th, td { padding: 5pt 7pt; }
+  a { color: inherit; }
+  p { orphans: 3; widows: 3; }
+}

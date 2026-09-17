@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A printable Kotlin-to-Python reference for CS1101: syntax, functions, tests, data classes, lists, mutation, and loops.">
+  <title>Transfer Reference to Python | CS1101</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="transfer-reference.css">
+</head>
+<body>
+  <div class="toolbar">
+    <a href="transfer-references.html">← Transfer references</a>
+    <button type="button" onclick="window.print()">Print / Save as PDF</button>
+  </div>
+  <main id="main">
+    <header class="cover">
+      <div class="eyebrow">CS1101 · Beyond Kotlin · Transfer reference 01</div>
+      <h1>Transfer Reference<br>to <span>Python</span></h1>
+      <p class="intro">Keep the design habits. Learn the new spelling. A reference for turning the functions, tests, and data you know from Kotlin into Python programs.</p>
+      <div class="metadata"><span>Python 3.10+</span><span>Standard library only</span><span>Kotlin first, Python second</span><span>12 topic sheets</span></div>
+      <p>Read each comparison from left to right (top to bottom on a phone). Examples are independent unless a note says they reuse an earlier definition. Comments show expected results. Kotlin snippets belong inside <code>main</code> when they contain executable statements; type and function definitions can go at file level.</p>
+      <nav aria-label="Reference contents">
+        <ol class="contents">
+          <li><a href="#start"><span>01</span> Files, running &amp; debugging</a></li>
+          <li><a href="#names"><span>02</span> Names, assignment &amp; scope</a></li>
+          <li><a href="#values"><span>03</span> Numbers &amp; Booleans</a></li>
+          <li><a href="#text"><span>04</span> Strings &amp; missing values</a></li>
+          <li><a href="#decisions"><span>05</span> if, when &amp; named choices</a></li>
+          <li><a href="#functions"><span>06</span> Function design &amp; testing</a></li>
+          <li><a href="#records"><span>07</span> Compound data &amp; copies</a></li>
+          <li><a href="#variants"><span>08</span> Sum types &amp; type checks</a></li>
+          <li><a href="#lists"><span>09</span> Lists &amp; operations</a></li>
+          <li><a href="#higher-order"><span>10</span> Lambdas, map, filter &amp; fold</a></li>
+          <li><a href="#mutation"><span>11</span> Mutation &amp; shared values</a></li>
+          <li><a href="#loops"><span>12</span> Loops, ranges &amp; input</a></li>
+        </ol>
+      </nav>
+      <div class="note"><strong>Carry these habits forward:</strong> state a purpose, describe inputs and outputs, write examples, inventory the data, and then implement and test. Python changes how you express that plan.</div>
+      <p class="screen-only">For a paper reference, use <strong>Print / Save as PDF</strong>. Choose portrait, Letter or A4, 100% scale, and turn off browser headers and footers. Each numbered topic starts on a fresh page; this overview is the cover.</p>
+    </header>
+
+    <section class="sheet" id="start" aria-labelledby="start-title">
+      <div class="sheet-number">01 / Tools &amp; files</div>
+      <h2 id="start-title">Make a file. Run it. Inspect it.</h2>
+      <p class="lede">PyCharm is the JetBrains Python IDE closest to the IntelliJ workflow used in the course. A Python interpreter runs your code.</p>
+      <h3>A starting file and an entry point</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin · hello.kt</div><pre><code>fun main() {
+    val name = "Gompei"
+    println("Hello, $name!")
+}</code></pre></div>
+        <div class="example python"><div class="language">Python · hello.py</div><pre><code>def main() -&gt; None:
+    name = "Gompei"
+    print(f"Hello, {name}!")
+
+if __name__ == "__main__":
+    main()</code></pre></div>
+      </div>
+      <p>Kotlin uses <code>.kt</code>; Python uses <code>.py</code>. Python does not call a function just because it is named <code>main</code>. The guard above calls it when the file runs as the main program, but not when another file imports it. Both print a line ending.</p>
+      <h3>A short script and a library import</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>import kotlin.math.sqrt
+
+fun main() {
+    // Display the square root.
+    println(sqrt(81.0)) // 9.0
+}</code></pre></div>
+        <div class="example python"><div class="language">Python</div><pre><code>from math import sqrt
+
+# Top-level statements run in order.
+print(sqrt(81.0))  # 9.0</code></pre></div>
+      </div>
+      <p>Python permits statements directly in a file. Importing that file executes its top-level statements the first time, so use the main guard for demonstrations and tests you do not want run during import. Use <code>#</code> for comments.</p>
+      <ol class="steps">
+        <li><strong>Create:</strong> in PyCharm, create a Python project with a Python 3.10+ interpreter and a virtual environment, then add a Python file such as <code>hello.py</code>. The environment keeps project dependencies separate.</li>
+        <li><strong>Run:</strong> use the file’s Run command. In a terminal, use <code>python hello.py</code>; depending on your installation, the command may be <code>python3 hello.py</code> or, on Windows, <code>py hello.py</code>.</li>
+        <li><strong>Debug:</strong> click the gutter beside a line to set a breakpoint, then choose Debug. Inspect variables; use Step Over for the next line, Step Into to enter a call, and Resume to continue.</li>
+        <li><strong>Read errors:</strong> the last line of a traceback names the error; the frames above it identify the files and lines that led there. A syntax or indentation error must be fixed before that code can run.</li>
+      </ol>
+      <p class="note"><strong>No extra packages for this guide.</strong> <code>math</code>, <code>dataclasses</code>, <code>enum</code>, <code>typing</code>, and <code>functools</code> come with Python. An import makes a library name available; it does not install a package.</p>
+      <p class="sources">Official references: <a href="https://www.jetbrains.com/help/pycharm/creating-and-running-your-first-python-project.html">PyCharm setup &amp; running</a> <a href="https://www.jetbrains.com/help/pycharm/debugging-your-first-python-application.html">Debugging</a> <a href="https://docs.python.org/3/library/__main__.html">Python’s main guard</a></p>
+    </section>
+
+    <section class="sheet" id="names" aria-labelledby="names-title">
+      <div class="sheet-number">02 / Names &amp; scope</div>
+      <h2 id="names-title">Assignment needs no keyword</h2>
+      <p class="lede">Python uses indentation for blocks, but a block does not necessarily introduce a scope.</p>
+      <h3>Binding a name and changing its value</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val x = 3
+var count: Int = 0
+count = count + 1
+// x = 4 would be a compile error.</code></pre></div>
+        <div class="example python"><div class="language">Python</div><pre><code>x = 3
+count: int = 0
+count = count + 1
+x = 4  # Rebinding is allowed.</code></pre></div>
+      </div>
+      <p>There is no ordinary Python <code>val</code> declaration. An assignment binds a name to a value; a later assignment can rebind it. An annotation such as <code>count: int</code> documents the intended type for readers and checking tools. It does not enforce the type at runtime.</p>
+      <h3>if and for do not create Python local scopes</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val ready = true
+val x = if (ready) {
+    val chosen = 3
+    chosen
+} else {
+    4
+}
+println(x) // 3
+// chosen is out of scope here.</code></pre></div>
+        <div class="example python"><div class="language">Python</div><pre><code>ready = True
+if ready:
+    x = 3
+else:
+    x = 4
+print(x)  # 3; same surrounding scope
+
+for item in [10, 20]:
+    last = item
+print(item, last)  # 20 20</code></pre></div>
+      </div>
+      <p>In Kotlin, a local declaration is available from its declaration through the enclosing block. In Python, <code>if</code>, <code>for</code>, and <code>while</code> blocks share the surrounding scope. Their assignments remain available afterward <em>if those assignments ran</em>. An empty loop or an unchosen branch might leave a name unbound.</p>
+      <h3>Function calls have their own local names</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>fun nextCount(count: Int): Int {
+    val next = count + 1
+    return next
+}
+// next belongs to the function.</code></pre></div>
+        <div class="example python"><div class="language">Python</div><pre><code>def next_count(count: int) -&gt; int:
+    next_value = count + 1
+    return next_value
+
+# next_value belongs to the function.</code></pre></div>
+      </div>
+      <p class="note"><strong>Indentation is syntax.</strong> Use four spaces per level. A colon starts a function or control-flow body; indentation groups its statements. Function assignments are normally local. Prefer parameters and returned results to rebinding global names. Comprehension iteration variables also have their own scope (sheet 10).</p>
+      <p class="sources">Official references: <a href="https://docs.python.org/3/reference/executionmodel.html">Names &amp; scope</a> <a href="https://docs.python.org/3/library/typing.html">Type hints</a></p>
+    </section>
+
+    <section class="sheet" id="values" aria-labelledby="values-title">
+      <div class="sheet-number">03 / Primitive values</div>
+      <h2 id="values-title">Numbers and Boolean expressions</h2>
+      <p class="lede"><code>Int</code> becomes <code>int</code>, <code>Double</code> becomes <code>float</code>, and <code>Boolean</code> becomes <code>bool</code>.</p>
+      <h3>Arithmetic, conversions, and division</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>import kotlin.math.pow
+
+val sum = 7 + 2       // 9
+val difference = 7 - 2 // 5
+val product = 7 * 2   // 14
+val quotient = 7 / 2  // 3
+val decimal = 7.0 / 2 // 3.5
+val remainder = 7 % 2 // 1
+val square = 3.0.pow(2) // 9.0
+val converted = 7.toDouble() // 7.0
+val parsed = "42".toInt()   // 42
+val text = 42.toString()    // "42"</code></pre></div>
+        <div class="example python"><div class="language">Python</div><pre><code>total = 7 + 2        # 9
+difference = 7 - 2   # 5
+product = 7 * 2      # 14
+quotient = 7 // 2    # 3
+decimal = 7 / 2      # 3.5
+remainder = 7 % 2    # 1
+square = 3 ** 2      # 9 (int)
+converted = float(7) # 7.0
+parsed = int("42")   # 42
+text = str(42)       # "42"</code></pre></div>
+      </div>
+      <table>
+        <caption>Check the behavior, especially with negative numbers</caption>
+        <thead><tr><th scope="col">Operation</th><th scope="col">Kotlin</th><th scope="col">Python</th></tr></thead>
+        <tbody>
+          <tr><td>Integer division</td><td><code>-7 / 2 == -3</code> (toward zero)</td><td><code>-7 // 2 == -4</code> (floor)</td></tr>
+          <tr><td>Remainder / modulo</td><td><code>-7 % 2 == -1</code></td><td><code>-7 % 2 == 1</code> (sign follows divisor)</td></tr>
+          <tr><td>Decimal to integer</td><td><code>(-3.8).toInt() == -3</code></td><td><code>int(-3.8) == -3</code> (toward zero)</td></tr>
+          <tr><td>Integer size</td><td><code>Int</code> is a signed 32-bit value</td><td><code>int</code> grows as needed, limited by memory</td></tr>
+        </tbody>
+      </table>
+      <h3>Comparisons and short-circuit logic</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val age = 20
+val member = false
+val adult = age &gt;= 18
+val offer = adult &amp;&amp; !member // true
+val eligible = adult || member
+val teen = age &gt;= 13 &amp;&amp; age &lt; 20
+val different = age != 21</code></pre></div>
+        <div class="example python"><div class="language">Python</div><pre><code>age = 20
+member = False
+adult = age &gt;= 18
+offer = adult and not member  # True
+eligible = adult or member
+teen = 13 &lt;= age &lt; 20
+different = age != 21</code></pre></div>
+      </div>
+      <p><code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, and <code>&gt;=</code> compare values in both languages. Python spells the constants <code>True</code> and <code>False</code>. <code>and</code> and <code>or</code> skip the second operand when the first decides the result.</p>
+      <p class="note"><strong>Truthiness is broader than Boolean values.</strong> Python treats <code>0</code>, <code>""</code>, <code>[]</code>, and <code>None</code> as false in conditions. Also, <code>and</code> and <code>or</code> return an operand: <code>"" or "guest"</code> gives <code>"guest"</code>. Use explicit comparisons when that distinction matters.</p>
+      <p class="sources">Official references: <a href="https://docs.python.org/3/tutorial/introduction.html">Numbers</a> <a href="https://docs.python.org/3/library/stdtypes.html#truth-value-testing">Truth values &amp; numeric types</a></p>
+    </section>
+
+    <section class="sheet" id="text" aria-labelledby="text-title">
+      <div class="sheet-number">04 / Text &amp; optional values</div>
+      <h2 id="text-title">Strings, equality, and None</h2>
+      <p class="lede">Python’s <code>str</code> is immutable. Single and double quotes both create strings; there is no separate character type.</p>
+      <h3>Reading and building text</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val name = "Gompei"
+name.length              // 6
+name[0]                  // 'G' (Char)
+name.substring(0, 3)     // "Gom"
+name.lowercase()         // "gompei"
+name.startsWith("Gom")   // true
+name.contains("pei")     // true
+"  hi  ".trim()          // "hi"
+"red,blue".split(",")    // [red, blue]
+"Hi, " + name            // "Hi, Gompei"
+"$name has ${name.length} letters"</code></pre></div>
+        <div class="example python"><div class="language">Python</div><pre><code>name = "Gompei"
+len(name)                # 6
+name[0]                  # "G" (str)
+name[0:3]                # "Gom"
+name.lower()             # "gompei"
+name.startswith("Gom")   # True
+"pei" in name            # True
+"  hi  ".strip()          # "hi"
+"red,blue".split(",")    # ["red", "blue"]
+"Hi, " + name            # "Hi, Gompei"
+f"{name} has {len(name)} letters"</code></pre></div>
+      </div>
+      <p>Both examples select from index 0 up to, but not including, 3. Python also permits <code>name[-1]</code> for the last character and <code>name[:3]</code> for the first three. A slice tolerates bounds beyond the string; a single out-of-range index raises <code>IndexError</code>. Kotlin’s <code>substring</code> checks its bounds.</p>
+      <h3>Compare values; handle a missing value explicitly</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val same = "cat" == "cat" // true
+val nickname: String? = null
+val label = nickname ?: "guest"
+val size = nickname?.length
+// label is "guest"; size is null.
+
+if (nickname != null) {
+    println(nickname.length)
+}</code></pre></div>
+        <div class="example python"><div class="language">Python</div><pre><code>same = "cat" == "cat"  # True
+nickname: str | None = None
+label = (
+    nickname if nickname is not None
+    else "guest"
+)
+size = (
+    len(nickname) if nickname is not None
+    else None
+)
+if nickname is not None:
+    print(len(nickname))</code></pre></div>
+      </div>
+      <p>Python has no direct <code>?.</code> or <code>?:</code> operator. <code>str | None</code> documents a string-or-missing value. Test for <code>None</code> with <code>is None</code> or <code>is not None</code>. Accessing an absent value without checking can fail at runtime.</p>
+      <p class="note"><strong>Two easy traps:</strong> use <code>==</code> for string contents, not <code>is</code> (object identity). Also, <code>nickname or "guest"</code> replaces an empty string as well as <code>None</code>; it is not the same as Kotlin’s null-only Elvis operator.</p>
+      <p class="sources">Official references: <a href="https://docs.python.org/3/library/stdtypes.html#text-sequence-type-str">String operations</a> <a href="https://docs.python.org/3/reference/expressions.html#is-not">Identity comparisons</a> <a href="https://docs.python.org/3/library/typing.html">Union annotations</a></p>
+    </section>
+
+    <section class="sheet" id="decisions" aria-labelledby="decisions-title">
+      <div class="sheet-number">05 / Decisions</div>
+      <h2 id="decisions-title">Choose a branch or a value</h2>
+      <p class="lede">Use <code>if / elif / else</code> for conditions. Use <code>match / case</code> for selected value or shape patterns.</p>
+      <h3>Two choices: if as an expression</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val age = 20
+val price = if (age &lt; 18) 5 else 10</code></pre></div>
+        <div class="example python"><div class="language">Python</div><pre><code>age = 20
+price = 5 if age &lt; 18 else 10</code></pre></div>
+      </div>
+      <h3>Several conditions: when without a subject</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>fun label(score: Int): String {
+    return when {
+        score &gt;= 90 -&gt; "high"
+        score &gt;= 60 -&gt; "passing"
+        else -&gt; "retry"
+    }
+}</code></pre></div>
+        <div class="example python"><div class="language">Python</div><pre><code>def label(score: int) -&gt; str:
+    if score &gt;= 90:
+        return "high"
+    elif score &gt;= 60:
+        return "passing"
+    else:
+        return "retry"</code></pre></div>
+      </div>
+      <p>Both choose the first satisfied condition. Python’s statement form does not produce a value: assign a result in each branch or return from a function. The final expression on a branch is not automatically returned.</p>
+      <h3>Named choices: enum and value matching</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>enum class Signal { STOP, GO }
+
+fun action(signal: Signal): String {
+    return when (signal) {
+        Signal.STOP -&gt; "wait"
+        Signal.GO -&gt; "walk"
+    }
+}</code></pre></div>
+        <div class="example python"><div class="language">Python</div><pre><code>from enum import Enum
+
+class Signal(Enum):
+    STOP = "stop"
+    GO = "go"
+
+def action(signal: Signal) -&gt; str:
+    match signal:
+        case Signal.STOP:
+            return "wait"
+        case Signal.GO:
+            return "walk"
+        case _:
+            raise ValueError("Unknown signal")</code></pre></div>
+      </div>
+      <p>Python <code>match</code> requires 3.10+. Patterns can also be literals such as <code>case "stop":</code>; <code>case _:</code> is a catch-all. It does not fall through to later cases. Python does not require exhaustive cases at runtime, so include a fallback when unmatched input would be a bug.</p>
+      <p class="note"><strong>Pattern names matter.</strong> Keep the qualified name <code>Signal.STOP</code>. A bare <code>case STOP:</code> captures the subject in a variable named <code>STOP</code>; it does not compare to a constant. For arbitrary Boolean tests, use <code>if / elif</code>.</p>
+      <p class="sources">Official references: <a href="https://docs.python.org/3/tutorial/controlflow.html">if &amp; match</a> <a href="https://docs.python.org/3/library/enum.html">Enum</a></p>
+    </section>
+
+    <section class="sheet" id="functions" aria-labelledby="functions-title">
+      <div class="sheet-number">06 / Design &amp; tests</div>
+      <h2 id="functions-title">Keep the function design recipe</h2>
+      <p class="lede">Purpose → signature and stub → examples → input inventory and helpers → implementation → tests.</p>
+      <h3>State the purpose and type promise; start with a stub</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>/** Computes the price for count tickets. */
+fun ticketCost(
+    count: Int, discounted: Boolean
+): Int {
+    return 0 // temporary stub
+}</code></pre></div>
+        <div class="example python"><div class="language">Python</div><pre><code>def ticket_cost(
+    count: int, discounted: bool
+) -&gt; int:
+    """Compute the price for count tickets."""
+    return 0  # temporary stub</code></pre></div>
+      </div>
+      <p>Python uses <code>def</code>, <code>name: type</code> for parameters, and <code>-&gt; type</code> for the result. A first string in the body is a <strong>docstring</strong>. Python convention uses <code>snake_case</code> for functions and variables. Annotations are optional and are not runtime checks.</p>
+      <h3>Implement with a local subcomputation</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin · replace the stub body</div><pre><code>fun ticketCost(
+    count: Int, discounted: Boolean
+): Int {
+    val unitPrice = if (discounted) 5 else 10
+    return count * unitPrice
+}
+val cost = ticketCost(
+    count = 3, discounted = true
+) // 15</code></pre></div>
+        <div class="example python"><div class="language">Python · replace the stub body</div><pre><code>def ticket_cost(
+    count: int, discounted: bool
+) -&gt; int:
+    """Compute the price for count tickets."""
+    unit_price = 5 if discounted else 10
+    return count * unit_price
+
+cost = ticket_cost(
+    count=3, discounted=True
+)  # 15</code></pre></div>
+      </div>
+      <p><code>return</code> ends the call and supplies its result. Falling off a Python function’s end (or using bare <code>return</code>) returns <code>None</code>, even if its annotation promises <code>int</code>. For a function that only prints, annotate <code>-&gt; None</code> instead of Kotlin’s <code>Unit</code>.</p>
+      <h3>Turn examples into tests, without a test class</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin · with the implemented function</div><pre><code>import io.kotest.matchers.shouldBe
+
+fun main() {
+    ticketCost(0, false) shouldBe 0
+    ticketCost(3, false) shouldBe 30
+    ticketCost(3, true) shouldBe 15
+}</code></pre></div>
+        <div class="example python"><div class="language">Python · with the implemented function</div><pre><code>def test_ticket_cost() -&gt; None:
+    assert ticket_cost(0, False) == 0
+    assert ticket_cost(3, False) == 30
+    assert ticket_cost(3, True) == 15
+
+if __name__ == "__main__":
+    test_ticket_cost()
+    print("Tests passed")</code></pre></div>
+      </div>
+      <p><code>assert</code> raises <code>AssertionError</code> when its condition is false; a passing assertion is silent. Run the file to call these tests. Merely defining a <code>test_...</code> function does not execute it. Test boundaries and each branch; the nonzero examples should fail with the stub.</p>
+      <p class="note"><strong>Testing details:</strong> for approximate decimal results, use <code>from math import isclose</code> and <code>assert isclose(0.1 + 0.2, 0.3)</code>. Run normally: Python’s <code>-O</code> optimization removes assertions. Use explicit checks and exceptions for required input validation.</p>
+      <p class="sources">Official references: <a href="https://docs.python.org/3/tutorial/controlflow.html#defining-functions">Functions</a> <a href="https://docs.python.org/3/reference/simple_stmts.html#the-assert-statement">assert</a> <a href="https://docs.python.org/3/library/math.html#math.isclose">isclose</a></p>
+    </section>
+
+    <section class="sheet" id="records" aria-labelledby="records-title">
+      <div class="sheet-number">07 / Compound data</div>
+      <h2 id="records-title">Data classes carry named fields</h2>
+      <p class="lede">A Python dataclass supplies a constructor and field-based equality. Use it as a record; functions can stay outside the class.</p>
+      <h3>Define, construct, and select</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>data class Book(
+    val title: String,
+    val pages: Int
+)
+
+val book = Book(title = "Field Guide", pages = 80)
+val title = book.title
+val same = book == Book("Field Guide", 80)
+// true</code></pre></div>
+        <div class="example python"><div class="language">Python</div><pre><code>from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class Book:
+    title: str
+    pages: int
+
+book = Book(title="Field Guide", pages=80)
+title = book.title
+same = book == Book("Field Guide", 80)
+# True</code></pre></div>
+      </div>
+      <p>The <code>@dataclass</code> decorator generates record behavior from the annotated fields. <code>frozen=True</code> rejects ordinary field reassignment, resembling Kotlin <code>val</code> fields. Without it, fields can be reassigned. Annotations do not check the constructor’s argument types at runtime.</p>
+      <h3>Produce a changed copy and consume nested data</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin · reuses Book above</div><pre><code>val book = Book("Field Guide", 80)
+val longer = book.copy(pages = 96)
+// book.pages remains 80.
+
+data class Loan(
+    val book: Book,
+    val borrower: String
+)
+
+fun loanLabel(loan: Loan): String {
+    return "${loan.borrower}: ${loan.book.title}"
+}
+
+val loan = Loan(book, "Sam")
+println(loanLabel(loan))
+// Sam: Field Guide</code></pre></div>
+        <div class="example python"><div class="language">Python · reuses Book above</div><pre><code>from dataclasses import replace
+
+book = Book("Field Guide", 80)
+longer = replace(book, pages=96)
+# book.pages remains 80.
+
+@dataclass(frozen=True)
+class Loan:
+    book: Book
+    borrower: str
+
+def loan_label(loan: Loan) -&gt; str:
+    return f"{loan.borrower}: {loan.book.title}"
+
+loan = Loan(book, "Sam")
+print(loan_label(loan))
+# Sam: Field Guide</code></pre></div>
+      </div>
+      <p>Named arguments become Python keyword arguments. Dot selection works through nested records in both languages. Python dataclass equality compares fields when the two objects have the same class; <code>is</code> would instead ask whether they are the very same object.</p>
+      <p class="note"><strong>Copies and freezing are shallow.</strong> Neither a Kotlin <code>val</code> field nor a frozen Python dataclass makes a contained mutable list immutable. Kotlin <code>copy</code> and Python <code>replace</code> reuse unchanged field values; they do not recursively copy everything inside.</p>
+      <p class="sources">Official references: <a href="https://docs.python.org/3/library/dataclasses.html">dataclass, frozen records &amp; replace</a> <a href="https://kotlinlang.org/docs/data-classes.html#copying">Kotlin copies</a></p>
+    </section>
+
+    <section class="sheet" id="variants" aria-labelledby="variants-title">
+      <div class="sheet-number">08 / Sum data</div>
+      <h2 id="variants-title">Separate variants, then check the case</h2>
+      <p class="lede">Use dataclasses for the alternatives and <code>match / case</code> to distinguish them and extract their fields. Python's <a href="https://www.w3schools.com/Python/ref_keyword_is.asp">is keyword</a> means something different than Kotlin's.</p>
+      <h3>A result is either a success or a failure</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>sealed interface Result
+data class Success(val message: String) : Result
+data class Failure(val reason: String) : Result
+
+fun describe(result: Result): String {
+    return when (result) {
+        is Success -&gt; result.message
+        is Failure -&gt; "Error: ${result.reason}"
+    }
+}
+
+val ok: Result = Success("Saved")
+val bad: Result = Failure("No space")
+println(describe(ok))  // Saved
+println(describe(bad)) // Error: No space</code></pre></div>
+        <div class="example python"><div class="language">Python</div><pre><code>from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class Success:
+    message: str
+
+@dataclass(frozen=True)
+class Failure:
+    reason: str
+
+Result = Success | Failure
+
+def describe(result: Result) -&gt; str:
+    match result:
+        case Success(message):
+            return message
+        case Failure(reason):
+            return f"Error: {reason}"
+        case _:
+            raise TypeError("Unknown result")
+
+ok: Result = Success("Saved")
+bad: Result = Failure("No space")
+print(describe(ok))   # Saved
+print(describe(bad))  # Error: No space</code></pre></div>
+      </div>
+      <p><code>Success | Failure</code> is a union annotation for tools and readers. It does not close a family of variants like a sealed interface, nor prevent other values being passed at runtime. The class pattern <code>Success(message)</code> checks the variant and binds its first field to the local name <code>message</code>; <code>Failure(reason)</code> binds its first field to <code>reason</code>. These dataclasses support positional patterns in field declaration order; the local names need not match the field names. Python does not enforce exhaustive matching at runtime, so <code>case _:</code> rejects unexpected values.</p>
+      <h3>Duck typing is a different choice</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin · reuses Success</div><pre><code>fun messageText(value: Success): String {
+    return value.message
+}
+
+println(messageText(Success("Saved")))</code></pre></div>
+        <div class="example python"><div class="language">Python · reuses Success</div><pre><code>def message_text(value) -&gt; str:
+    return value.message
+
+print(message_text(Success("Saved")))
+# Any object with a usable .message works.</code></pre></div>
+      </div>
+      <p>Duck typing means using an object’s supported fields or operations without first checking its class. The class patterns above do check the class. Here, a <code>Failure</code> has no <code>message</code>, so passing it to <code>message_text</code> raises <code>AttributeError</code>. Use explicit variant matching when the alternatives require different work.</p>
+      <p class="note"><strong>Keep the data-driven template.</strong> Write one branch per variant, select only that variant’s fields, and give each branch a result. The classes above are plain data records; they need no custom methods or shared base class.</p>
+      <p class="sources">Official references: <a href="https://docs.python.org/3/tutorial/controlflow.html#match-statements">match &amp; class patterns</a> <a href="https://docs.python.org/3/library/typing.html#typing.Union">Union types</a> <a href="https://docs.python.org/3/glossary.html#term-duck-typing">Duck typing</a></p>
+    </section>
+
+    <section class="sheet" id="lists" aria-labelledby="lists-title">
+      <div class="sheet-number">09 / Collections</div>
+      <h2 id="lists-title">List&lt;T&gt; becomes list[T]</h2>
+      <p class="lede">Python’s everyday array-like collection is <code>list</code>: an ordered, resizable, mutable sequence. It is not the specialized <code>array</code> module.</p>
+      <h3>Construct, index, slice, and combine</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val scores: List&lt;Int&gt; = listOf(10, 20, 30)
+val empty: List&lt;Int&gt; = emptyList()
+scores.size               // 3
+scores[0]                 // 10
+scores.last()             // 30
+scores.take(2)            // [10, 20]
+scores.drop(1)            // [20, 30]
+20 in scores              // true
+scores.isEmpty()          // false
+val more = scores + listOf(40)
+// scores remains [10, 20, 30].</code></pre></div>
+        <div class="example python"><div class="language">Python</div><pre><code>scores: list[int] = [10, 20, 30]
+empty: list[int] = []
+len(scores)               # 3
+scores[0]                 # 10
+scores[-1]                # 30
+scores[:2]                # [10, 20]
+scores[1:]                # [20, 30]
+20 in scores              # True
+not scores                # False
+more = scores + [40]
+# scores remains [10, 20, 30].</code></pre></div>
+      </div>
+      <p>Both use index 0 for the first element. Python slices use an exclusive end. <code>+</code> creates a new list; <code>append</code> changes an existing one. Python can store mixed types in one list, but <code>list[int]</code> records your intended element type without enforcing it at runtime.</p>
+      <h3>Find, sort, and compare</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val scores = listOf(30, 10, 20)
+val found = scores.find { it &gt; 15 }
+// 30; null if nothing matches
+val ordered = scores.sorted()
+// [10, 20, 30]; scores is unchanged
+val same = listOf(1, 2) == listOf(1, 2)
+// true</code></pre></div>
+        <div class="example python"><div class="language">Python</div><pre><code>scores = [30, 10, 20]
+found = next((x for x in scores if x &gt; 15), None)
+# 30; None if nothing matches
+ordered = sorted(scores)
+# [10, 20, 30]; scores is unchanged
+same = [1, 2] == [1, 2]
+# True</code></pre></div>
+      </div>
+      <p>The parenthesized generator supplies candidates to <code>next</code> as needed; <code>None</code> is the default when none match. This works as an absence marker here because the elements are integers. List <code>==</code> compares elements in order.</p>
+      <p class="note"><strong>Read-only and mutable are different promises.</strong> Kotlin’s <code>List&lt;T&gt;</code> exposes read-only operations (a backing object can still be mutable). Python <code>list[T]</code> allows updates. To preserve the course’s functional style, produce new lists and avoid mutating inputs. An immutable sequence option is a tuple, for example <code>(10, 20, 30)</code>.</p>
+      <p class="sources">Official references: <a href="https://docs.python.org/3/tutorial/datastructures.html">Lists &amp; tuples</a> <a href="https://docs.python.org/3/library/functions.html#next">next</a> <a href="https://kotlinlang.org/docs/collections-overview.html">Kotlin collection interfaces</a></p>
+    </section>
+
+    <section class="sheet" id="higher-order" aria-labelledby="higher-order-title">
+      <div class="sheet-number">10 / Higher-order operations</div>
+      <h2 id="higher-order-title">Transform, select, and summarize</h2>
+      <p class="lede">For the comparisons below, use <code>val nums = listOf(1, 2, 3, 4)</code> in Kotlin and <code>nums = [1, 2, 3, 4]</code> in Python.</p>
+      <h3>map and filter: functions or comprehensions</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin · uses nums above</div><pre><code>val squares = nums.map { n -&gt; n * n }
+// [1, 4, 9, 16]
+val evens = nums.filter { it % 2 == 0 }
+// [2, 4]
+val evenSquares = nums
+    .filter { it % 2 == 0 }
+    .map { it * it }
+// [4, 16]</code></pre></div>
+        <div class="example python"><div class="language">Python · uses nums above</div><pre><code>squares = list(map(lambda n: n * n, nums))
+evens = list(filter(lambda n: n % 2 == 0, nums))
+
+# Usually clearer: list comprehensions.
+squares = [n * n for n in nums]
+evens = [n for n in nums if n % 2 == 0]
+even_squares = [n * n for n in nums if n % 2 == 0]
+# [1, 4, 9, 16]; [2, 4]; [4, 16]</code></pre></div>
+      </div>
+      <p>A comprehension builds a new list; its loop variable does not escape into the surrounding scope. Python <code>map</code> and <code>filter</code> return lazy iterators, consumed as you traverse them. Wrap them in <code>list(...)</code> for stored results like Kotlin’s list operations.</p>
+      <h3>any, all, and fold</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin · uses nums above</div><pre><code>val hasEven = nums.any { it % 2 == 0 }
+val allPositive = nums.all { it &gt; 0 }
+val total = nums.fold(0) { acc, n -&gt; acc + n }
+val product = nums.fold(1) { acc, n -&gt; acc * n }
+// true, true, 10, 24
+val simplerTotal = nums.sum()</code></pre></div>
+        <div class="example python"><div class="language">Python · uses nums above</div><pre><code>from functools import reduce
+
+has_even = any(n % 2 == 0 for n in nums)
+all_positive = all(n &gt; 0 for n in nums)
+total = reduce(lambda acc, n: acc + n, nums, 0)
+product = reduce(lambda acc, n: acc * n, nums, 1)
+# True, True, 10, 24
+simpler_total = sum(nums)</code></pre></div>
+      </div>
+      <p><code>any</code> and <code>all</code> short-circuit over generated Boolean values. On an empty collection, <code>any</code> is false and <code>all</code> is true in both languages. <code>reduce(function, items, initial)</code> matches a left fold: accumulator first, element second. Empty input returns the initial value; omitting it on empty input raises an error.</p>
+      <h3>Function values, references, and lambda syntax</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>fun double(n: Int): Int = n * 2
+val operation: (Int) -&gt; Int = ::double
+val triple: (Int) -&gt; Int = { n -&gt; n * 3 }
+val answer = operation(4) // 8
+val results = listOf(1, 2).map(::double)</code></pre></div>
+        <div class="example python"><div class="language">Python</div><pre><code>from typing import Callable
+
+def double(n: int) -&gt; int:
+    return n * 2
+
+operation: Callable[[int], int] = double
+triple = lambda n: n * 3
+answer = operation(4)  # 8
+results = list(map(double, [1, 2]))</code></pre></div>
+      </div>
+      <p class="note"><strong>A name passes the function; parentheses call it.</strong> Python uses <code>double</code> where Kotlin uses <code>::double</code>. A Python lambda contains exactly one expression, whose value is returned. Use <code>def</code> for multiple statements; there is no implicit <code>it</code>.</p>
+      <p class="sources">Official references: <a href="https://docs.python.org/3/library/functions.html">map, filter, any &amp; all</a> <a href="https://docs.python.org/3/library/functools.html#functools.reduce">reduce</a> <a href="https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions">Comprehensions</a></p>
+    </section>
+
+    <section class="sheet" id="mutation" aria-labelledby="mutation-title">
+      <div class="sheet-number">11 / State</div>
+      <h2 id="mutation-title">Rebinding versus changing an object</h2>
+      <p class="lede">Assignment changes what a name refers to. Mutation changes the contents of an existing object, visible through every name referring to it.</p>
+      <h3>Update numbers, list elements, and list size</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>var count = 1
+count += 2
+count++ // now 4
+
+val scores = mutableListOf(10, 20)
+scores[0] = 11
+scores.add(30)
+scores.addAll(listOf(40, 50))
+val removed = scores.removeAt(1)
+// removed is 20
+// scores is [11, 30, 40, 50]</code></pre></div>
+        <div class="example python"><div class="language">Python</div><pre><code>count = 1
+count += 2
+count += 1  # now 4; no ++ operator
+
+scores = [10, 20]
+scores[0] = 11
+scores.append(30)
+scores.extend([40, 50])
+removed = scores.pop(1)
+# removed is 20
+# scores is [11, 30, 40, 50]</code></pre></div>
+      </div>
+      <p>Python <code>append</code>, <code>extend</code>, and <code>sort</code> mutate a list and return <code>None</code>. Do not write <code>scores = scores.append(30)</code>: that loses the list binding. <code>scores.sort()</code> mutates; <code>sorted(scores)</code> returns a new list.</p>
+      <h3>Aliasing, shallow copies, and mutable fields</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val original = mutableListOf(1, 2)
+val alias = original
+val separate = original.toMutableList()
+alias.add(3)
+// original: [1, 2, 3]; separate: [1, 2]
+
+data class Counter(var value: Int)
+val counter = Counter(0)
+counter.value += 1</code></pre></div>
+        <div class="example python"><div class="language">Python</div><pre><code>from dataclasses import dataclass
+
+original = [1, 2]
+alias = original
+separate = original.copy()
+alias.append(3)
+# original: [1, 2, 3]; separate: [1, 2]
+
+@dataclass
+class Counter:
+    value: int
+
+counter = Counter(0)
+counter.value += 1</code></pre></div>
+      </div>
+      <p>Assignment does not copy an object. <code>list.copy()</code> makes a new outer list but reuses its elements. A function parameter can also refer to a caller’s list: appending through that parameter changes the caller’s list; assigning a different list to the parameter only rebinds the local name.</p>
+      <p class="note"><strong><code>+=</code> depends on the value.</strong> For a Python integer it computes a new value and rebinds the name. For a list, <code>items += [x]</code> extends the existing list, so aliases observe it. <code>items = items + [x]</code> instead binds the name to a new list.</p>
+      <p class="sources">Official references: <a href="https://docs.python.org/3/tutorial/datastructures.html#more-on-lists">List mutations</a> <a href="https://docs.python.org/3/library/copy.html">Assignment &amp; shallow copies</a> <a href="https://docs.python.org/3/reference/simple_stmts.html#augmented-assignment-statements">Augmented assignment</a></p>
+    </section>
+
+    <section class="sheet" id="loops" aria-labelledby="loops-title">
+      <div class="sheet-number">12 / Repetition &amp; input</div>
+      <h2 id="loops-title">Loop over values or a range</h2>
+      <p class="lede">Python <code>for</code> visits an iterable’s values; <code>while</code> repeats while a condition is truthy.</p>
+      <h3>Elements, indices, and a running total</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val scores = listOf(10, 20, 30)
+var total = 0
+for (score in scores) {
+    total += score
+}
+for ((index, score) in scores.withIndex()) {
+    println("$index: $score")
+}
+// total is 60.</code></pre></div>
+        <div class="example python"><div class="language">Python</div><pre><code>scores = [10, 20, 30]
+total = 0
+for score in scores:
+    total += score
+
+for index, score in enumerate(scores):
+    print(f"{index}: {score}")
+# total is 60.</code></pre></div>
+      </div>
+      <h3>Range boundaries and steps</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>for (i in 1..3) println(i)
+// 1, 2, 3
+for (i in 0 until 3) println(i)
+// 0, 1, 2
+for (i in 1..7 step 2) println(i)
+// 1, 3, 5, 7
+for (i in 3 downTo 1) println(i)
+// 3, 2, 1</code></pre></div>
+        <div class="example python"><div class="language">Python</div><pre><code>for i in range(1, 4):
+    print(i)  # 1, 2, 3
+for i in range(3):
+    print(i)  # 0, 1, 2
+for i in range(1, 8, 2):
+    print(i)  # 1, 3, 5, 7
+for i in range(3, 0, -1):
+    print(i)  # 3, 2, 1</code></pre></div>
+      </div>
+      <p><code>range(start, stop, step)</code> always excludes <code>stop</code>, including when counting downward. Defaults are start 0 and step 1. A range is an iterable sequence, not a prebuilt list; use <code>list(range(...))</code> when you need one.</p>
+      <h3>Read until a sentinel; skip and stop</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>while (true) {
+    print("Word (quit to stop): ")
+    val word = readln()
+    if (word == "quit") break
+    if (word.isEmpty()) continue
+    println(word.uppercase())
+}
+// For numeric input:
+// val age = readln().toInt()</code></pre></div>
+        <div class="example python"><div class="language">Python</div><pre><code>while True:
+    word = input("Word (quit to stop): ")
+    if word == "quit":
+        break
+    if word == "":
+        continue
+    print(word.upper())
+
+# For numeric input:
+# age = int(input("Age: "))</code></pre></div>
+      </div>
+      <p><code>input</code> returns text without the trailing newline; <code>int(...)</code> converts integer text and raises <code>ValueError</code> for invalid text. <code>break</code> exits the nearest loop; <code>continue</code> skips to its next iteration.</p>
+      <p class="note"><strong>Choose the clearest form.</strong> Use a comprehension to build a new list (sheet 10), a collection summary such as <code>sum</code> for a total, and a loop for repeated effects. Avoid adding or removing elements from the same list you are traversing; build a filtered list instead.</p>
+      <p class="sources">Official references: <a href="https://docs.python.org/3/tutorial/controlflow.html">Loops, ranges, break &amp; continue</a> <a href="https://docs.python.org/3/library/functions.html#input">input</a></p>
+    </section>
+  </main>
+  <footer class="footer"><p>CS1101 · Transfer Reference to Python · <a href="#main">Back to contents</a> · <a href="index.html">All readings</a></p></footer>
+</body>
+</html>
