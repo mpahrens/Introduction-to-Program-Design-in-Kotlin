@@ -1576,7 +1576,7 @@ data class Question(
           `sealed interface StudentBST {
     data object Leaf : StudentBST
 
-    // At every Entry:
+    // At every StudentBST.Entry:
     // left ids are smaller
     // right ids are larger
     data class Entry(
@@ -1605,20 +1605,20 @@ data class Question(
           "This is <strong>pruning</strong>: using the invariant to avoid work in a branch that cannot contain the answer.",
           `fun containsId(tree: StudentBST, target: Int): Boolean {
     return when (tree) {
-        StudentEmpty -&gt; false
-        is Entry -&gt; when {
+        is StudentBST.Leaf -&gt; false
+        is StudentBST.Entry -&gt; when {
             target == tree.id -&gt; true
             target &lt; tree.id -&gt; containsId(tree.left, target)
             else -&gt; containsId(tree.right, target)
         }
     }
 }`,
-          "Only one recursive call occurs at each Entry. Empty means the target was not found.",
+          "Only one recursive call occurs at each <code>StudentBST.Entry</code>. Reaching <code>StudentBST.Leaf</code> means the target was not found.",
           "A general binary-tree search examines both branches; a search-tree function should visibly use the invariant.",
           [
             Q("Where does a smaller target search?", "The left subtree."),
             Q("How many recursive calls occur per node?", "At most one."),
-            Q("What is the Empty answer?", "<code>false</code>.")
+            Q("What is the <code>StudentBST.Leaf</code> answer?", "<code>false</code>.")
           ]
         ),
         R(
@@ -1658,15 +1658,17 @@ data class Question(
           "lecture-16-insert-by-rebuilding.html",
           "Insert by Rebuilding the Search Path",
           "necessary",
-          "Functional insertion constructs a new leaf or copies each node along the chosen branch.",
+          "Functional insertion constructs a new entry or copies each node along the chosen branch.",
           "Preserve a search-tree invariant while returning a new tree.",
           ["copy", "invariant", "recursion"],
           "Insertion follows the same comparisons as search. At an empty position, construct a new node. At an existing node, recursively insert into one branch and copy the current node with that updated subtree.",
           "Only nodes on the search path are rebuilt; untouched subtrees can be reused.",
           `fun addId(tree: StudentBST, id: Int): StudentBST {
     return when (tree) {
-        StudentEmpty -&gt; Entry(id, StudentEmpty, StudentEmpty)
-        is Entry -&gt; when {
+        is StudentBST.Leaf -&gt; StudentBST.Entry(
+            id, StudentBST.Leaf, StudentBST.Leaf
+        )
+        is StudentBST.Entry -&gt; when {
             id &lt; tree.id -&gt; tree.copy(left = addId(tree.left, id))
             id &gt; tree.id -&gt; tree.copy(right = addId(tree.right, id))
             else -&gt; tree
@@ -1676,7 +1678,7 @@ data class Question(
           "The equality branch leaves an existing id unchanged. The other branches update exactly one copied field.",
           "Search and insertion must agree about which direction each comparison chooses.",
           [
-            Q("Where is a new node constructed?", "At <code>StudentEmpty</code>."),
+            Q("Where is a new node constructed?", "At <code>StudentBST.Leaf</code>."),
             Q("What happens for a duplicate id?", "The existing tree is returned."),
             Q("Is the original tree changed?", "No.")
           ]
@@ -1693,8 +1695,8 @@ data class Question(
           "The justification must be based on the stated ordering, not on a guess about the sample tree.",
           `fun countAtLeast(tree: StudentBST, minimum: Int): Int {
     return when (tree) {
-        StudentEmpty -&gt; 0
-        is Entry -&gt; if (tree.id &lt; minimum) {
+        is StudentBST.Leaf -&gt; 0
+        is StudentBST.Entry -&gt; if (tree.id &lt; minimum) {
             countAtLeast(tree.right, minimum)
         } else {
             1 + countAtLeast(tree.left, minimum) +

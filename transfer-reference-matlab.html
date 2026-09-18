@@ -1,0 +1,722 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A printable Kotlin-to-MATLAB reference for CS1101: scripts, functions, tests, structs, arrays, higher-order operations, updates, and loops.">
+  <title>Transfer Reference to MATLAB | CS1101</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="transfer-reference.css">
+</head>
+<body>
+  <div class="toolbar">
+    <a href="transfer-references.html">← Transfer references</a>
+    <button type="button" onclick="window.print()">Print / Save as PDF</button>
+  </div>
+  <main id="main">
+    <header class="cover">
+      <div class="eyebrow">CS1101 · Beyond Kotlin · Transfer reference 02</div>
+      <h1>Transfer Reference<br>to <span>MATLAB</span></h1>
+      <p class="intro">Keep the design habits. Think in arrays. A reference for expressing familiar Kotlin computations, tests, and data in MATLAB.</p>
+      <div class="metadata"><span>MATLAB R2020b+</span><span>No additional toolboxes</span><span>Kotlin first, MATLAB second</span><span>12 topic sheets</span></div>
+      <p>Read comparisons from left to right (top to bottom on a phone). Examples are independent unless noted otherwise. Comments show expected results. Kotlin executable statements belong inside <code>main</code>; imports and type definitions belong at file level. MATLAB file labels identify scripts and reusable function files.</p>
+      <nav aria-label="Reference contents">
+        <ol class="contents">
+          <li><a href="#start"><span>01</span> Files, running &amp; debugging</a></li>
+          <li><a href="#names"><span>02</span> Variables &amp; workspaces</a></li>
+          <li><a href="#values"><span>03</span> Numbers &amp; Booleans</a></li>
+          <li><a href="#text"><span>04</span> Strings &amp; conversions</a></li>
+          <li><a href="#decisions"><span>05</span> if, when &amp; switch</a></li>
+          <li><a href="#functions"><span>06</span> Function design &amp; testing</a></li>
+          <li><a href="#records"><span>07</span> Compound data with structs</a></li>
+          <li><a href="#variants"><span>08</span> Sum types with tags</a></li>
+          <li><a href="#lists"><span>09</span> Arrays, indexing &amp; cells</a></li>
+          <li><a href="#higher-order"><span>10</span> map, filter, any, all &amp; fold</a></li>
+          <li><a href="#mutation"><span>11</span> Updates &amp; value semantics</a></li>
+          <li><a href="#loops"><span>12</span> Loops, ranges &amp; input</a></li>
+        </ol>
+      </nav>
+      <div class="note"><strong>Carry these habits forward:</strong> state a purpose, describe inputs and outputs, write examples, inventory the data, then implement and test. In MATLAB, also ask about each input’s size and shape: one number, a row, or a column?</div>
+      <p class="screen-only">Use <strong>Print / Save as PDF</strong> for a reference copy. Choose portrait, Letter or A4, 100% scale, and turn off browser headers and footers. Each topic starts on a fresh page; this overview is the cover.</p>
+    </header>
+
+    <section class="sheet" id="start" aria-labelledby="start-title">
+      <div class="sheet-number">01 / Files, running &amp; debugging</div>
+      <h2 id="start-title">The MATLAB desktop is your IDE</h2>
+      <p class="lede">Use the Editor for code, the Command Window for commands and output, and the Workspace panel to inspect variables.</p>
+      <h3>A script can run directly</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>fun main() {
+    val name = "Gompei"
+    println("Hello, $name!")
+}</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · script hello.m</div><pre><code>name = "Gompei";
+disp("Hello, " + name + "!");
+
+% In the Command Window, run:
+% hello</code></pre></div>
+      </div>
+      <p>A plain code file ends in <code>.m</code>. A script runs its statements in order; no special <code>main</code> is required. <code>disp</code> displays a value and a newline. A semicolon suppresses automatic result display, but not an explicit <code>disp</code> call. Comments start with <code>%</code>.</p>
+      <h3>Built-in functions and formatted output</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>import kotlin.math.sqrt
+
+fun main() {
+    println(sqrt(81.0)) // 9.0
+    print("Ready")      // no newline
+}</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · script</div><pre><code>disp(sqrt(81));      % 9
+fprintf("Ready");    % no newline
+fprintf("\nScore: %.1f\n", 8.5);
+% %.1f formats one decimal place.</code></pre></div>
+      </div>
+      <ol class="steps">
+        <li><strong>Create and run:</strong> choose New Script, save <code>hello.m</code>, and click Run. Keep it in the Current Folder or on the MATLAB search path. Typing <code>hello</code> in the Command Window also runs it.</li>
+        <li><strong>Debug:</strong> click beside an executable line number to set a breakpoint. Run, inspect variables, and use Step, Step In, and Continue. <code>dbstop if error</code> pauses on an error.</li>
+        <li><strong>Get help:</strong> use <code>help sqrt</code> for a short description, <code>doc sqrt</code> for documentation, or <code>which sqrt</code> to locate the implementation.</li>
+      </ol>
+      <p class="note"><strong>Files and libraries:</strong> these examples use base MATLAB, with no imports or extra toolboxes. Reusable function files are named after their first function. Avoid naming variables or files <code>sum</code>, <code>length</code>, or other functions you intend to call. Live scripts, commonly saved as <code>.mlx</code>, combine code and formatted notes.</p>
+      <p class="sources">MathWorks references: <a href="https://www.mathworks.com/help/matlab/learn_matlab/scripts.html">Scripts</a> <a href="https://www.mathworks.com/help/matlab/matlab_prog/debugging-process-and-features.html">Debugging</a> <a href="https://www.mathworks.com/help/matlab/ref/fprintf.html">fprintf</a></p>
+    </section>
+
+    <section class="sheet" id="names" aria-labelledby="names-title">
+      <div class="sheet-number">02 / Variables &amp; workspaces</div>
+      <h2 id="names-title">Variables belong to a workspace</h2>
+      <p class="lede">An assignment creates or updates a variable. MATLAB has no ordinary val declaration.</p>
+      <h3>Assign and reassign</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val x = 3
+var count = 0
+count += 1
+// x = 4 would be a compile error.</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · script</div><pre><code>x = 3;
+count = 0;
+count = count + 1;
+x = 4;  % Reassignment is allowed.
+class(x) % 'double'
+whos x   % Show type, size, and storage.</code></pre></div>
+      </div>
+      <p>Variables have no fixed declared type: the assigned value determines their type and size. Numeric literals such as <code>3</code> normally create <code>double</code> values. Reassigning <code>x = "three"</code> is permitted, but may break later numeric computations.</p>
+      <h3>Conditional and loop blocks share the surrounding scope</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val ready = true
+val x = if (ready) {
+    val chosen = 3
+    chosen
+} else {
+    4
+}
+println(x)
+// chosen is out of scope here.</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · script</div><pre><code>ready = true;
+if ready
+    x = 3;
+else
+    x = 4;
+end
+disp(x); % 3; same workspace
+
+for item = [10 20]
+    last = item;
+end
+disp(last); % 20; still available</code></pre></div>
+      </div>
+      <p><code>if</code>, <code>for</code>, and <code>while</code> share the surrounding workspace. A variable exists afterward only if an assignment ran, or it already existed. MATLAB uses <code>end</code> to close these blocks; indentation is for readability.</p>
+      <div class="sheet-continuation">
+      <div class="sheet-number print-only">02 / Variables &amp; workspaces · continued</div>
+      <h3>Functions have separate local variables</h3>
+      <p>Save the MATLAB definition below in <code>nextCount.m</code>. Its input <code>count</code>, temporary variable <code>increment</code>, and output <code>next</code> all belong to the function’s own workspace.</p>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>fun nextCount(count: Int): Int {
+    val increment = 1
+    val next = count + increment
+    return next
+}</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · nextCount.m</div><pre><code>function next = nextCount(count)
+    increment = 1;
+    next = count + increment;
+end</code></pre></div>
+      </div>
+      <p>Put this calling code in a separate script, <code>demo_count.m</code>, in the same folder. Run that script, or enter its statements in the Command Window. The call passes a value into the function and assigns the returned value to <code>updated</code>.</p>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin · calls nextCount above</div><pre><code>fun main() {
+    val count = 3
+    val next = 100
+    val updated = nextCount(count)
+    println(listOf(count, next, updated))
+    // [3, 100, 4]
+    // increment is not in scope here.
+}</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · script demo_count.m</div><pre><code>count = 3;
+next = 100;
+updated = nextCount(count);
+disp([count next updated]); % [3 100 4]
+% increment is not available here.</code></pre></div>
+      </div>
+      <p><strong>Inside the function:</strong> it can use its parameters and variables it creates, but cannot read unrelated variables from the calling script. Even though that script has a <code>count</code>, calling <code>nextCount()</code> without an argument will fail when the function tries to use its missing input. Reassigning a numeric parameter inside MATLAB changes only the local value.</p>
+      <p><strong>Back in the caller:</strong> the function’s <code>next</code> becomes the value assigned to <code>updated</code>; it does not overwrite the caller’s separate <code>next</code>. The temporary <code>increment</code> is not exposed. If the caller already had its own <code>increment</code>, that variable would remain independent.</p>
+      <p class="note"><strong>Scripts share; ordinary functions isolate.</strong> Scripts run in the caller’s workspace. Functions in their own files, and local functions at the end of scripts, have separate workspaces. Being in the same folder or script file does not grant access to the caller’s variables. Nested functions defined inside another function have different sharing rules; the examples here use ordinary functions.</p>
+      </div>
+      <p class="sources">MathWorks references: <a href="https://www.mathworks.com/help/matlab/matlab_prog/base-and-function-workspaces.html">Workspaces</a> <a href="https://www.mathworks.com/help/matlab/ref/double.html">double</a></p>
+    </section>
+
+    <section class="sheet" id="values" aria-labelledby="values-title">
+      <div class="sheet-number">03 / Numbers &amp; Booleans</div>
+      <h2 id="values-title">Numbers are arrays, even scalars</h2>
+      <p class="lede">A scalar is a 1-by-1 array. Ordinary numeric literals are floating-point double values, even without a decimal point.</p>
+      <h3>Arithmetic and integer-like calculations</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val total = 7 + 2       // 9
+val difference = 7 - 2  // 5
+val product = 7 * 2     // 14
+val quotient = 7 / 2    // 3
+val decimal = 7.0 / 2   // 3.5
+val remainder = -7 % 2 // -1
+val truncated = (-3.8).toInt() // -3</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · script</div><pre><code>total = 7 + 2;         % 9
+difference = 7 - 2;    % 5
+product = 7 * 2;       % 14
+quotient = fix(7 / 2); % 3, still double
+decimal = 7 / 2;       % 3.5
+remainder = rem(-7, 2); % -1
+truncated = fix(-3.8); % -3, still double
+modulo = mod(-7, 2);   % 1</code></pre></div>
+      </div>
+      <p><code>fix</code> truncates toward zero; <code>floor</code> rounds down. <code>rem</code> matches the sign behavior of Kotlin’s integer <code>%</code>; <code>mod</code> can differ for negative inputs. Integer classes such as <code>int32</code> also exist, but converting a fraction to an integer class rounds rather than simply truncating. A <code>double</code> cannot represent every arbitrarily large integer exactly.</p>
+      <h3>Comparisons and scalar logic</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val age = 20
+val member = false
+val eligible = age &gt;= 18 &amp;&amp; !member
+val either = member || age &gt;= 65
+val different = age != 21
+val teen = age &gt;= 13 &amp;&amp; age &lt; 20</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · script</div><pre><code>age = 20;
+member = false;
+eligible = age &gt;= 18 &amp;&amp; ~member;
+either = member || age &gt;= 65;
+different = age ~= 21;
+teen = age &gt;= 13 &amp;&amp; age &lt; 20;</code></pre></div>
+      </div>
+      <p>Booleans have class <code>logical</code> and often display as <code>1</code> or <code>0</code>. Use <code>~</code> for not and <code>~=</code> for not equal. <code>&amp;&amp;</code> and <code>||</code> require scalar conditions and short-circuit; <code>&amp;</code> and <code>|</code> operate element by element. Do not chain comparisons as <code>13 &lt;= age &lt; 20</code>.</p>
+      <h3>Calculate separately for each element</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val xs = listOf(2.0, 4.0)
+val squares = xs.map { it * it }
+val halves = xs.map { it / 2 }
+// [4.0, 16.0]; [1.0, 2.0]</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · script</div><pre><code>xs = [2 4];
+squares = xs.^2;
+halves = xs./2;
+% [4 16]; [1 2]</code></pre></div>
+      </div>
+      <p class="note"><strong>The dots matter.</strong> Use <code>.*</code>, <code>./</code>, and <code>.^</code> for element-wise work. Without dots, these operators have linear-algebra meanings for nonscalar arrays. Corresponding-element calculations need matching shapes; compatible unequal shapes can expand the result.</p>
+      <p class="sources">MathWorks references: <a href="https://www.mathworks.com/help/matlab/matlab_prog/array-vs-matrix-operations.html">Array operators</a> <a href="https://www.mathworks.com/help/matlab/ref/double.rem.html">rem</a> <a href="https://www.mathworks.com/help/matlab/ref/int32.html">Integer conversion</a></p>
+    </section>
+
+    <section class="sheet" id="text" aria-labelledby="text-title">
+      <div class="sheet-number">04 / Strings &amp; conversions</div>
+      <h2 id="text-title">Use double quotes for string values</h2>
+      <p class="lede">MATLAB distinguishes a string scalar such as "Gompei" from a character vector such as 'Gompei'.</p>
+      <h3>Read and build text</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val name = "Gompei"
+name.length              // 6
+name.substring(0, 3)     // "Gom"
+name.lowercase()         // "gompei"
+name.startsWith("Gom")   // true
+name.contains("pei")     // true
+"  hi  ".trim()          // "hi"
+"Hi, " + name            // "Hi, Gompei"
+"$name has ${name.length} letters"</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · script</div><pre><code>name = "Gompei";
+strlength(name)           % 6
+extractBetween(name, 1, 3) % "Gom"
+lower(name)               % "gompei"
+startsWith(name, "Gom")   % true
+contains(name, "pei")     % true
+strtrim("  hi  ")         % "hi"
+"Hi, " + name             % "Hi, Gompei"
+name + " has " + string(strlength(name)) ...
+    + " letters"</code></pre></div>
+      </div>
+      <p><code>extractBetween</code> with numeric positions includes both endpoints and counts from 1. <code>...</code> continues a statement on the next line. <code>strlength</code> counts characters in each string; <code>numel(name)</code> is 1 because <code>name</code> contains one string.</p>
+      <h3>Character access, equality, and conversions</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val name = "Gompei"
+val first = name[0]       // 'G'
+val same = name == "Gompei"
+val n = "42".toDouble()   // 42.0
+val text = 42.toString()  // "42"
+val words = listOf("red", "blue")
+val word = words[0]       // "red"</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · script</div><pre><code>name = "Gompei";
+chars = char(name);
+first = chars(1);         % 'G'
+same = name == "Gompei";  % true
+n = str2double("42");     % 42
+text = string(42);        % "42"
+words = ["red" "blue"];
+word = words(1);          % "red"</code></pre></div>
+      </div>
+      <p><code>name(1)</code> selects the first <em>string</em>, not its first character. Convert to a character vector and index it, or use text extraction. <code>==</code> compares string values; for character vectors use <code>strcmp</code> to compare whole texts.</p>
+      <p class="note"><strong>Conversions and absent data:</strong> <code>str2double("hello")</code> produces <code>NaN</code>; check with <code>isnan</code>, not <code>== NaN</code>. There is no single general-purpose equivalent of Kotlin’s <code>null</code>. <code>[]</code> is an empty array, <code>""</code> is an empty-text string, and a missing string is checked with <code>ismissing</code>. Document the representation your function uses.</p>
+      <p class="sources">MathWorks references: <a href="https://www.mathworks.com/help/matlab/ref/string.html">Strings</a> <a href="https://www.mathworks.com/help/matlab/ref/string.extractbetween.html">extractBetween</a> <a href="https://www.mathworks.com/help/matlab/ref/str2double.html">str2double</a></p>
+    </section>
+
+    <section class="sheet" id="decisions" aria-labelledby="decisions-title">
+      <div class="sheet-number">05 / if, when &amp; switch</div>
+      <h2 id="decisions-title">Choose a branch, then assign a result</h2>
+      <p class="lede">Use if / elseif / else / end for conditions and switch / case / otherwise / end for value choices.</p>
+      <h3>Two choices and several conditions</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val age = 20
+val price = if (age &lt; 18) 5 else 10
+
+val score = 75
+val label = when {
+    score &gt;= 90 -&gt; "high"
+    score &gt;= 60 -&gt; "passing"
+    else -&gt; "retry"
+}</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · script</div><pre><code>age = 20;
+if age &lt; 18
+    price = 5;
+else
+    price = 10;
+end
+
+score = 75;
+if score &gt;= 90
+    label = "high";
+elseif score &gt;= 60
+    label = "passing";
+else
+    label = "retry";
+end</code></pre></div>
+      </div>
+      <p>Both choose the first satisfied condition. MATLAB’s <code>if</code> is a statement, not an expression: assign a result inside each branch. There is no direct ternary <code>if</code> expression. Prefer scalar logical conditions; a nonscalar condition is true only when it is nonempty and all its elements are nonzero.</p>
+      <h3>when with a subject becomes switch</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val signal = "go"
+val action = when (signal) {
+    "stop" -&gt; "wait"
+    "go" -&gt; "walk"
+    else -&gt; error("Unknown signal")
+}</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · script</div><pre><code>signal = "go";
+switch signal
+    case "stop"
+        action = "wait";
+    case "go"
+        action = "walk";
+    otherwise
+        error("Unknown signal");
+end</code></pre></div>
+      </div>
+      <p><code>switch</code> stops after the matching case body; there is no fall-through or need for <code>break</code>. Use <code>otherwise</code> for unexpected values. These string labels are a convention, not an enum type restricting possible inputs.</p>
+      <p class="note"><strong>Value cases are not predicate cases.</strong> For tests such as <code>score &gt;= 90</code>, use <code>if / elseif</code>. A <code>case</code> expression is compared with the switch value; it does not mean “run this case if this condition is true.” MATLAB does not require exhaustive cases.</p>
+      <p class="sources">MathWorks references: <a href="https://www.mathworks.com/help/matlab/ref/if.html">if</a> <a href="https://www.mathworks.com/help/matlab/ref/switch.html">switch</a></p>
+    </section>
+
+    <section class="sheet" id="functions" aria-labelledby="functions-title">
+      <div class="sheet-number">06 / Function design &amp; testing</div>
+      <h2 id="functions-title">Name the output in the signature</h2>
+      <p class="lede">Keep the recipe: purpose, signature and stub, examples, input inventory, implementation, and tests.</p>
+      <h3>Define and implement a function</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>/** Computes the price for count tickets. */
+fun ticketCost(
+    count: Int, discounted: Boolean
+): Int {
+    val unitPrice = if (discounted) 5 else 10
+    return count * unitPrice
+}
+val cost = ticketCost(3, true) // 15</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · ticketCost.m</div><pre><code>function cost = ticketCost(count, discounted)
+% Compute the price for count tickets.
+    if discounted
+        unitPrice = 5;
+    else
+        unitPrice = 10;
+    end
+    cost = count * unitPrice;
+end
+
+% From a script or the Command Window:
+% cost = ticketCost(3, true); % 15</code></pre></div>
+      </div>
+      <p>The output <code>cost</code> appears before <code>=</code> in the signature. Assign it before finishing. MATLAB’s <code>return</code> only exits early; it takes no result expression. A stub could assign <code>cost = 0;</code>. A function with no output omits <code>cost =</code> from its signature.</p>
+      <h3>Optional runtime input validation</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>// Inside ticketCost:
+// The signature requires Int and Boolean.
+require(count &gt;= 0)
+// Then compute the ticket cost.</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · insert before the function body</div><pre><code>arguments
+    count (1,1) double ...
+        {mustBeInteger, mustBeNonnegative}
+    discounted (1,1) logical
+end
+% Then compute the ticket cost.</code></pre></div>
+      </div>
+      <p>An <code>arguments</code> block follows the function declaration and help comments, before executable statements. <code>(1,1)</code> requires a scalar. Class and size declarations can convert compatible inputs. These are runtime requirements, not Kotlin-style compile-time types.</p>
+      <h3>Test examples with assert</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>// With Kotest shouldBe imported:
+ticketCost(0, false) shouldBe 0
+ticketCost(3, false) shouldBe 30
+ticketCost(3, true) shouldBe 15
+listOf(1, 2) shouldBe listOf(1, 2)</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · script test_ticketCost.m</div><pre><code>assert(ticketCost(0, false) == 0);
+assert(ticketCost(3, false) == 30);
+assert(ticketCost(3, true) == 15);
+assert(isequal([1 2], [1 2]));
+disp("Tests passed");</code></pre></div>
+      </div>
+      <p>Run the script with <code>ticketCost.m</code> in the Current Folder or on the path. Passing assertions are silent; failures raise errors. Use <code>isequal</code> for whole arrays or structs: array <code>==</code> produces per-element results. For decimals, use an appropriate tolerance, such as <code>assert(abs((0.1 + 0.2) - 0.3) &lt; 1e-12)</code>.</p>
+      <p class="note"><strong>File organization:</strong> name a reusable function file after its first function. Helpers used only within a script can be local functions placed after all script statements. This placement also works before R2024a, when it was required. Local functions are visible only within their file.</p>
+      <p class="sources">MathWorks references: <a href="https://www.mathworks.com/help/matlab/ref/function.html">Functions</a> <a href="https://www.mathworks.com/help/matlab/matlab_prog/function-argument-validation-1.html">Validation</a> <a href="https://www.mathworks.com/help/matlab/ref/assert.html">assert</a> <a href="https://www.mathworks.com/help/matlab/matlab_prog/local-functions-in-scripts.html">Local functions</a></p>
+    </section>
+
+    <section class="sheet" id="records" aria-labelledby="records-title">
+      <div class="sheet-number">07 / Compound data with structs</div>
+      <h2 id="records-title">Use a struct for named fields</h2>
+      <p class="lede">A struct groups fields into one value. It does not declare a new type like a Kotlin data class.</p>
+      <h3>A constructor helper, construction, and field selection</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>data class Book(
+    val title: String,
+    val pages: Int
+)
+
+val book = Book("Field Guide", 80)
+val title = book.title
+val same = book == Book("Field Guide", 80)
+// true</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · makeBook.m</div><pre><code>function book = makeBook(title, pages)
+    book = struct("title", title, ...
+                  "pages", pages);
+end
+
+% In a script or the Command Window:
+% book = makeBook("Field Guide", 80);
+% title = book.title;
+% same = isequal(book, ...
+%     makeBook("Field Guide", 80)); % true</code></pre></div>
+      </div>
+      <p><code>struct</code> takes alternating field names and values. Dot notation selects fields. A constructor helper provides one place to document and validate the representation. These values still have class <code>struct</code>; there is no automatically introduced <code>Book</code> type.</p>
+      <h3>Produce a changed copy and access nested fields</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>// Reuses Book above.
+val book = Book("Field Guide", 80)
+val longer = book.copy(pages = 96)
+
+data class Loan(
+    val book: Book, val borrower: String
+)
+val loan = Loan(book, "Sam")
+val title = loan.book.title
+// book.pages: 80; longer.pages: 96</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · script; uses makeBook.m</div><pre><code>book = makeBook("Field Guide", 80);
+longer = book;
+longer.pages = 96;
+
+loan = struct("book", book, ...
+              "borrower", "Sam");
+title = loan.book.title;
+% book.pages: 80; longer.pages: 96</code></pre></div>
+      </div>
+      <p>Ordinary structs have value semantics: updating <code>longer.pages</code> does not change <code>book.pages</code>. Unlike Kotlin <code>val</code> fields, struct fields can be reassigned or added freely. Names and field types are conventions unless your functions validate them.</p>
+      <p class="note"><strong>Pass data in, return changed data out.</strong> A helper that updates a struct should return the updated struct; assign that result in the caller. Updating an ordinary struct parameter does not mutate the caller’s variable. The course’s “produce new data” style fits naturally.</p>
+      <p class="sources">MathWorks references: <a href="https://www.mathworks.com/help/matlab/ref/struct.html">Structs</a> <a href="https://www.mathworks.com/help/matlab/ref/isequal.html">isequal</a> <a href="https://www.mathworks.com/help/matlab/matlab_prog/avoid-unnecessary-copies-of-data.html">Value copies</a></p>
+    </section>
+
+    <section class="sheet" id="variants" aria-labelledby="variants-title">
+      <div class="sheet-number">08 / Sum types with tags</div>
+      <h2 id="variants-title">Mark the variant with a tag</h2>
+      <p class="lede">Represent each alternative as a struct with a kind field. Use switch on that tag to select the appropriate fields.</p>
+      <h3>A result is either a success or a failure</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>sealed interface Result
+data class Success(val message: String) : Result
+data class Failure(val reason: String) : Result
+
+fun describe(result: Result): String {
+    return when (result) {
+        is Success -&gt; result.message
+        is Failure -&gt; "Error: ${result.reason}"
+    }
+}
+
+val ok: Result = Success("Saved")
+val bad: Result = Failure("No space")
+println(describe(ok))  // Saved
+println(describe(bad)) // Error: No space</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · script demo_result.m</div><pre><code>ok = struct("kind", "success", ...
+            "message", "Saved");
+bad = struct("kind", "failure", ...
+             "reason", "No space");
+disp(describe(ok));  % Saved
+disp(describe(bad)); % Error: No space
+
+function text = describe(result)
+    switch result.kind
+        case "success"
+            text = result.message;
+        case "failure"
+            text = "Error: " + result.reason;
+        otherwise
+            error("Unknown result kind");
+    end
+end</code></pre></div>
+      </div>
+      <p>This is a tagged representation by convention, not a sealed type. MATLAB does not prove that all variants are handled or that a success carries a <code>message</code>. An unknown tag reaches <code>otherwise</code>; a missing field causes a field-access error. Constructor helpers and tests can enforce the intended representation.</p>
+      <h3>A function can depend only on a field</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>// Reuses Success above.
+fun messageText(value: Success): String {
+    return value.message
+}</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · messageText.m</div><pre><code>function text = messageText(value)
+    text = value.message;
+end</code></pre></div>
+      </div>
+      <p>The MATLAB function accepts any struct with a suitable <code>message</code> field. This is a form of duck typing: the supported field matters rather than a declared record class. Passing the failure struct above fails because it has no <code>message</code>.</p>
+      <p class="note"><strong>A class test does not separate these variants.</strong> Both are structs, so <code>isstruct</code> or <code>isa(value, "struct")</code> cannot distinguish success from failure. Match the tag instead. MATLAB <code>switch</code> does not destructure a record or bind its fields as a pattern; select them with dot notation inside each case.</p>
+      <p class="sources">MathWorks references: <a href="https://www.mathworks.com/help/matlab/ref/struct.html">Structs</a> <a href="https://www.mathworks.com/help/matlab/ref/switch.html">switch</a> <a href="https://www.mathworks.com/help/matlab/ref/isa.html">isa</a></p>
+    </section>
+
+    <section class="sheet" id="lists" aria-labelledby="lists-title">
+      <div class="sheet-number">09 / Arrays, indexing &amp; cells</div>
+      <h2 id="lists-title">Choose an array representation</h2>
+      <p class="lede">Use numeric vectors for numbers, string arrays for text, and cell arrays for values of different types or sizes.</p>
+      <h3>A list of numbers becomes a numeric vector</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val scores = listOf(10, 20, 30)
+scores.size          // 3
+scores[0]            // 10
+scores.last()        // 30
+scores.take(2)       // [10, 20]
+scores.drop(1)       // [20, 30]
+20 in scores         // true
+scores.isEmpty()     // false
+val more = scores + listOf(40)</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · script</div><pre><code>scores = [10 20 30]; % a row vector
+numel(scores)        % 3
+scores(1)            % 10
+scores(end)          % 30
+scores(1:2)          % [10 20]
+scores(2:end)        % [20 30]
+ismember(20, scores) % true
+isempty(scores)      % false
+more = [scores 40];  % concatenate</code></pre></div>
+      </div>
+      <p>MATLAB indices start at <strong>1</strong> and use parentheses. Square brackets construct or concatenate arrays. <code>1:2</code> includes both endpoints; <code>end</code> in an index means the last position. Reading beyond the bounds is an error. <code>numel</code> counts all elements; <code>length</code> gives the largest dimension.</p>
+      <h3>Mixed values use cells; braces extract the contents</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val items: List&lt;Any&gt; =
+    listOf("Gompei", 80)
+val first = items[0] // "Gompei"
+val oneItem = items.take(1)
+// A list containing "Gompei".</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · script</div><pre><code>items = {"Gompei", 80};
+first = items{1};   % string "Gompei"
+oneItem = items(1); % a 1-by-1 cell array
+
+% Vectors have an orientation:
+row = [10 20 30];      % 1-by-3
+column = [10; 20; 30]; % 3-by-1</code></pre></div>
+      </div>
+      <p>Parentheses select cells; braces retrieve their contents. Prefer numeric vectors for homogeneous numeric lists. Row and column orientation affect concatenation and element-wise operations, so keep shapes consistent when translating list operations.</p>
+      <p class="note"><strong>Lookups need an absence convention.</strong> <code>find(scores &gt; 15, 1)</code> returns the first matching index, or <code>[]</code> if none exists. Check <code>isempty(index)</code> before using that index to retrieve a value. Kotlin’s <code>find</code> instead returns the matching element or <code>null</code>.</p>
+      <p class="sources">MathWorks references: <a href="https://www.mathworks.com/help/matlab/math/array-indexing.html">Indexing</a> <a href="https://www.mathworks.com/help/matlab/ref/cell.html">Cells</a> <a href="https://www.mathworks.com/help/matlab/ref/find.html">find</a></p>
+    </section>
+
+    <section class="sheet" id="higher-order" aria-labelledby="higher-order-title">
+      <div class="sheet-number">10 / map, filter, any, all &amp; fold</div>
+      <h2 id="higher-order-title">Use arrays and function handles</h2>
+      <p class="lede">Start with Kotlin <code>val nums = listOf(1, 2, 3, 4)</code> or MATLAB <code>nums = [1 2 3 4];</code>.</p>
+      <h3>map, lambdas, and filter</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>// Uses nums above.
+val square = { n: Int -&gt; n * n }
+val squares = nums.map(square)
+val evens = nums.filter { it % 2 == 0 }
+val evenSquares = nums
+    .filter { it % 2 == 0 }
+    .map { it * it }
+// [1, 4, 9, 16]; [2, 4]; [4, 16]</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · script</div><pre><code>% Uses nums above.
+square = @(n) n.^2;
+squares = arrayfun(square, nums);
+% Or use vectorized arithmetic:
+squares = nums.^2;
+evens = nums(mod(nums, 2) == 0);
+evenSquares = evens.^2;
+% [1 4 9 16]; [2 4]; [4 16]</code></pre></div>
+      </div>
+      <p><code>@(n) expression</code> creates an anonymous function. <code>arrayfun</code> applies a handle to each element; by default the results must be compatible scalars. Vectorized arithmetic is often simpler. A logical mask selects matching elements. MATLAB has no Python-style list comprehension.</p>
+      <h3>any, all, and common summaries</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>// Uses nums above.
+val hasEven = nums.any { it % 2 == 0 }
+val allPositive = nums.all { it &gt; 0 }
+val total = nums.sum()
+val product = nums.fold(1) { acc, n -&gt; acc * n }
+// true, true, 10, 24</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · script</div><pre><code>% Uses nums above.
+hasEven = any(mod(nums, 2) == 0, "all");
+allPositive = all(nums &gt; 0, "all");
+total = sum(nums);
+product = prod(nums);
+% true, true, 10, 24</code></pre></div>
+      </div>
+      <p><code>"all"</code> reduces across every element, regardless of shape. Empty input gives false for <code>any</code> and true for <code>all</code>. The predicate arrays are computed first; unlike Kotlin’s predicate calls, their evaluation does not stop at the first deciding element.</p>
+      <h3>A general left fold can be a small helper</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val nums = listOf(1, 2, 3, 4)
+val total = nums.fold(0) { acc, n -&gt; acc + n }
+// 10
+
+fun double(n: Int): Int = n * 2
+val operation: (Int) -&gt; Int = ::double
+val answer = operation(4) // 8</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · script with local helper</div><pre><code>nums = [1 2 3 4];
+total = foldLeft(@(acc, n) acc + n, nums, 0);
+operation = @(n) n * 2;
+answer = operation(4); % 8
+
+function acc = foldLeft(combine, xs, initial)
+    acc = initial;
+    for k = 1:numel(xs)
+        acc = combine(acc, xs(k));
+    end
+end</code></pre></div>
+      </div>
+      <p class="note"><strong>Handles are function values.</strong> Use <code>@myFunction</code> for a named function, like <code>::myFunction</code> in Kotlin. Anonymous functions contain one expression and capture current ordinary variable values when created. Use <code>cellfun</code> for cell contents. The fold helper preserves order and returns the initial value on empty input.</p>
+      <p class="sources">MathWorks references: <a href="https://www.mathworks.com/help/matlab/ref/arrayfun.html">arrayfun</a> <a href="https://www.mathworks.com/help/matlab/matlab_prog/anonymous-functions.html">Anonymous functions</a> <a href="https://www.mathworks.com/help/matlab/ref/any.html">any</a> <a href="https://www.mathworks.com/help/matlab/ref/all.html">all</a></p>
+    </section>
+
+    <section class="sheet" id="mutation" aria-labelledby="mutation-title">
+      <div class="sheet-number">11 / Updates &amp; value semantics</div>
+      <h2 id="mutation-title">Updates change a variable’s value</h2>
+      <p class="lede">MATLAB numeric arrays, strings, cells, and ordinary structs use value semantics, rather than Kotlin mutable-list aliasing.</p>
+      <h3>Update numbers, elements, and array size</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>var count = 1
+count += 2
+count++ // 4
+
+val scores = mutableListOf(10, 20)
+scores[0] = 11
+scores.add(30)
+val removed = scores.removeAt(1)
+// removed: 20; scores: [11, 30]</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · script</div><pre><code>count = 1;
+count = count + 2;
+count = count + 1; % 4; no ++ or +=
+
+scores = [10 20];
+scores(1) = 11;
+scores(end + 1) = 30;
+removed = scores(2);
+scores(2) = [];
+% removed: 20; scores: [11 30]</code></pre></div>
+      </div>
+      <p>Assigning <code>[]</code> to indexed positions deletes those elements. Writing just beyond the end grows an array. When the final size is known, preallocate with <code>zeros</code> instead of repeatedly growing the array in a loop.</p>
+      <h3>Assignment does not create a shared mutable array</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val original = mutableListOf(1, 2)
+val alias = original
+alias[0] = 99
+// original is now [99, 2].
+
+val separate = original.toMutableList()
+separate[0] = 7
+// original is still [99, 2].</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · script</div><pre><code>original = [1 2];
+separate = original;
+separate(1) = 99;
+% original is still [1 2].
+% separate is [99 2].
+
+book = struct("pages", 80);
+revised = book;
+revised.pages = 96;
+% book.pages is still 80.</code></pre></div>
+      </div>
+      <p>MATLAB may share storage internally until an update requires copying, but the observable behavior for these values is independent updates. A function that updates an ordinary array parameter must return the updated array if the caller is to receive it.</p>
+      <p class="note"><strong>This rule is about the values used here.</strong> MATLAB also has handle objects with shared-reference behavior. A struct or cell containing a handle can refer to that shared object. Ordinary numeric arrays and the simple records in this guide do not have that behavior.</p>
+      <p class="sources">MathWorks references: <a href="https://www.mathworks.com/help/matlab/matlab_prog/avoid-unnecessary-copies-of-data.html">Copy behavior</a> <a href="https://www.mathworks.com/help/matlab/math/array-indexing.html">Indexing</a> <a href="https://www.mathworks.com/help/matlab/matlab_prog/preallocating-arrays.html">Preallocation</a></p>
+    </section>
+
+    <section class="sheet" id="loops" aria-labelledby="loops-title">
+      <div class="sheet-number">12 / Loops, ranges &amp; input</div>
+      <h2 id="loops-title">Repeat over indices or a range</h2>
+      <p class="lede">A <code>for</code> loop visits a known sequence; a <code>while</code> loop repeats while a condition holds. Close each body with <code>end</code>.</p>
+      <h3>Visit values and build a result</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val scores = listOf(10, 20, 30)
+var total = 0
+for (score in scores) {
+    total += score
+}
+val squares = scores.map { it * it }
+// total: 60; squares: [100, 400, 900]</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · script</div><pre><code>scores = [10 20 30];
+total = 0;
+squares = zeros(size(scores));
+for k = 1:numel(scores)
+    total = total + scores(k);
+    squares(k) = scores(k).^2;
+end
+% total: 60; squares: [100 400 900]
+% Simpler here: sum(scores), scores.^2</code></pre></div>
+      </div>
+      <p>A MATLAB <code>for value = array</code> visits <em>columns</em>. A row vector yields one scalar at a time; a column vector yields the whole column in one iteration. The index loop above visits each element of either vector orientation.</p>
+      <h3>Ranges include reachable endpoints</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>for (i in 1..3) println(i) // 1, 2, 3
+for (i in 0 until 3) println(i) // 0, 1, 2
+for (i in 1..7 step 2) println(i)
+// 1, 3, 5, 7
+for (i in 3 downTo 1) println(i)
+// 3, 2, 1</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · script</div><pre><code>for i = 1:3
+    disp(i); % 1, 2, 3
+end
+% Other ranges:
+% 0:2    gives 0, 1, 2
+% 1:2:7  gives 1, 3, 5, 7
+% 3:-1:1 gives 3, 2, 1</code></pre></div>
+      </div>
+      <p>The order is <code>start:step:stop</code>, with step 1 if omitted. The stop value is included only if reached: <code>1:2:6</code> gives <code>[1 3 5]</code>. <code>3:1</code> is empty because its default step is positive.</p>
+      <h3>Read text until a sentinel</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>while (true) {
+    print("Word (quit to stop): ")
+    val word = readln()
+    if (word == "quit") break
+    if (word.isEmpty()) continue
+    println(word.uppercase())
+}</code></pre></div>
+        <div class="example matlab"><div class="language">MATLAB · script</div><pre><code>while true
+    word = string(input("Word: ", "s"));
+    if word == "quit"
+        break
+    end
+    if strlength(word) == 0
+        continue
+    end
+    disp(upper(word));
+end</code></pre></div>
+      </div>
+      <p class="note"><strong>Read text deliberately.</strong> <code>input(prompt, "s")</code> returns a character vector; <code>string</code> converts it to a string scalar. Without <code>"s"</code>, <code>input</code> evaluates the entered text as a MATLAB expression. For numeric text, use <code>str2double</code> and check for <code>NaN</code>. <code>break</code> exits the nearest loop; <code>continue</code> skips to its next iteration.</p>
+      <p class="sources">MathWorks references: <a href="https://www.mathworks.com/help/matlab/ref/for.html">for</a> <a href="https://www.mathworks.com/help/matlab/ref/colon.html">Ranges</a> <a href="https://www.mathworks.com/help/matlab/ref/input.html">input</a></p>
+    </section>
+
+  </main>
+  <footer class="footer"><p>CS1101 · Transfer Reference to MATLAB · <a href="#main">Back to contents</a> · <a href="index.html">All readings</a></p></footer>
+</body>
+</html>

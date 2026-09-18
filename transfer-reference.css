@@ -27,7 +27,7 @@ p { margin: 9px 0 13px; }
 .example { min-width: 0; background: #f7f8fa; padding: 13px 16px; }
 .example + .example { border-left: 1px solid var(--line); background: #f0f7f5; }
 .language { font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; color: #4e4b70; margin: 0 0 9px; }
-.python .language { color: #00635b; }
+.python .language, .matlab .language { color: #00635b; }
 .example p { font-size: .87rem; margin-bottom: 9px; }
 pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; tab-size: 4; font: .82rem/1.55 ui-monospace, SFMono-Regular, Consolas, monospace; }
 code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .91em; }
@@ -43,6 +43,7 @@ table { width: 100%; border-collapse: collapse; font-size: .88rem; margin: 12px 
 th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
 th { background: var(--wash); }
 .footer { padding: 0 12px; color: var(--muted); font-size: .84rem; text-align: center; }
+.print-only { display: none; }
 @media (max-width: 720px) {
   .toolbar { padding: 14px 16px; font-size: .85rem; }
   main { margin-inline: 10px; }
@@ -59,6 +60,8 @@ th { background: var(--wash); }
   main { max-width: none; margin: 0; }
   .cover, .sheet { border: 0; border-radius: 0; padding: 0; margin: 0; break-after: page; }
   .sheet:last-of-type { break-after: auto; }
+  .sheet-continuation { break-before: page; }
+  .print-only { display: block; }
   .cover { border-top: 4pt solid #006b68; padding-top: 12pt; }
   h1 { font-size: 40pt; margin: 14pt 0; }
   h2 { font-size: 19pt; }
