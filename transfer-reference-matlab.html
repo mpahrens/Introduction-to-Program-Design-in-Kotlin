@@ -556,7 +556,7 @@ evens = nums(mod(nums, 2) == 0);
 evenSquares = evens.^2;
 % [1 4 9 16]; [2 4]; [4 16]</code></pre></div>
       </div>
-      <p><code>@(n) expression</code> creates an anonymous function. <code>arrayfun</code> applies a handle to each element; by default the results must be compatible scalars. Vectorized arithmetic is often simpler. A logical mask selects matching elements. MATLAB has no Python-style list comprehension.</p>
+      <p><code>@(n) expression</code> creates an anonymous function. <code>arrayfun</code> applies a handle to each element; by default the results must be compatible scalars. Vectorized arithmetic is often simpler. A logical mask selects matching elements, serving the same purpose as Kotlin’s <code>filter</code>.</p>
       <h3>any, all, and common summaries</h3>
       <div class="pair">
         <div class="example kotlin"><div class="language">Kotlin</div><pre><code>// Uses nums above.
