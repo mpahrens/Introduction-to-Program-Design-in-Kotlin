@@ -1745,7 +1745,7 @@ val drinks = MenuItem(
     "Drinks",
     listOf(MenuItem("Tea", emptyList()), MenuItem("Juice", emptyList()))
 )`,
-          "The root has two direct children. Each child is a leaf because its own children list is empty.",
+          "The root has two direct children. The emptyList of nodes serves as the <em>leafs</em> of the tree, terminating each path"
           "The recursive occurrence is inside <code>List&lt;MenuItem&gt;</code>.",
           [
             Q("How is a leaf represented?", "By a MenuItem with an empty children list."),
