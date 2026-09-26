@@ -37,7 +37,7 @@
               <figcaption>In the Libraries panel, use the <strong>+</strong> button and choose <strong>From Maven</strong>.</figcaption>
             </figure>
           </li>
-          <li>Enter <code>io.kotest:kotest-assertions-core-jvm:5.5.0</code>, then add or download the library.</li>
+          <li>Enter <code>io.kotest:kotest-assertions-core-jvm:LATEST</code>, then add or download the library. You may have to change your JVM version in "File | Settings | Build, Execution, Deployment | Compiler | Kotlin Compiler" from 1.8 to 11 or later.</li>
         </ol>
         <p>Kotest should now appear in the project's <strong>External Libraries</strong> section. At the top of a Kotlin file that uses these assertions, import the names you need:</p>
         <pre><code>import io.kotest.assertions.assertSoftly

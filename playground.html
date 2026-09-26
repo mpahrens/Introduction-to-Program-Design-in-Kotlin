@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CS1101 - Soft Assertions</title>
+</head>
+<body>
+
+    <div class="kotlin-assignment">
+        <textarea>
+fun calculateSquare(x: Int) = x * x
+
+fun main() {
+    show(circle(20,"solid","red"))
+    val circles = listOf("red","green","orange","purple").map{circle(50,"solid",it)}
+    show(above(beside(circles[0],circles[1]), beside(circles[2], circles[3])))
+}
+        </textarea>
+
+        <!-- Invisible Testing Framework Upgrade -->
+        <textarea class="hidden-dependency">
+import kotlin.math.abs
+
+// State tracking for soft assertions
+private var softAssertMode = false
+private val collectedErrors = mutableListOf<String>()
+
+/**
+ * Executes a testing block, collecting errors and raising a combined exception at the end.
+ */
+fun assertSoftly(block: () -> Unit) {
+    softAssertMode = true
+    collectedErrors.clear()
+    
+    try {
+        block()
+    } finally {
+        softAssertMode = false
+        if (collectedErrors.isNotEmpty()) {
+            val failureMessage = buildString {
+                append("\n❌ assertSoftly failed with ${collectedErrors.size} assertion(s):\n")
+                collectedErrors.forEachIndexed { index, err -> 
+                    append("  ${index + 1}) $err\n") 
+                }
+            }
+            throw AssertionError(failureMessage)
+        } else {
+            println("✅ All soft assertions passed cleanly!")
+        }
+    }
+}
+
+// Internal routing helper for tests
+private fun reportFailure(message: String) {
+    if (softAssertMode) {
+        collectedErrors.add(message)
+    } else {
+        throw AssertionError("❌ Test Failed! $message")
+    }
+}
+
+// --- Extended Assertion Types ---
+
+// Standard Exact Match shouldBe
+infix fun <T> T.shouldBe(expected: T) {
+    if (this != expected) {
+        reportFailure("Expected [$expected] but got [$this]")
+    } else if (!softAssertMode) {
+        println("✅ Test Passed: Got $this")
+    }
+}
+
+// Tolerance / Floating-Point Matches
+data class ToleranceRange(val value: Double, val margin: Double)
+val Number.plusOrMinus: Double get() = this.toDouble()
+infix fun Number.plusOrMinus(margin: Number) = ToleranceRange(this.toDouble(), margin.toDouble())
+
+infix fun Number.shouldBe(range: ToleranceRange) {
+    val actual = this.toDouble()
+    val difference = abs(actual - range.value)
+    if (difference > range.margin) {
+        reportFailure("Expected [${range.value} ± ${range.margin}] but got [$actual] (drifted by $difference)")
+    } else if (!softAssertMode) {
+        println("✅ Test Passed: $actual falls within tolerance")
+    }
+}
+        </textarea>
+
+ <textarea class="hidden-dependency">
+
+import java.awt.BasicStroke
+import java.awt.Color as AwtColor
+import java.awt.Font
+import java.awt.FontMetrics
+import java.awt.Graphics2D
+import java.awt.RenderingHints
+import java.awt.Shape
+import java.awt.event.KeyAdapter
+import java.awt.event.KeyEvent
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
+import java.awt.font.FontRenderContext
+import java.awt.geom.Ellipse2D
+import java.awt.geom.Path2D
+import java.awt.geom.Rectangle2D
+import java.awt.image.BufferedImage as AwtBufferedImage
+import java.io.ByteArrayInputStream
+import java.io.File
+import java.net.URI
+import java.util.Base64
+import java.util.Locale
+import javax.imageio.ImageIO
+import javax.swing.ImageIcon
+import javax.swing.JFrame
+import javax.swing.JLabel
+import javax.swing.SwingUtilities
+import javax.swing.Timer
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.ceil
+import kotlin.math.cos
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.roundToInt
+import kotlin.math.sin
+import kotlin.math.sqrt
+import java.io.ByteArrayOutputStream
+
+
+typealias Color = AwtColor
+typealias Image = AwtBufferedImage
+
+/*
+ * A tiny, single-file Kotlin cousin of Racket's htdp2/image library.
+ *
+ * The image value is always java.awt.image.BufferedImage, so every intermediate
+ * value can be inspected directly in a debugger or displayed with show(...).
+ *
+ * Public API style:
+ *   val img = overlay(circle(50, "solid", "tomato"), square(80, "outline", "black"))
+ *   show(img)
+ */
+
+/** The default font family used by [text]. */
+const val DefaultFontName: String = "SansSerif"
+
+/** Creates a rectangle with the given [width] and [height]. [mode] is `"solid"` or `"outline"`. */
+fun rectangle(width: Int, height: Int, mode: String = "solid", color: Color = Color.BLACK): Image {
+    requirePositive(width, "width")
+    requirePositive(height, "height")
+    return drawShape(width, height, mode, color) {
+        Rectangle2D.Double(0.5, 0.5, width - 1.0, height - 1.0)
+    }
+}
+
+/** Creates a rectangle using a named or hex color string. */
+fun rectangle(width: Int, height: Int, mode: String, colorName: String): Image =
+    rectangle(width, height, mode, color(colorName))
+
+/** Creates a square with sides of [size]. [mode] is `"solid"` or `"outline"`. */
+fun square(size: Int, mode: String = "solid", color: Color = Color.BLACK): Image =
+    rectangle(size, size, mode, color)
+
+/** Creates a square using a named or hex color string. */
+fun square(size: Int, mode: String, colorName: String): Image =
+    square(size, mode, color(colorName))
+
+/** Creates a circle with the given [radius]. [mode] is `"solid"` or `"outline"`. */
+fun circle(radius: Int, mode: String = "solid", color: Color = Color.BLACK): Image {
+    requirePositive(radius, "radius")
+    val diameter = radius * 2
+    return ellipse(diameter, diameter, mode, color)
+}
+
+/** Creates a circle using a named or hex color string. */
+fun circle(radius: Int, mode: String, colorName: String): Image =
+    circle(radius, mode, color(colorName))
+
+/** Creates an ellipse that fits inside [width] by [height]. [mode] is `"solid"` or `"outline"`. */
+fun ellipse(width: Int, height: Int, mode: String = "solid", color: Color = Color.BLACK): Image {
+    requirePositive(width, "width")
+    requirePositive(height, "height")
+    return drawShape(width, height, mode, color) {
+        Ellipse2D.Double(0.5, 0.5, width - 1.0, height - 1.0)
+    }
+}
+
+/** Creates an ellipse using a named or hex color string. */
+fun ellipse(width: Int, height: Int, mode: String, colorName: String): Image =
+    ellipse(width, height, mode, color(colorName))
+
+/** Creates an equilateral triangle with side length [side]. [mode] is `"solid"` or `"outline"`. */
+fun triangle(side: Int, mode: String = "solid", color: Color = Color.BLACK): Image {
+    requirePositive(side, "side")
+    val height = ceil(side * sqrt(3.0) / 2.0).toInt()
+    val path = Path2D.Double().apply {
+        moveTo(side / 2.0, 0.5)
+        lineTo(side - 0.5, height - 0.5)
+        lineTo(0.5, height - 0.5)
+        closePath()
+    }
+    return drawShape(side, height, mode, color) { path }
+}
+
+/** Creates an equilateral triangle using a named or hex color string. */
+fun triangle(side: Int, mode: String, colorName: String): Image =
+    triangle(side, mode, color(colorName))
+
+/** Creates a right triangle that fits inside [width] by [height]. [mode] is `"solid"` or `"outline"`. */
+fun rightTriangle(width: Int, height: Int, mode: String = "solid", color: Color = Color.BLACK): Image {
+    requirePositive(width, "width")
+    requirePositive(height, "height")
+    val path = Path2D.Double().apply {
+        moveTo(0.5, 0.5)
+        lineTo(width - 0.5, height - 0.5)
+        lineTo(0.5, height - 0.5)
+        closePath()
+    }
+    return drawShape(width, height, mode, color) { path }
+}
+
+/** Creates a right triangle using a named or hex color string. */
+fun rightTriangle(width: Int, height: Int, mode: String, colorName: String): Image =
+    rightTriangle(width, height, mode, color(colorName))
+
+/** Creates a star with alternating [outerRadius] and [innerRadius] vertices. [mode] is `"solid"` or `"outline"`. */
+fun star(points: Int, outerRadius: Int, innerRadius: Int, mode: String = "solid", color: Color = Color.BLACK): Image {
+    require(points >= 2) { "points must be at least 2" }
+    requirePositive(outerRadius, "outerRadius")
+    requirePositive(innerRadius, "innerRadius")
+    val size = outerRadius * 2
+    val center = outerRadius.toDouble()
+    val path = Path2D.Double()
+    repeat(points * 2) { index ->
+        val radius = if (index % 2 == 0) outerRadius.toDouble() else innerRadius.toDouble()
+        val angle = -PI / 2.0 + index * PI / points
+        val x = center + cos(angle) * radius
+        val y = center + sin(angle) * radius
+        if (index == 0) path.moveTo(x, y) else path.lineTo(x, y)
+    }
+    path.closePath()
+    return drawShape(size, size, mode, color) { path }
+}
+
+/** Creates a star using a named or hex color string. */
+fun star(points: Int, outerRadius: Int, innerRadius: Int, mode: String, colorName: String): Image =
+    star(points, outerRadius, innerRadius, mode, color(colorName))
+
+/** Creates a regular polygon with [sides] sides, centered in a [radius] by [radius] bounding circle. */
+fun regularPolygon(sides: Int, radius: Int, mode: String = "solid", color: Color = Color.BLACK): Image {
+    require(sides >= 3) { "sides must be at least 3" }
+    requirePositive(radius, "radius")
+    val size = radius * 2
+    val center = radius.toDouble()
+    val path = Path2D.Double()
+    repeat(sides) { index ->
+        val angle = -PI / 2.0 + index * 2.0 * PI / sides
+        val x = center + cos(angle) * radius
+        val y = center + sin(angle) * radius
+        if (index == 0) path.moveTo(x, y) else path.lineTo(x, y)
+    }
+    path.closePath()
+    return drawShape(size, size, mode, color) { path }
+}
+
+/** Creates a regular polygon using a named or hex color string. */
+fun regularPolygon(sides: Int, radius: Int, mode: String, colorName: String): Image =
+    regularPolygon(sides, radius, mode, color(colorName))
+
+/** Creates an image containing a line from `(0, 0)` to `(x, y)`. */
+fun line(x: Int, y: Int, color: Color = Color.BLACK): Image {
+    val width = max(1, abs(x))
+    val height = max(1, abs(y))
+    val image = emptyImage(width, height)
+    image.graphics2D {
+        it.color = color
+        it.stroke = BasicStroke(1f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND)
+        val x1 = if (x < 0) width - 1 else 0
+        val y1 = if (y < 0) height - 1 else 0
+        val x2 = if (x < 0) 0 else width - 1
+        val y2 = if (y < 0) 0 else height - 1
+        it.drawLine(x1, y1, x2, y2)
+    }
+    return image
+}
+
+/** Creates a line image using a named or hex color string. */
+fun line(x: Int, y: Int, colorName: String): Image =
+    line(x, y, color(colorName))
+
+/** Creates an image containing [value] rendered at [size] points. */
+fun text(value: String, size: Int = 18, color: Color = Color.BLACK, fontName: String = DefaultFontName): Image {
+    requirePositive(size, "size")
+    val font = Font(fontName, Font.PLAIN, size)
+    val frc = FontRenderContext(null, true, true)
+    val bounds = font.getStringBounds(value.ifEmpty { " " }, frc)
+    val width = max(1, ceil(bounds.width).toInt() + 2)
+    val height = max(1, ceil(bounds.height).toInt() + 2)
+    val image = emptyImage(width, height)
+    image.graphics2D {
+        it.font = font
+        it.color = color
+        val metrics: FontMetrics = it.fontMetrics
+        it.drawString(value, 1, 1 + metrics.ascent)
+    }
+    return image
+}
+
+/** Creates a text image using a named or hex color string. */
+fun text(value: String, size: Int, colorName: String, fontName: String = DefaultFontName): Image =
+    text(value, size, color(colorName), fontName)
+
+/** Creates a transparent image with the given [width] and [height]. */
+fun emptyImage(width: Int = 1, height: Int = 1): Image {
+    requirePositive(width, "width")
+    requirePositive(height, "height")
+    return Image(width, height, Image.TYPE_INT_ARGB)
+}
+
+/** Creates an opaque scene filled with [color]. */
+fun emptyScene(width: Int, height: Int, color: Color = Color.WHITE): Image {
+    requirePositive(width, "width")
+    requirePositive(height, "height")
+    val image = emptyImage(width, height)
+    image.graphics2D {
+        it.color = color
+        it.fillRect(0, 0, width, height)
+    }
+    return image
+}
+
+/** Creates an opaque scene using a named or hex color string. */
+fun emptyScene(width: Int, height: Int, colorName: String): Image =
+    emptyScene(width, height, color(colorName))
+
+/** Centers [top] over [bottom], returning a new image large enough to contain both. */
+fun overlay(top: Image, bottom: Image): Image =
+    overlayAt(top, bottom, horizontal = "center", vertical = "center")
+
+/** Aligns [top] over [bottom] using `"left"`, `"center"`, or `"right"` and `"top"`, `"center"`, or `"bottom"`. */
+fun overlayAt(top: Image, bottom: Image, horizontal: String = "center", vertical: String = "center"): Image {
+    val width = max(top.width, bottom.width)
+    val height = max(top.height, bottom.height)
+    val result = emptyImage(width, height)
+    result.graphics2D {
+        it.drawImage(bottom, alignX(horizontal, width, bottom.width), alignY(vertical, height, bottom.height), null)
+        it.drawImage(top, alignX(horizontal, width, top.width), alignY(vertical, height, top.height), null)
+    }
+    return result
+}
+
+/** Places [top] over [bottom], with the arguments ordered like an underlay operation. */
+fun underlay(bottom: Image, top: Image): Image =
+    overlay(top, bottom)
+
+/** Places [top] at pixel offset ([x], [y]) relative to [bottom]'s top-left corner. */
+fun overlayXY(top: Image, x: Int, y: Int, bottom: Image): Image {
+    val left = minOf(0, x)
+    val topEdge = minOf(0, y)
+    val right = maxOf(bottom.width, x + top.width)
+    val bottomEdge = maxOf(bottom.height, y + top.height)
+    val result = emptyImage(right - left, bottomEdge - topEdge)
+    result.graphics2D {
+        it.drawImage(bottom, -left, -topEdge, null)
+        it.drawImage(top, x - left, y - topEdge, null)
+    }
+    return result
+}
+
+/** Places [images] left-to-right, vertically aligned by [vertical]. */
+fun beside(vararg images: Image, vertical: String = "center"): Image {
+    require(images.isNotEmpty()) { "beside requires at least one image" }
+    val width = images.sumOf { it.width }
+    val height = images.maxOf { it.height }
+    val result = emptyImage(width, height)
+    var x = 0
+    result.graphics2D { g ->
+        images.forEach { image ->
+            g.drawImage(image, x, alignY(vertical, height, image.height), null)
+            x += image.width
+        }
+    }
+    return result
+}
+
+/** Places [images] left-to-right using the given vertical alignment. */
+fun besideAlign(vertical: String, vararg images: Image): Image =
+    beside(*images, vertical = vertical)
+
+/** Places [images] top-to-bottom, horizontally aligned by [horizontal]. */
+fun above(vararg images: Image, horizontal: String = "center"): Image {
+    require(images.isNotEmpty()) { "above requires at least one image" }
+    val width = images.maxOf { it.width }
+    val height = images.sumOf { it.height }
+    val result = emptyImage(width, height)
+    var y = 0
+    result.graphics2D { g ->
+        images.forEach { image ->
+            g.drawImage(image, alignX(horizontal, width, image.width), y, null)
+            y += image.height
+        }
+    }
+    return result
+}
+
+/** Places [images] top-to-bottom using the given horizontal alignment. */
+fun aboveAlign(horizontal: String, vararg images: Image): Image =
+    above(*images, horizontal = horizontal)
+
+/** Places [image] into [scene] with [x] and [y] treated as the image center. */
+fun placeImage(image: Image, x: Int, y: Int, scene: Image): Image {
+    val result = scene.copy()
+    result.graphics2D {
+        it.drawImage(image, x - image.width / 2, y - image.height / 2, null)
+    }
+    return result
+}
+
+/** Places [image] into [scene], aligning [horizontal] and [vertical] to the point ([x], [y]). */
+fun placeImageAlign(
+    image: Image,
+    x: Int,
+    y: Int,
+    horizontal: String,
+    vertical: String,
+    scene: Image
+): Image {
+    val result = scene.copy()
+    val drawX = when (horizontal.lowercase()) {
+        "left" -> x
+        "right" -> x - image.width
+        "center", "middle" -> x - image.width / 2
+        else -> throw IllegalArgumentException("horizontal must be left, center, middle, or right")
+    }
+    val drawY = when (vertical.lowercase()) {
+        "top" -> y
+        "bottom" -> y - image.height
+        "center", "middle" -> y - image.height / 2
+        else -> throw IllegalArgumentException("vertical must be top, center, middle, or bottom")
+    }
+    result.graphics2D {
+        it.drawImage(image, drawX, drawY, null)
+    }
+    return result
+}
+
+/** Draws a line onto a copy of [image], leaving the original image unchanged. */
+fun addLine(image: Image, x1: Int, y1: Int, x2: Int, y2: Int, color: Color = Color.BLACK): Image {
+    val result = image.copy()
+    result.graphics2D {
+        it.color = color
+        it.stroke = BasicStroke(1f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND)
+        it.drawLine(x1, y1, x2, y2)
+    }
+    return result
+}
+
+/** Draws a line onto a copy of [image] using a named or hex color string. */
+fun addLine(image: Image, x1: Int, y1: Int, x2: Int, y2: Int, colorName: String): Image =
+    addLine(image, x1, y1, x2, y2, color(colorName))
+
+/** Draws a line onto a copy of [scene], matching Racket's scene-line naming. */
+fun sceneLine(scene: Image, x1: Int, y1: Int, x2: Int, y2: Int, color: Color = Color.BLACK): Image =
+    addLine(scene, x1, y1, x2, y2, color)
+
+/** Draws a scene line using a named or hex color string. */
+fun sceneLine(scene: Image, x1: Int, y1: Int, x2: Int, y2: Int, colorName: String): Image =
+    sceneLine(scene, x1, y1, x2, y2, color(colorName))
+
+/** Rotates [image] counterclockwise by [degrees], expanding the result so the image is not clipped. */
+fun rotate(degrees: Double, image: Image): Image {
+    val radians = Math.toRadians(degrees)
+    val sin = abs(sin(radians))
+    val cos = abs(cos(radians))
+    val width = ceil(image.width * cos + image.height * sin).toInt()
+    val height = ceil(image.width * sin + image.height * cos).toInt()
+    val result = emptyImage(width, height)
+    result.graphics2D {
+        it.translate(width / 2.0, height / 2.0)
+        it.rotate(radians)
+        it.translate(-image.width / 2.0, -image.height / 2.0)
+        it.drawImage(image, 0, 0, null)
+    }
+    return result
+}
+
+/** Scales [image] uniformly by [factor]. */
+fun scale(factor: Double, image: Image): Image =
+    scaleXY(factor, factor, image)
+
+/** Scales [image] independently in the x and y directions. */
+fun scaleXY(xFactor: Double, yFactor: Double, image: Image): Image {
+    require(xFactor > 0.0) { "xFactor must be positive" }
+    require(yFactor > 0.0) { "yFactor must be positive" }
+    val width = max(1, (image.width * xFactor).roundToInt())
+    val height = max(1, (image.height * yFactor).roundToInt())
+    val result = emptyImage(width, height)
+    result.graphics2D {
+        it.scale(xFactor, yFactor)
+        it.drawImage(image, 0, 0, null)
+    }
+    return result
+}
+
+/** Crops [image] to a new [width] by [height] image starting at ([x], [y]). */
+fun crop(x: Int, y: Int, width: Int, height: Int, image: Image): Image {
+    requirePositive(width, "width")
+    requirePositive(height, "height")
+    val result = emptyImage(width, height)
+    result.graphics2D {
+        it.drawImage(image, -x, -y, null)
+    }
+    return result
+}
+
+/** Mirrors [image] from left to right. */
+fun flipHorizontal(image: Image): Image {
+    val result = emptyImage(image.width, image.height)
+    result.graphics2D {
+        it.drawImage(image, image.width, 0, -image.width, image.height, null)
+    }
+    return result
+}
+
+/** Mirrors [image] from top to bottom. */
+fun flipVertical(image: Image): Image {
+    val result = emptyImage(image.width, image.height)
+    result.graphics2D {
+        it.drawImage(image, 0, image.height, image.width, -image.height, null)
+    }
+    return result
+}
+
+/** Draws a one-pixel frame around a copy of [image]. */
+fun frame(image: Image, color: Color = Color.BLACK): Image {
+    val result = image.copy()
+    result.graphics2D {
+        it.color = color
+        it.drawRect(0, 0, image.width - 1, image.height - 1)
+    }
+    return result
+}
+
+/** Draws a one-pixel frame using a named or hex color string. */
+fun frame(image: Image, colorName: String): Image =
+    frame(image, color(colorName))
+
+/** Returns the width of [image] in pixels. */
+fun imageWidth(image: Image): Int = image.width
+
+/** Returns the height of [image] in pixels. */
+fun imageHeight(image: Image): Int = image.height
+
+/** Saves [image] to [path], using the path extension as the image format. */
+fun saveImage(image: Image, path: String): File {
+    val file = File(path)
+    file.parentFile?.mkdirs()
+    val extension = file.extension.ifBlank { "png" }.lowercase()
+    ImageIO.write(image, extension, file)
+    return file
+}
+
+/** Reads an image file from [path]. */
+fun readImage(path: String): Image =
+    ImageIO.read(File(path))
+
+/** Reads an image by UUID from project resources, URL, or legacy Base64 literal. */
+fun img(data: String): Image {
+    val reference = data.trim()
+    require(reference.isNotBlank()) { "image reference is empty" }
+
+    if (reference.startsWith("http://", ignoreCase = true) || reference.startsWith("https://", ignoreCase = true)) {
+        return ImageIO.read(URI(reference).toURL())
+            ?: throw IllegalArgumentException("URL did not contain a supported image: $reference")
+    }
+
+    readResourceImage(reference)?.let { return it }
+
+    val encoded = if (reference.startsWith("data:", ignoreCase = true)) {
+        reference.substringAfter(",", missingDelimiterValue = "")
+    } else {
+        reference
+    }.filterNot(Char::isWhitespace)
+    return try {
+        img(Base64.getMimeDecoder().decode(encoded))
+    } catch (exception: Exception) {
+        throw IllegalArgumentException("image reference is not a known resource UUID, URL, or Base64 literal: $reference", exception)
+    }
+}
+
+/** Decodes image bytes into a [Image]. */
+fun img(bytes: ByteArray): Image =
+    ImageIO.read(ByteArrayInputStream(bytes))
+        ?: throw IllegalArgumentException("image literal is not a supported image format")
+
+private fun readResourceImage(reference: String): Image? {
+    val resourcePath = resourceImagePath(reference)
+    val loader = Thread.currentThread().contextClassLoader ?: object {}.javaClass.classLoader
+    loader?.getResourceAsStream(resourcePath)?.use { stream ->
+        return ImageIO.read(stream)
+    }
+
+    val file = listOf(
+        File("src/main/resources", resourcePath),
+        File("resources", resourcePath),
+        File("src", resourcePath),
+        File(resourcePath)
+    ).firstOrNull { it.isFile } ?: return null
+    return ImageIO.read(file)
+}
+
+private fun resourceImagePath(reference: String): String {
+    val normalized = reference.removePrefix("/").removeSuffix(".png")
+    return if (normalized.contains("/")) {
+        "$normalized.png"
+    } else {
+        "smallimage/images/$normalized.png"
+    }
+}
+
+/** Displays [image] in a small Swing window and returns the created [JFrame]. */
+fun show(image: Image, title: String = "Image") {
+    try {
+        val outputStream = ByteArrayOutputStream()
+        // Compress the image data into a light PNG byte array
+        ImageIO.write(image, "png", outputStream)
+        val imageBytes = outputStream.toByteArray()
+        
+        // Convert raw bytes to standard Base64 text string
+        val base64String = Base64.getEncoder().encodeToString(imageBytes)
+        
+        // Output clean HTML. Kotlin Playground will render this natively!
+        println("RENDER_IMAGE:::data:image/png;base64,$base64String:::RENDER_END")
+    } catch (e: Exception) {
+        println("❌ Failed to render image: ${e.message}")
+    }
+}
+
+/**
+ * Opens a Swing window and repeatedly displays images produced by [drawFrame].
+ *
+ * [drawFrame] receives the number of frames requested so far, starting at `0`. The
+ * window updates on a Swing timer at approximately [framesPerSecond]. If drawing takes
+ * longer than the timer delay, Swing coalesces pending timer events and continues with
+ * the next frame count it can render.
+ *
+ * Example:
+ *
+ * ```kotlin
+ * animate { frame ->
+ *     placeImage(circle(20, "solid", "red"), 20 + frame.toInt(), 50, emptyScene(200, 100))
+ * }
+ * ```
+ */
+fun animate(
+    title: String = "Animation",
+    framesPerSecond: Int = 15, // 15 FPS keeps log sizes small and looks fine for web
+    drawFrame: (Long) -> Image
+) {
+/*
+    require(framesPerSecond > 0) { "framesPerSecond must be positive" }
+    
+    val msPerFrame = 1000 / framesPerSecond
+    val totalSeconds = 1.5 // 1.5 seconds is plenty for a simple testing loop
+    val totalFrames = (framesPerSecond * totalSeconds).toInt()
+    
+    // 1. Alert JavaScript to set up the animation panel with the frame interval
+    println("<span style=\"display:none;\">START_ANIMATION:::$msPerFrame</span>")
+    
+    // 2. Stream individual frames immediately as they compress to avoid large memory collections
+    for (f in 0 until totalFrames) {
+        val frameTimeMs = f * msPerFrame
+        val img = drawFrame(frameTimeMs.toLong())
+        
+        val outputStream = ByteArrayOutputStream()
+        // 💡 CRITICAL: Using "jpeg" compression drastically cuts log size down by ~80% vs raw PNGs
+        ImageIO.write(img, "jpeg", outputStream)
+        val base64String = Base64.getEncoder().encodeToString(outputStream.toByteArray())
+        
+        // Print individual frame entries line-by-line
+        println("<span style=\"display:none;\">FRAME_DATA:::$f:::data:image/jpeg;base64,$base64String</span>")
+    }
+    
+    println("<span style=\"display:none;\">END_ANIMATION</span>")
+*/
+    throw UnsupportedOperationException("animate not yet implemented")
+    
+}
+/** An input event delivered to [interact]. */
+sealed interface InteractionEvent
+
+/** A mouse button press at ([x], [y]). */
+data class MousePress(val x: Int, val y: Int, val button: Int) : InteractionEvent
+
+/** A mouse button release at ([x], [y]). */
+data class MouseRelease(val x: Int, val y: Int, val button: Int) : InteractionEvent
+
+/** A mouse move at ([x], [y]) with no button information. */
+data class MouseMove(val x: Int, val y: Int) : InteractionEvent
+
+/** A key press. [keyCode] is the AWT key code, [keyChar] is the typed character when available. */
+data class KeyPress(val keyCode: Int, val keyChar: Char, val keyText: String) : InteractionEvent
+
+/** A key release. [keyCode] is the AWT key code, [keyChar] is the typed character when available. */
+data class KeyRelease(val keyCode: Int, val keyChar: Char, val keyText: String) : InteractionEvent
+
+/**
+ * Opens a Swing window that runs a small functional-reactive interaction loop.
+ *
+ * On each timer tick, [update] consumes the current state and returns the next state. On input,
+ * [handleEvent] consumes an [InteractionEvent] and the current state and returns the next state.
+ * After each tick or input event, [render] draws the current state as a [Image].
+ *
+ * Press `Ctrl+D` in the interaction window to toggle debug mode. Debug mode overlays a 50x50
+ * pixel grid, shows recent input events as toast messages, and logs `state.toString()` to the
+ * console after each render.
+ *
+ * Example:
+ *
+ * ```kotlin
+ * interact(
+ *     title = "Move",
+ *     initialState = 100,
+ *     update = { it },
+ *     render = { x -> placeImage(circle(10, "solid", "red"), x, 50, emptyScene(200, 100)) }
+ * ) { event, x ->
+ *     when (event) {
+ *         is KeyPress -> if (event.keyCode == KeyEvent.VK_RIGHT) x + 5 else x
+ *         else -> x
+ *     }
+ * }
+ * ```
+ */
+fun <T> interact(
+    title: String = "Interaction",
+    framesPerSecond: Int = 60,
+    initialState: T,
+    update: (T) -> T,
+    render: (T) -> Image,
+    handleEvent: (InteractionEvent, T) -> T
+): JFrame {
+    require(framesPerSecond > 0) { "framesPerSecond must be positive" }
+
+    var createdFrame: JFrame? = null
+    val open = Runnable {
+        createdFrame = startInteraction(title, framesPerSecond, initialState, update, render, handleEvent)
+    }
+
+    if (SwingUtilities.isEventDispatchThread()) {
+        open.run()
+    } else {
+        SwingUtilities.invokeAndWait(open)
+    }
+    return createdFrame ?: error("interaction window was not created")
+}
+
+/** Parses a named color, `#RRGGBB`, or `0xRRGGBB` string. */
+fun color(nameOrHex: String): Color {
+    val value = nameOrHex.trim().lowercase()
+    if (value.startsWith("#")) {
+        return Color.decode(value)
+    }
+    if (value.startsWith("0x")) {
+        return Color.decode(value)
+    }
+    return namedColors[value] ?: throw IllegalArgumentException("Unknown color: $nameOrHex")
+}
+
+/** Creates a color from red, green, blue, and optional alpha components in `0..255`. */
+fun color(red: Int, green: Int, blue: Int, alpha: Int = 255): Color {
+    require(red in 0..255) { "red must be in 0..255" }
+    require(green in 0..255) { "green must be in 0..255" }
+    require(blue in 0..255) { "blue must be in 0..255" }
+    require(alpha in 0..255) { "alpha must be in 0..255" }
+    return Color(red, green, blue, alpha)
+}
+
+/**
+ * Returns the ARGB pixel similarity between [first] and [second] as a value from `0.0` to `1.0`.
+ *
+ * If dimensions differ, [second] is scaled to [first]'s dimensions before comparison. Each pixel
+ * contributes the average closeness of its alpha, red, green, and blue channels.
+ */
+fun imageSimilarity(first: Image, second: Image): Double {
+    val pixelCount = first.width * first.height
+    if (pixelCount == 0) {
+        return 1.0
+    }
+
+    val normalizedSecond = if (first.width == second.width && first.height == second.height) {
+        second
+    } else {
+        scaleTo(first.width, first.height, second)
+    }
+
+    var totalDifference = 0L
+    for (y in 0 until first.height) {
+        for (x in 0 until first.width) {
+            val a = first.getRGB(x, y)
+            val b = normalizedSecond.getRGB(x, y)
+            totalDifference += abs(((a ushr 24) and 0xff) - ((b ushr 24) and 0xff))
+            totalDifference += abs(((a ushr 16) and 0xff) - ((b ushr 16) and 0xff))
+            totalDifference += abs(((a ushr 8) and 0xff) - ((b ushr 8) and 0xff))
+            totalDifference += abs((a and 0xff) - (b and 0xff))
+        }
+    }
+
+    val maximumDifference = pixelCount.toDouble() * 4.0 * 255.0
+    return 1.0 - totalDifference / maximumDifference
+}
+
+/** Scales [image] to exactly [width] by [height]. */
+fun scaleTo(width: Int, height: Int, image: Image): Image {
+    requirePositive(width, "width")
+    requirePositive(height, "height")
+    val result = emptyImage(width, height)
+    result.graphics2D {
+        it.scale(width.toDouble() / image.width, height.toDouble() / image.height)
+        it.drawImage(image, 0, 0, null)
+    }
+    return result
+}
+
+private fun startAnimation(
+    title: String,
+    framesPerSecond: Int,
+    drawFrame: (Long) -> Image
+): JFrame {
+    var frameNumber = 0L
+    val firstImage = drawFrame(frameNumber)
+    frameNumber += 1
+
+    val label = JLabel(ImageIcon(firstImage))
+    val frame = JFrame(title)
+    frame.defaultCloseOperation = JFrame.DISPOSE_ON_CLOSE
+    frame.contentPane.add(label)
+    frame.pack()
+    frame.setLocationRelativeTo(null)
+
+    val delayMillis = max(1, (1000.0 / framesPerSecond).roundToInt())
+    val timer = Timer(delayMillis, null)
+    timer.addActionListener {
+        val nextImage = drawFrame(frameNumber)
+        frameNumber += 1
+        setLabelImage(label, frame, nextImage)
+    }
+    timer.isCoalesce = true
+
+    frame.addWindowListener(object : WindowAdapter() {
+        override fun windowClosed(event: WindowEvent) {
+            timer.stop()
+        }
+    })
+
+    frame.isVisible = true
+    timer.start()
+    return frame
+}
+
+private fun <T> startInteraction(
+    title: String,
+    framesPerSecond: Int,
+    initialState: T,
+    update: (T) -> T,
+    render: (T) -> Image,
+    handleEvent: (InteractionEvent, T) -> T
+): JFrame {
+    var state = initialState
+    var debug = false
+    val toasts = mutableListOf<DebugToast>()
+    val label = JLabel(ImageIcon(render(state)))
+    val frame = JFrame(title)
+
+    fun renderState() {
+        val image = if (debug) {
+            pruneToasts(toasts)
+            println(state.toString())
+            debugOverlay(render(state), toasts)
+        } else {
+            render(state)
+        }
+        setLabelImage(label, frame, image)
+    }
+
+    fun addToast(message: String) {
+        if (debug) {
+            toasts.add(DebugToast(message, System.currentTimeMillis() + DebugToastMillis))
+            while (toasts.size > DebugToastLimit) {
+                toasts.removeAt(0)
+            }
+        }
+    }
+
+    fun toggleDebug() {
+        debug = !debug
+        toasts.clear()
+        if (debug) {
+            toasts.add(DebugToast("debug on", System.currentTimeMillis() + DebugToastMillis))
+        }
+        println("debug ${if (debug) "on" else "off"}: ${state}")
+        renderState()
+    }
+
+    fun applyEvent(event: InteractionEvent) {
+        addToast(event.toString())
+        state = handleEvent(event, state)
+        renderState()
+    }
+
+    val mouseListener = object : MouseAdapter() {
+        override fun mousePressed(event: MouseEvent) {
+            label.requestFocusInWindow()
+            applyEvent(MousePress(event.x, event.y, event.button))
+        }
+
+        override fun mouseReleased(event: MouseEvent) {
+            applyEvent(MouseRelease(event.x, event.y, event.button))
+        }
+    }
+
+    val mouseMotionListener = object : MouseAdapter() {
+        override fun mouseMoved(event: MouseEvent) {
+            applyEvent(MouseMove(event.x, event.y))
+        }
+
+        override fun mouseDragged(event: MouseEvent) {
+            applyEvent(MouseMove(event.x, event.y))
+        }
+    }
+
+    val keyListener = object : KeyAdapter() {
+        override fun keyPressed(event: KeyEvent) {
+            if (event.isControlDown && event.keyCode == KeyEvent.VK_D) {
+                toggleDebug()
+                event.consume()
+                return
+            }
+            applyEvent(KeyPress(event.keyCode, event.keyChar, KeyEvent.getKeyText(event.keyCode)))
+        }
+
+        override fun keyReleased(event: KeyEvent) {
+            applyEvent(KeyRelease(event.keyCode, event.keyChar, KeyEvent.getKeyText(event.keyCode)))
+        }
+    }
+
+    label.isFocusable = true
+    label.addMouseListener(mouseListener)
+    label.addMouseMotionListener(mouseMotionListener)
+    label.addKeyListener(keyListener)
+
+    frame.defaultCloseOperation = JFrame.DISPOSE_ON_CLOSE
+    frame.contentPane.add(label)
+    frame.pack()
+    frame.setLocationRelativeTo(null)
+
+    val delayMillis = max(1, (1000.0 / framesPerSecond).roundToInt())
+    val timer = Timer(delayMillis, null)
+    timer.addActionListener {
+        state = update(state)
+        renderState()
+    }
+    timer.isCoalesce = true
+
+    frame.addWindowListener(object : WindowAdapter() {
+        override fun windowClosed(event: WindowEvent) {
+            timer.stop()
+        }
+    })
+
+    frame.isVisible = true
+    SwingUtilities.invokeLater {
+        label.requestFocusInWindow()
+    }
+    timer.start()
+    return frame
+}
+
+private fun setLabelImage(label: JLabel, frame: JFrame, image: Image) {
+    val oldIcon = label.icon
+    val oldWidth = oldIcon?.iconWidth ?: -1
+    val oldHeight = oldIcon?.iconHeight ?: -1
+    label.icon = ImageIcon(image)
+    if (image.width != oldWidth || image.height != oldHeight) {
+        frame.pack()
+    }
+}
+
+private const val DebugGridSize = 50
+private const val DebugToastMillis = 1800L
+private const val DebugToastLimit = 6
+
+private data class DebugToast(val message: String, val expiresAtMillis: Long)
+
+private fun pruneToasts(toasts: MutableList<DebugToast>) {
+    val now = System.currentTimeMillis()
+    toasts.removeAll { it.expiresAtMillis <= now }
+}
+
+private fun debugOverlay(image: Image, toasts: List<DebugToast>): Image {
+    val result = image.copy()
+    result.graphics2D { g ->
+        drawDebugGrid(g, result.width, result.height)
+        drawDebugToasts(g, result.width, toasts)
+    }
+    return result
+}
+
+private fun drawDebugGrid(g: Graphics2D, width: Int, height: Int) {
+    g.font = Font(DefaultFontName, Font.PLAIN, 11)
+    g.color = Color(0, 120, 255, 80)
+
+    var x = 0
+    while (x < width) {
+        g.drawLine(x, 0, x, height)
+        if (x > 0) {
+            g.drawString(x.toString(), x + 3, 13)
+        }
+        x += DebugGridSize
+    }
+
+    var y = 0
+    while (y < height) {
+        g.drawLine(0, y, width, y)
+        if (y > 0) {
+            g.drawString(y.toString(), 3, y - 3)
+        }
+        y += DebugGridSize
+    }
+}
+
+private fun drawDebugToasts(g: Graphics2D, width: Int, toasts: List<DebugToast>) {
+    if (toasts.isEmpty()) {
+        return
+    }
+
+    g.font = Font(DefaultFontName, Font.PLAIN, 12)
+    val metrics = g.fontMetrics
+    val padding = 8
+    val lineHeight = metrics.height + padding
+    val maxToastWidth = max(80, width - 20)
+
+    toasts.takeLast(DebugToastLimit).forEachIndexed { index, toast ->
+        val text = toast.message.take(120)
+        val textWidth = min(metrics.stringWidth(text), maxToastWidth - padding * 2)
+        val boxWidth = textWidth + padding * 2
+        val boxHeight = lineHeight
+        val x = 10
+        val y = 10 + index * (boxHeight + 4)
+
+        g.color = Color(20, 20, 20, 190)
+        g.fillRoundRect(x, y, boxWidth, boxHeight, 8, 8)
+        g.color = Color.WHITE
+        g.drawString(text, x + padding, y + padding + metrics.ascent)
+    }
+}
+
+private fun drawShape(width: Int, height: Int, mode: String, color: Color, shape: () -> Shape): Image {
+    val image = emptyImage(width, height)
+    image.graphics2D {
+        it.color = color
+        when (mode.lowercase()) {
+            "solid" -> it.fill(shape())
+            "outline" -> {
+                it.stroke = BasicStroke(1f)
+                it.draw(shape())
+            }
+            else -> throw IllegalArgumentException("mode must be solid or outline")
+        }
+    }
+    return image
+}
+
+private fun Image.copy(): Image {
+    val result = emptyImage(width, height)
+    result.graphics2D {
+        it.drawImage(this, 0, 0, null)
+    }
+    return result
+}
+
+private fun Image.graphics2D(block: (Graphics2D) -> Unit) {
+    val g = createGraphics()
+    try {
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY)
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
+        block(g)
+    } finally {
+        g.dispose()
+    }
+}
+
+private fun alignX(horizontal: String, outer: Int, inner: Int): Int =
+    when (horizontal.lowercase()) {
+        "left" -> 0
+        "right" -> outer - inner
+        "center", "middle" -> (outer - inner) / 2
+        else -> throw IllegalArgumentException("horizontal must be left, center, middle, or right")
+    }
+
+private fun alignY(vertical: String, outer: Int, inner: Int): Int =
+    when (vertical.lowercase()) {
+        "top" -> 0
+        "bottom" -> outer - inner
+        "center", "middle" -> (outer - inner) / 2
+        else -> throw IllegalArgumentException("vertical must be top, center, middle, or bottom")
+    }
+
+private fun requirePositive(value: Int, name: String) {
+    require(value > 0) { "$name must be positive" }
+}
+
+private fun formatSimilarity(value: Double): String =
+    "%.6f".format(Locale.US, value)
+
+private val namedColors: Map<String, Color> = mapOf(
+    "transparent" to Color(0, 0, 0, 0),
+    "black" to Color.BLACK,
+    "blue" to Color.BLUE,
+    "cyan" to Color.CYAN,
+    "darkgray" to Color.DARK_GRAY,
+    "darkgrey" to Color.DARK_GRAY,
+    "gray" to Color.GRAY,
+    "grey" to Color.GRAY,
+    "green" to Color.GREEN,
+    "lightgray" to Color.LIGHT_GRAY,
+    "lightgrey" to Color.LIGHT_GRAY,
+    "magenta" to Color.MAGENTA,
+    "orange" to Color.ORANGE,
+    "pink" to Color.PINK,
+    "red" to Color.RED,
+    "white" to Color.WHITE,
+    "yellow" to Color.YELLOW,
+    "purple" to Color(128, 0, 128),
+    "brown" to Color(165, 42, 42),
+    "tomato" to Color(255, 99, 71),
+    "gold" to Color(255, 215, 0),
+    "navy" to Color(0, 0, 128),
+    "skyblue" to Color(135, 206, 235)
+)
+        </textarea>
+    </div>
+    <!-- 1. Include the playground loader script (Safe, un-automated) -->
+    <script src="https://unpkg.com/kotlin-playground@1"></script>
+
+<script>
+function getTextBetweenRegex(text, startStr, endStr) {
+    // Escape special regex characters if your substrings might contain things like ?, *, \$, etc.
+    const escapeRegExp = (string) => string.replace(/[.*+?^\${}()|[\]\\]/g, '\\$&');
+    
+    const regex = new RegExp(`${escapeRegExp(startStr)}(.*?)${escapeRegExp(endStr)}`);
+    const match = text.match(regex);
+    
+    return match ? match[1] : ""; // match[1] contains the captured text between
+}
+    document.addEventListener('DOMContentLoaded', function() {
+        KotlinPlayground('.kotlin-assignment', {
+            callback: function(targetNode, mountNode) {
+                let activePlaybackInterval = null;
+                let frameCache = [];
+                let msPerFrame = 66; // Default to ~15 FPS fallback
+                const observer = new MutationObserver(() => {
+                    const consoleElement = mountNode.querySelector('span.standard-output');
+                    if (!consoleElement) return;
+
+                    // .textContent reads right through hidden display:none span elements!
+                    const rawText = consoleElement.textContent || consoleElement.innerText;
+
+// ==========================================
+                    const htmlContent = consoleElement.innerHTML;
+
+                    // 1. Catch initialization meta-tag
+                    if (htmlContent.includes("START_ANIMATION:::")) {
+                        if (activePlaybackInterval) clearInterval(activePlaybackInterval);
+                        
+                        // Extract interval rate
+                        const match = htmlContent.match(/START_ANIMATION:::(\d+)/);
+                        if (match) {
+                            msPerFrame = parseInt(match[1], 10);
+                        }
+                        frameCache = []; // Flush old frame references
+                    }
+
+                    // 2. Aggregate frame stream pieces incrementally
+                    if (htmlContent.includes("FRAME_DATA:::")) {
+                        // Scan for all generated frames hidden in the current text tree
+                        const frameRegex = /FRAME_DATA:::(\d+):::(data:image\/jpeg;base64,[A-Za-z0-9+/=\s]+)/g;
+                        let frameMatch;
+                        
+                        while ((frameMatch = frameRegex.exec(htmlContent)) !== null) {
+                            const frameIndex = parseInt(frameMatch[1], 10);
+                            const base64Data = frameMatch[2].trim().replace(/(&lt;br&gt;|<br>)/g, '');
+                            
+                            // Save safely inside our browser-side cache index arrays
+                            frameCache[frameIndex] = base64Data;
+                        }
+                    }
+
+                    // 3. Kick off playback loop once the streaming sequence completes
+                    if (htmlContent.includes("END_ANIMATION") && frameCache.length > 0 && !activePlaybackInterval) {
+                        let canvasImg = consoleElement.querySelector('.custom-rendered-canvas');
+                        
+                        if (!canvasImg) {
+                            const wrapperDiv = document.createElement('div');
+                            wrapperDiv.style.marginTop = "12px";
+                            wrapperDiv.style.borderTop = "1px dashed #ccc";
+                            wrapperDiv.style.paddingTop = "8px";
+
+                            wrapperDiv.innerHTML = `
+                                <div style="color: #1565c0; font-weight: bold; font-family: sans-serif; margin-bottom: 6px; font-size: 13px;">
+                                    🎬 Animation Running Loop:
+                                </div>
+                                <img class="custom-rendered-canvas" src="${frameCache[0]}" style="border: 2px solid #1565c0; border-radius: 4px; display: block; max-width: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" />
+                            `;
+                            consoleElement.appendChild(wrapperDiv);
+                            canvasImg = wrapperDiv.querySelector('.custom-rendered-canvas');
+                        }
+
+                        let currentFrame = 0;
+                        activePlaybackInterval = setInterval(() => {
+                            if (canvasImg && frameCache[currentFrame]) {
+                                canvasImg.src = frameCache[currentFrame];
+                                currentFrame = (currentFrame + 1) % frameCache.length;
+                            }
+                        }, msPerFrame);
+                    }
+
+// ================================
+                    if (rawText.includes("RENDER_IMAGE:::")) {
+                        const base64Payload = getTextBetweenRegex(rawText,"RENDER_IMAGE:::",":::RENDER_END").trim();
+			console.log(consoleElement)
+			consoleElement.innerHTML = consoleElement.innerHTML.replace("RENDER_IMAGE:::"+base64Payload+":::RENDER_END",
+                          `<img class="custom-rendered-canvas" src="${base64Payload}" style=" display: block; max-width: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" />`)
+                        
+                    }
+                });
+
+                observer.observe(mountNode, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>
