@@ -303,7 +303,7 @@ const CS1101_RESOURCE_LINKS = {
   ethereumMerkle: ["Ethereum.org: Merkle Patricia Tries", "https://ethereum.org/developers/docs/data-structures-and-encoding/patricia-merkle-trie/"],
   intellijRun: ["IntelliJ IDEA Help: Run applications", "https://www.jetbrains.com/help/idea/running-applications.html"],
   kotest: ["Kotest Documentation: Core matchers", "https://kotest.io/docs/assertions/core-matchers.html"],
-  designRecipe: ["Northeastern CS2500: The Design Recipe", "https://course.khoury.northeastern.edu/cs2500/design_recipe.html"],
+  designRecipe: ["How to Design Programs: Systematic Design", "https://htdp.org/2026-5-28//Book/part_preface.html#%28part._sec~3asystematic-design%29"],
   recursion: ["Wikipedia: Recursion (computer science)", "https://en.wikipedia.org/wiki/Recursion_(computer_science)"],
   binaryTree: ["Wikipedia: Binary tree", "https://en.wikipedia.org/wiki/Binary_tree"],
   binarySearchTree: ["Wikipedia: Binary search tree", "https://en.wikipedia.org/wiki/Binary_search_tree"],

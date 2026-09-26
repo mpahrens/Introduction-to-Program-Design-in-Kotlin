@@ -179,6 +179,7 @@ function renderReading(set, reading) {
               </div>
             </details>
           </div>
+          ${reading.footnote ? `<p class="reading-footnote"><small>${reading.footnote}</small></p>` : ""}
         </article>
 
         <nav class="lesson-nav${showNextOptions ? " lesson-nav-with-options" : ""}">
