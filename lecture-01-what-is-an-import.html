@@ -6,7 +6,10 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <title>Lecture 1: What Is an Import?</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="kotlin-editor.css">
   <script src="glossary.js" defer></script>
+  <script src="https://unpkg.com/kotlin-playground@1" defer></script>
+  <script src="kotlin-editor.js" defer></script>
 </head>
 <body>
   <header class="site-header">
@@ -31,11 +34,14 @@
 
         <h2>Bring One Name into the File</h2>
         <p>An <span class="term" data-term="import">import</span> line makes a library name available in the current Kotlin file. Import lines go near the top, before function definitions.</p>
-        <pre><code>import kotlin.math.sqrt
+        <figure class="kotlin-example" aria-label="An import example you can change and run">
+          <figcaption>Try it <span>Run the program, then change 81.0 to another number and try again.</span></figcaption>
+          <pre data-kotlin-editor aria-label="Import example"><code>import kotlin.math.sqrt
 
 fun main() {
     println(sqrt(81.0))
 }</code></pre>
+        </figure>
         <p>The imported name is <code>sqrt</code>, a function that computes a square root. Once it is imported, the program can call <code>sqrt(81.0)</code> by its short name.</p>
 
         <h2>An Import Does Not Run the Function</h2>

@@ -6,7 +6,10 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <title>Lecture 1: Unit Testing with Kotest's shouldBe</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="kotlin-editor.css">
   <script src="glossary.js" defer></script>
+  <script src="https://unpkg.com/kotlin-playground@1" defer></script>
+  <script src="kotlin-editor.js" defer></script>
 </head>
 <body>
   <header class="site-header">
@@ -65,6 +68,26 @@ import io.kotest.matchers.shouldBe</code></pre>
     2.0 / 3.0 shouldBe (0.667 plusOrMinus 0.001)
 }</code></pre>
         <p>The ordinary <code>shouldBe</code> checks exact equality. Use <code>plusOrMinus</code> only when a <code>Double</code> result is expected to be close to a value rather than exactly equal to it.</p>
+
+        <h2>Try It: Find and Fix Two Failing Expectations</h2>
+        <p>This example has three <code>shouldBe</code> statements inside one <code>assertSoftly</code> block. The first passes, but the other two deliberately do not meet their expectations. The editor already includes the testing helpers, so you can run it here without installing or importing anything.</p>
+        <figure class="kotlin-example" aria-label="Three grouped tests with two expectations to fix">
+          <figcaption>Your turn <span>Run the tests, observe the error reports, then fix the expressions on the left to meet the expected answers.</span></figcaption>
+          <pre data-kotlin-editor data-kotlin-dependencies="kotlin-dependencies/kotest-mini.kt" aria-label="Fix failing expectations"><code>fun main() {
+    assertSoftly {
+        4 * 3 shouldBe 12
+        7 - 2 shouldBe 6
+        9.0 / 4.0 shouldBe (2.0 plusOrMinus 0.01)
+    }
+}</code></pre>
+        </figure>
+        <h3>What Do the Errors Mean?</h3>
+        <p>After the first run, look for <code>assertSoftly failed with 2 assertion(s)</code>. The report contains both mismatches:</p>
+        <ul>
+          <li><code>Expected [6] but got [5]</code>: <code>7 - 2</code> produces <code>5</code>, so the exact expectation is wrong.</li>
+          <li><code>Expected [2.0 ± 0.01] but got [2.25] (drifted by 0.25)</code>: <code>9.0 / 4.0</code> produces <code>2.25</code>, which is outside the expected range from <code>1.99</code> to <code>2.01</code>.</li>
+        </ul>
+        <p>The first statement produces <code>12</code> as expected, so it does not appear in the failure report. These are what test failures do: the code compiled, it ran, but it did not match our expectations showing us potential bugs 🐞🐞🐞.</p>
 
         <div class="practice">
           <h2>Practice</h2>

@@ -6,7 +6,10 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <title>Lecture 1: What Is a String Object?</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="kotlin-editor.css">
   <script src="glossary.js" defer></script>
+  <script src="https://unpkg.com/kotlin-playground@1" defer></script>
+  <script src="kotlin-editor.js" defer></script>
 </head>
 <body>
   <header class="site-header">
@@ -28,20 +31,35 @@
       <article class="reading-block">
         <h2>Text Is More Than Characters</h2>
         <p>A String is an <span class="term" data-term="object">object</span>: a value that carries information and operations together. Dot notation asks the object for one of those pieces.</p>
-        <pre><code>val language = "Kotlin"
+        <figure class="kotlin-example" aria-label="String operations you can change and run">
+          <figcaption>Try it <span>Predict the three results, then run. Try another String with at least four characters.</span></figcaption>
+          <pre data-kotlin-editor aria-label="String operations"><code>fun main() {
+    val language = "Kotlin"
 
-language.length
-language.uppercase()
-language.substring(1, 4)</code></pre>
+    println(language.length)
+    println(language.uppercase())
+    println(language.substring(1, 4))
+}</code></pre>
+        </figure>
 
         <h2>Properties Hold Information</h2>
-        <p>A <span class="term" data-term="property">property</span> is information available on an object. The <code>length</code> property tells how many characters are in a String. It uses no parentheses:</p>
-        <pre><code>"Kotlin".length   // 6</code></pre>
+        <p>A <span class="term" data-term="property">property</span> is information available on an object. The <code>length</code> property tells how many characters are in a String. There are no parentheses after <code>length</code>; the surrounding <code>println(...)</code> displays its value:</p>
+        <figure class="kotlin-example" aria-label="A String property you can change and run">
+          <figcaption>Try it <span>Change the text and run to see its length.</span></figcaption>
+          <pre data-kotlin-editor aria-label="String length"><code>fun main() {
+    println("Kotlin".length)   // 6
+}</code></pre>
+        </figure>
 
         <h2>Methods Perform Operations</h2>
-        <p>A <span class="term" data-term="method">method</span> is a <span class="term" data-term="function">function</span> attached to an object. A method call uses parentheses, which may contain arguments.</p>
-        <pre><code>"Kotlin".uppercase()        // "KOTLIN"
-"Kotlin".substring(1, 4)    // "otl"</code></pre>
+        <p>A <span class="term" data-term="method">method</span> is a <span class="term" data-term="function">function</span> attached to an object. A method call uses dot-notation after the object argument like <code>obj.m(...)</code> instead of typical function syntax <code>f(obj, ...)</code>, where <code>...</code> is a placeholder for additional arguments.</p>
+        <figure class="kotlin-example" aria-label="String methods you can change and run">
+          <figcaption>Try it <span>Run the methods, then try different substring positions.</span></figcaption>
+          <pre data-kotlin-editor aria-label="String methods"><code>fun main() {
+    println("Kotlin".uppercase())        // "KOTLIN"
+    println("Kotlin".substring(1, 4))    // "otl"
+}</code></pre>
+        </figure>
         <p>Character positions are called <span class="term" data-term="index">indexes</span>, and String indexes begin at 0. For <code>substring(1, 4)</code>, position 1 is included but position 4 is not. It takes indexes 1, 2, and 3.</p>
         <pre><code>K o t l i n
 0 1 2 3 4 5</code></pre>
@@ -65,9 +83,12 @@ language.substring(1, 4)</code></pre>
         </div>
       </article>
 
-      <nav class="lesson-nav">
+      <nav class="lesson-nav lesson-nav-with-options">
         <a href="lecture-01-immutable-val.html">Previous: Immutable val</a>
-        <a href="lecture-02-functions-tests-helpers.html">Next: Lecture 2</a>
+        <div class="lesson-nav-next">
+          <a href="lecture-02-functions-tests-helpers.html">Next: Lecture 2 reading set</a>
+          <a href="lecture-01-reading-library-paths.html">Next optional: Read a Library Path</a>
+        </div>
       </nav>
     </section>
 

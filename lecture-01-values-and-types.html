@@ -6,7 +6,10 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <title>Lecture 1: Values Have Types</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="kotlin-editor.css">
   <script src="glossary.js" defer></script>
+  <script src="https://unpkg.com/kotlin-playground@1" defer></script>
+  <script src="kotlin-editor.js" defer></script>
 </head>
 <body>
   <header class="site-header">
@@ -37,8 +40,14 @@ true        // Boolean</code></pre>
         <h2>Appearance Matters</h2>
         <p>The values <code>12</code>, <code>12.0</code>, and <code>"12"</code> look related to a person, but Kotlin gives them different types. The decimal point makes <code>12.0</code> a <code>Double</code>. The quotation marks make <code>"12"</code> a <code>String</code>.</p>
         <p>Types prevent nonsensical operations. Adding two numbers makes sense. Asking whether one number is smaller than another makes sense. Kotlin uses the types involved to decide whether an operation is allowed and what kind of value it produces.</p>
-        <pre><code>12 + 3       // produces the Int value 15
-12 &lt; 20      // produces the Boolean value true</code></pre>
+        <figure class="kotlin-example" aria-label="Expressions you can change and run">
+          <figcaption>Try it <span>Predict the results, then run. Change the values and try again.</span></figcaption>
+          <pre data-kotlin-editor aria-label="Values and types"><code>fun main() {
+    println(12 + 3)     // produces the Int value 15
+    println(12 &lt; 20)   // produces the Boolean value true
+    // println("12" < 20) // error due to type mismatch. Uncomment it and see
+}</code></pre>
+        </figure>
 
         <div class="practice">
           <h2>Practice</h2>

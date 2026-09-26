@@ -101,6 +101,14 @@ function renderReading(set, reading) {
   const previousLabel = previous ? `Previous: ${previous.shortTitle || previous.title}` : `${set.lecture} contents`;
   const nextHref = next?.file || set.nextHref;
   const nextLabel = next ? `Next: ${next.shortTitle || next.title}` : set.nextLabel;
+  const lastNecessary = set.readings.filter((item) => item.status === "necessary").at(-1);
+  const firstOptional = set.readings.find((item) => item.status === "optional");
+  const showNextOptions = reading === lastNecessary && firstOptional;
+  const nextLinks = showNextOptions ? `
+          <div class="lesson-nav-next">
+            <a href="${set.nextHref}">${set.nextHref === "index.html" ? set.nextLabel : `Next: ${set.nextLabel}`}</a>
+            <a href="${firstOptional.file}">Next optional: ${firstOptional.shortTitle || firstOptional.title}</a>
+          </div>` : `<a href="${nextHref}">${nextLabel}</a>`;
 
   document.getElementById("reading-app").innerHTML = `
     <header class="site-header">
@@ -145,9 +153,9 @@ function renderReading(set, reading) {
           </div>
         </article>
 
-        <nav class="lesson-nav">
+        <nav class="lesson-nav${showNextOptions ? " lesson-nav-with-options" : ""}">
           <a href="${previousHref}">${previousLabel}</a>
-          <a href="${nextHref}">${nextLabel}</a>
+          ${nextLinks}
         </nav>
       </section>
 

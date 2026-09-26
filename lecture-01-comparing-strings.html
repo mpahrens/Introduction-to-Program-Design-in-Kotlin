@@ -6,7 +6,10 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <title>Lecture 1 Optional: Comparing Strings</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="kotlin-editor.css">
   <script src="glossary.js" defer></script>
+  <script src="https://unpkg.com/kotlin-playground@1" defer></script>
+  <script src="kotlin-editor.js" defer></script>
 </head>
 <body>
   <header class="site-header">
@@ -28,16 +31,31 @@
       <article class="reading-block">
         <h2>Equality Is Exact</h2>
         <p>The <code>==</code> operator asks whether two String values contain the same characters in the same order. The comparison is case-sensitive.</p>
-        <pre><code>"Ada" == "Ada"   // true
-"Ada" == "ada"   // false
-"Ada" != "Grace" // true</code></pre>
+        <figure class="kotlin-example" aria-label="String equality comparisons you can change and run">
+          <figcaption>Try it <span>Predict each result, then run. Change the text or capitalization and try again.</span></figcaption>
+          <pre data-kotlin-editor aria-label="String equality"><code>fun main() {
+    println("Ada" == "Ada")   // true
+    println("Ada" == "ada")   // false
+    println("Ada" != "Grace") // true
+}</code></pre>
+        </figure>
         <p>Each comparison is an <span class="term" data-term="expression">expression</span> that produces a <span class="term" data-term="boolean">Boolean</span> value.</p>
 
         <h2>Ordering Uses Character Order</h2>
         <p>Kotlin can also compare Strings with <code>&lt;</code> and <code>&gt;</code>. This resembles dictionary order, but computer character ordering also distinguishes uppercase and lowercase characters.</p>
-        <pre><code>"ant" &lt; "bee"   // true</code></pre>
+        <figure class="kotlin-example" aria-label="String ordering you can change and run">
+          <figcaption>Try it <span>Run the comparison, then swap the two words and run again.</span></figcaption>
+          <pre data-kotlin-editor aria-label="String ordering"><code>fun main() {
+    println("ant" &lt; "bee")   // true
+}</code></pre>
+        </figure>
         <p>For human-facing text, you may want to ignore capitalization. The <code>compareTo</code> method can do that with a named argument:</p>
-        <pre><code>"Ada".compareTo("ada", ignoreCase = true)   // 0</code></pre>
+        <figure class="kotlin-example" aria-label="A case-insensitive comparison you can change and run">
+          <figcaption>Try it <span>Run, then change ignoreCase to false and compare the result.</span></figcaption>
+          <pre data-kotlin-editor aria-label="Case-insensitive comparison"><code>fun main() {
+    println("Ada".compareTo("ada", ignoreCase = true))   // 0
+}</code></pre>
+        </figure>
         <p>A result of zero means the Strings compare as equal under the chosen rule. The phrase <code>ignoreCase = true</code> names the argument, making its purpose visible.</p>
 
         <h2>Choose the Comparison That Matches the Question</h2>
@@ -61,9 +79,12 @@
         </div>
       </article>
 
-      <nav class="lesson-nav">
+      <nav class="lesson-nav lesson-nav-with-options">
         <a href="lecture-01-reading-library-paths.html">Previous: Library Paths</a>
-        <a href="lecture-02-functions-tests-helpers.html">Next: Lecture 2</a>
+        <div class="lesson-nav-next">
+          <a href="lecture-02-functions-tests-helpers.html">Next: Lecture 2 reading set</a>
+          <a href="lecture-01-why-foundations-matter.html">Next optional: Programming Foundations</a>
+        </div>
       </nav>
     </section>
 

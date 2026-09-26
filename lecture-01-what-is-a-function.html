@@ -6,7 +6,10 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <title>Lecture 1: What Is a Function?</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="kotlin-editor.css">
   <script src="glossary.js" defer></script>
+  <script src="https://unpkg.com/kotlin-playground@1" defer></script>
+  <script src="kotlin-editor.js" defer></script>
 </head>
 <body>
   <header class="site-header">
@@ -28,9 +31,12 @@
       <article class="reading-block">
         <h2>A Named Part of a Program</h2>
         <p>A <span class="term" data-term="function">function</span> is a named computation or action. This definition creates a function named <code>main</code>:</p>
-        <pre><code>fun main() {
+        <figure class="kotlin-example" aria-label="A function definition you can run">
+          <figcaption>Try it <span>Run the program to see its output.</span></figcaption>
+          <pre data-kotlin-editor aria-label="Function definition"><code>fun main() {
     println("Ready to begin")
 }</code></pre>
+        </figure>
         <p>The keyword <code>fun</code> tells Kotlin that a function is being defined. The name comes next. The parentheses will eventually hold information the function needs. The curly braces enclose the <span class="term" data-term="function-body">function body</span>: the <span class="term" data-term="statement">statements</span> to perform when the function runs.</p>
 
         <h2><code>main</code> Is the Starting Function</h2>
@@ -38,8 +44,13 @@
 
         <h2>Calling Another Function</h2>
         <p>The line inside <code>main</code> is a <span class="term" data-term="call">function call</span>. It asks the existing <code>println</code> function to run. The text inside the parentheses is an <span class="term" data-term="argument">argument</span>: a value supplied to the function.</p>
-        <pre><code>println("Ready to begin")
-// name     argument</code></pre>
+        <figure class="kotlin-example" aria-label="A function call you can change and run">
+          <figcaption>Your turn <span>Change the text in quotes, then run again.</span></figcaption>
+          <pre data-kotlin-editor aria-label="Function call"><code>fun main() {
+    println("1 + 2 = " + (1 + 2))
+    // name     argument
+}</code></pre>
+        </figure>
         <p>Here, <code>println</code> displays its argument and then moves to a new line. Defining a function describes what it does. Calling a function asks it to do that work now.</p>
 
         <div class="practice">

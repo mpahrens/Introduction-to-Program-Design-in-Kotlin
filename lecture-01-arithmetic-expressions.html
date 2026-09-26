@@ -6,7 +6,10 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <title>Lecture 1: Arithmetic Expressions in Kotlin</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="kotlin-editor.css">
   <script src="glossary.js" defer></script>
+  <script src="https://unpkg.com/kotlin-playground@1" defer></script>
+  <script src="kotlin-editor.js" defer></script>
 </head>
 <body>
   <header class="site-header">
@@ -28,21 +31,36 @@
       <article class="reading-block">
         <h2>Expressions Produce Values</h2>
         <p>An <span class="term" data-term="expression">expression</span> is code that produces a value. A number by itself is an expression, and arithmetic can combine smaller expressions into a larger one.</p>
-        <pre><code>18 + 7
-6 * 5
-(10 - 4) * 3</code></pre>
+        <figure class="kotlin-example" aria-label="Arithmetic expressions you can change and run">
+          <figcaption>Try it <span>Predict each result, then run. Change the numbers and try again.</span></figcaption>
+          <pre data-kotlin-editor aria-label="Arithmetic expressions"><code>fun main() {
+    println(18 + 7)
+    println(6 * 5)
+    println((10 - 4) * 3)
+}</code></pre>
+        </figure>
         <p>The symbols <code>+</code>, <code>-</code>, <code>*</code>, and <code>/</code> are <span class="term" data-term="operator">operators</span>. Parentheses group the part that should be computed first, just as they do in mathematics.</p>
 
         <h2>The Number Types Affect Division</h2>
         <p>When both values are <code>Int</code>s, division produces an <code>Int</code> and discards any fractional part. When a <code>Double</code> is involved, the result can include a decimal part.</p>
-        <pre><code>17 / 5       // 3
-17.0 / 5.0   // 3.4</code></pre>
+        <figure class="kotlin-example" aria-label="Division expressions you can change and run">
+          <figcaption>Try it <span>Compare integer and decimal division, then try different values.</span></figcaption>
+          <pre data-kotlin-editor aria-label="Division expressions"><code>fun main() {
+    println(17 / 5)       // 3
+    println(17.0 / 5.0)   // 3.4
+}</code></pre>
+        </figure>
         <p>This is not rounding: integer division keeps the whole-number quotient.</p>
 
         <h2>Remainder Is Also Called Modulo</h2>
         <p>The <code>%</code> operator produces the remainder after division. It is also called <strong>modulo</strong>.</p>
-        <pre><code>17 % 5       // 2
-24 % 6       // 0</code></pre>
+        <figure class="kotlin-example" aria-label="Remainder expressions you can change and run">
+          <figcaption>Try it <span>Predict the remainders, then run. Try a number that divides evenly.</span></figcaption>
+          <pre data-kotlin-editor aria-label="Remainder expressions"><code>fun main() {
+    println(17 % 5)       // 2
+    println(24 % 6)       // 0
+}</code></pre>
+        </figure>
         <p>A remainder of zero means the first number is evenly divisible by the second.</p>
 
         <div class="practice">

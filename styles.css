@@ -247,6 +247,22 @@ h1 {
   margin-top: 28px;
 }
 
+.lesson-nav-with-options {
+  align-items: flex-start;
+}
+
+.lesson-nav-with-options > a,
+.lesson-nav-next {
+  flex: 1;
+  min-width: 0;
+}
+
+.lesson-nav-next {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+}
+
 .lesson-nav a,
 .button-link {
   display: inline-flex;

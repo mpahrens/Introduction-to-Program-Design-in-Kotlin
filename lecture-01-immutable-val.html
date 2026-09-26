@@ -6,7 +6,10 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <title>Lecture 1: Immutable Names with val</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="kotlin-editor.css">
   <script src="glossary.js" defer></script>
+  <script src="https://unpkg.com/kotlin-playground@1" defer></script>
+  <script src="kotlin-editor.js" defer></script>
 </head>
 <body>
   <header class="site-header">
@@ -28,22 +31,48 @@
       <article class="reading-block">
         <h2>Name a Result</h2>
         <p>Programs become easier to read when important values have names. In Kotlin, <code>val</code> creates a name and <span class="term" data-term="initialize">initializes</span> it with a value.</p>
-        <pre><code>val credits: Int = 4
-val courseName: String = "Calculus I"</code></pre>
-        <p>Read the first line as, "Let <code>credits</code> be the <code>Int</code> value 4." The colon introduces the name's type. Kotlin can often infer that type, so this shorter version also works:</p>
-        <pre><code>val credits = 4
-val courseName = "Calculus I"</code></pre>
+        <figure class="kotlin-example" aria-label="Explicitly typed names you can change and run">
+          <figcaption>Try it <span>Run to see the named values, then change their initial values.</span></figcaption>
+          <pre data-kotlin-editor aria-label="Explicit types"><code>fun main() {
+    val credits: Int = 4
+    val courseName: String = "Calculus I"
+    println(credits)
+    println(courseName)
+}</code></pre>
+        </figure>
+        <p>Read the first <code>val</code> line as, "Let <code>credits</code> be the <code>Int</code> value 4." The colon introduces the name's type. Kotlin can often infer that type, so this shorter version also works:</p>
+        <figure class="kotlin-example" aria-label="Inferred types you can change and run">
+          <figcaption>Try it <span>Run this shorter version and compare its output with the first example.</span></figcaption>
+          <pre data-kotlin-editor aria-label="Inferred types"><code>fun main() {
+    val credits = 4
+    val courseName = "Calculus I"
+    println(credits)
+    println(courseName)
+}</code></pre>
+        </figure>
 
         <h2><code>val</code> Names Are Immutable</h2>
         <p>An <span class="term" data-term="immutable">immutable</span> name cannot be <span class="term" data-term="reassign">reassigned</span> after it has been initialized. This code is therefore an error:</p>
-        <pre><code>val credits = 4
-credits = 5   // error: val cannot be reassigned</code></pre>
+        <figure class="kotlin-example" aria-label="A deliberate val reassignment error">
+          <figcaption>Expect an error <span>Run to see why a val cannot be reassigned.</span></figcaption>
+          <pre data-kotlin-editor aria-label="Val reassignment"><code>fun main() {
+    val credits = 4
+    credits = 5   // error: val cannot be reassigned
+    println(credits)
+}</code></pre>
+        </figure>
+        <p>Running this example should report that <code>val</code> cannot be reassigned. This is a compile-time error: Kotlin rejects the program before it runs, so nothing is printed. Delete the <code>credits = 5</code> line and run again to see the original value, <code>4</code>. Use <strong>Reset</strong> to restore the deliberate error.</p>
         <p>Immutability gives the reader a useful guarantee: every later use of <code>credits</code> refers to the value chosen on its <code>val</code> line. In a functional style, stable names make calculations easier to follow.</p>
 
         <h2>Use the Name in Later Expressions</h2>
-        <pre><code>val pagesRead = 18
-val pagesRemaining = 30 - pagesRead
-println(pagesRemaining)</code></pre>
+        <figure class="kotlin-example" aria-label="Named values in an expression you can change and run">
+          <figcaption>Try it <span>Predict the pages remaining, then run. Change pagesRead and try again.</span></figcaption>
+          <pre data-kotlin-editor aria-label="Pages remaining"><code>fun main() {
+    val pagesRead = 18
+    val pagesRemaining = 30 - pagesRead
+    println(pagesRemaining)
+}</code></pre>
+        </figure>
         <p>The later expression uses the value named <code>pagesRead</code>. It does not change that value.</p>
 
         <div class="practice">

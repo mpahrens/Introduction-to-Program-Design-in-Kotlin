@@ -6,7 +6,10 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <title>Lecture 1: Use Kotlin's Math Library</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="kotlin-editor.css">
   <script src="glossary.js" defer></script>
+  <script src="https://unpkg.com/kotlin-playground@1" defer></script>
+  <script src="kotlin-editor.js" defer></script>
 </head>
 <body>
   <header class="site-header">
@@ -31,14 +34,29 @@
         <pre><code>import kotlin.math.PI
 import kotlin.math.pow</code></pre>
         <p><code>PI</code> is a <code>Double</code> value. The <code>pow</code> method is called on a <code>Double</code> using dot notation. Its argument is the exponent.</p>
-        <pre><code>3.0.pow(2)   // 9.0
-2.0.pow(3)   // 8.0</code></pre>
+        <figure class="kotlin-example" aria-label="Power calculations you can change and run">
+          <figcaption>Try it <span>Predict the results, then run. Change a number or exponent and try again.</span></figcaption>
+          <pre data-kotlin-editor aria-label="Power calculations"><code>import kotlin.math.pow
+
+fun main() {
+    println(3.0.pow(2))   // 9.0
+    println(2.0.pow(3))   // 8.0
+}</code></pre>
+        </figure>
 
         <h2>Build a Formula from Named Pieces</h2>
         <p>For example, the area of a circle is pi times the radius squared. A Kotlin program can name the radius, then use that name in the formula:</p>
-        <pre><code>val radius = 2.5
-val area = PI * radius.pow(2)
-println(area)</code></pre>
+        <figure class="kotlin-example" aria-label="A circle-area formula you can change and run">
+          <figcaption>Try it <span>Run the formula, then change the radius and compare the area.</span></figcaption>
+          <pre data-kotlin-editor aria-label="Circle area"><code>import kotlin.math.PI
+import kotlin.math.pow
+
+fun main() {
+    val radius = 2.5
+    val area = PI * radius.pow(2)
+    println(area)
+}</code></pre>
+        </figure>
         <p>The formula is one expression built from smaller expressions: <code>PI</code>, <code>radius</code>, and <code>radius.pow(2)</code>. Naming the inputs and result makes the structure visible.</p>
 
         <h2>Keep Units and Types in Mind</h2>
