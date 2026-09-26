@@ -190,6 +190,13 @@ ${main(menu + '\nprintln(labelsReturning(drinks, "Tea"))\nprintln(labelsAccumula
     readings.get("l20-styles").examples[0].title = "Compare the two styles with explicit null checks";
     readings.get("l20-styles").examples[0].note = "labelsReturning adds the current label after a child returns a successful path. labelsAccumulating builds pathHere before the child call and passes it downward. In both folds, the explicit found != null check keeps the first path found.";
     readings.get("l20-styles").examples.push({
+        kind: "text",
+        title: "Representing lack of an answer",
+        note: "Make sure to take special care when modeling a search problem to know how you are representing the lack of an answer. Sometimes an <code>emptyList()</code> is used. Other times <code>null</code> is used. But the general three-cases of the search function are the same no matter how you represent not finding an answer: (1) Found it at the current node, (2) Did not find it in a subnode, (3) Did find it in a subnode",
+        code: `if(found != null) {...}
+if(!found.isEmpty()) {...}`
+    })
+    readings.get("l20-styles").examples.push({
       kind: "kotlin",
       title: "Simplify null handling with ?: and ?.let",
       note: "We can shorten the null checks in <code>labelsReturning</code> above. The Elvis operator ?: keeps <code>found</code> when it is non-null; However, when it <em>is</em> null, the expression on the right side searches the next child.<br> The safe call <code>?.let</code> checks if the function called produces null and <em>only</em> runs its lambda when the result is non-null, like finding a path amongst the children nodes. We give this non-null value a parameter name in the lambda, <code>childPath</code>; have the lambda continue the computation; and returns the extended path. <br>If searching the child returned null, the whole safe-call expression produces null. These two operators make the same return-path algorithm easier to read (no nested-ifs) without changing when it searches or builds the answer path.",
