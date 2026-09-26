@@ -74,7 +74,7 @@ const CS1101_READING_SETS_DATA = (() => {
       
       sealed interface HandlerChain {
         data object NoHandler : HandlerChain
-        data class Handler(try : ((MouseEvent) -> Boolean), nextHandler : HandlerChain)
+        data class Handler(val tryHandle : ((MouseEvent) -> Boolean), val nextHandler : HandlerChain) : HandlerChain
       }
       
       /** given a mouse event and a chain of UI elements which could potentially handle the mouse click, 
@@ -83,14 +83,14 @@ const CS1101_READING_SETS_DATA = (() => {
       fun handleMouseEvent(event : MouseEvent, chain : HandlerChain) {
         when(chain) {
           is HandlerChain.NoHandler -> error("mouse event unhandled")
-          is HandlerChain.Handler -> if(! chain.try(event)) {
+          is HandlerChain.Handler -> if(! chain.tryHandle(event)) {
             handleMouseEvent(event, chain.nextHandler)
           }
         }
       }`,
       "A datatype provides a recursively linked chain of mouse event handling functions, and we can try each one until one of them produces true for the mouse event.",
       "The value of recursion is not that it is clever. It is that the structure of the information suggests a repeatable plan. The fact that we want to try the event handlers in order and stop early is baked into the design of the data type.",
-      [Q("What value does an <code>Handler</code> data object store?", "A mouse event handler function"), Q("Why does the data structure imply an order to the handlers?", "Because we have to recurse through them to get to the end."), Q("How does the function stop early in Handler case even though there is a recursive field?", "It decides whether or not to recurse depending on the boolean result of calling the function in the try field")]
+      [Q("What values does a <code>Handler</code> store?", "A mouse event handler function and the rest of the handler chain."), Q("Why does the data structure imply an order to the handlers?", "Because we have to recurse through them to get to the end."), Q("How does the function stop early in the Handler case even though there is a recursive field?", "It recurses only when the function in the tryHandle field returns false.")]
     ),
     l10: W(
       "l10-why-decomposition-matters", "lecture-10-why-decomposition-matters.html", "Why this matters: Breaking Problems into Parts",
@@ -208,24 +208,24 @@ const CS1101_READING_SETS_DATA = (() => {
       "A function design begins by stating its purpose, promising its inputs and result, and adding a placeholder body that compiles.",
       "Write a KDoc purpose, a function signature, and a type-correct stub.",
       ["kdoc", "function-signature", "stub", "return-type"],
-      "A <strong>KDoc</strong> purpose tells a future reader what a function computes. The <strong>function signature</strong> names the function, lists its parameters and their types, and promises a return type. A <strong>stub</strong> is a temporary body that returns a placeholder of that promised type.",
+      "A <strong>KDoc</strong> purpose tells a future reader what a function computes. The <strong>function signature</strong> names the function, lists its parameters and their types, and promises a return type. A <strong>stub</strong> is a temporary body for an unfinished function. Use Kotlin's <code>TODO()</code> function to mark the work that remains.",
       "Writing this plan before an implementation separates the question of what the function should do from the later question of how to compute it. The stub gives the rest of the program a valid function to call while the design is still incomplete.",
-      "/**\n * Computes the cost to ship one package.\n */\nfun shippingCost(weightKg: Double, express: Boolean): Double {\n    return 0.0 // stub\n}",
-      "The purpose describes the result in ordinary language. The signature promises a decimal result from a weight and an express choice. Returning <code>0.0</code> makes the body type-correct, but it is not yet the shipping-cost calculation.",
-      "Choose a placeholder by the promised return type: <code>0</code> for an <code>Int</code>, <code>0.0</code> for a <code>Double</code>, <code>false</code> for a <code>Boolean</code>, or an empty value of the required structured type.",
-      [Q("What should the KDoc purpose explain?", "What result the function computes for its caller."), Q("Why does the stub return <code>0.0</code>?", "The signature promises a <code>Double</code> result."), Q("Does the stub solve the shipping-cost problem?", "No. It only gives the unfinished function a body that compiles.")]
+      "/**\n * Computes the cost to ship one package.\n */\nfun shippingCost(weightKg: Double, express: Boolean): Double {\n    return TODO()\n}",
+      "The purpose describes the result in ordinary language. The signature promises a decimal result from a weight and an express choice. <code>TODO()</code> lets the unfinished body compile, but calling it throws <code>NotImplementedError</code> with the message <code>An operation is not implemented.</code> No shipping cost is returned or printed.",
+      "<code>TODO()</code> works in a function with any return type because it never returns normally. Replace it with the implementation when you are ready to compute the promised result.",
+      [Q("What should the KDoc purpose explain?", "What result the function computes for its caller."), Q("What happens when the stub reaches <code>TODO()</code>?", "It throws NotImplementedError and stops the run instead of returning a value."), Q("Does the stub solve the shipping-cost problem?", "No. It only gives the unfinished function a body that compiles.")]
     ),
     R(
       "l02-tests-stubs", "lecture-02-tests-and-stubs.html", "Write Examples That Compile Before They Pass", "necessary",
       "Unit tests record the intended behavior before the real implementation exists; a stub lets those tests compile even though they should initially fail.",
       "Write example unit tests that distinguish cases and predict their eventual results.",
       ["test", "stub", "argument"],
-      "An example unit test calls a function with one particular input and states the expected result. Because a stub has the correct signature, tests can compile immediately. Because the stub returns a placeholder, tests that expect real behavior should not pass yet.",
+      "An example unit test calls a function with one particular input and states the expected result. Because a stub has the correct signature, tests can compile immediately. A <code>TODO()</code> stub stops execution with an error when called, so the tests cannot pass until the function is implemented.",
       "This is useful evidence, not a problem. Failing examples tell the programmer what the eventual implementation must make true. They also prevent the design from being shaped only by the first code idea that happens to come to mind.",
-      "shippingCost(2.0, false) shouldBe 6.5\nshippingCost(2.0, true) shouldBe 12.5",
-      "Both calls compile because the stub accepts a <code>Double</code> and a <code>Boolean</code> and returns a <code>Double</code>. With the placeholder return of <code>0.0</code>, both tests fail. That is expected until the real calculation is written.",
+      "assertSoftly{\n  shippingCost(2.0, false) shouldBe (6.5 plusOrMinus 0.01)\n  shippingCost(2.0, true) shouldBe (12.5 plusOrMinus 0.01)\n}",
+      "Both test expressions compile because the signature accepts a <code>Double</code> and a <code>Boolean</code> and promises a <code>Double</code>. On the first call, <code>TODO()</code> throws <code>NotImplementedError</code> before <code>shouldBe</code> can compare values. The second test is not reached. Replace the stub with the calculation, then run again to check the expected costs.",
       "Examples should make a difference visible. Here, the second example changes only the express choice, showing that express shipping must affect the answer.",
-      [Q("Why can the examples compile before the function is implemented?", "The stub already has the correct signature and return type."), Q("Why should these tests fail with the stub?", "The placeholder <code>0.0</code> is not the intended shipping cost."), Q("What difference do the two examples show?", "They show that the express choice changes the result.")]
+      [Q("Why can the examples compile before the function is implemented?", "The stub already has the correct signature, and TODO() is allowed in its body."), Q("Why does the run stop before the second test?", "The first call reaches TODO(), which throws NotImplementedError before returning a shipping cost."), Q("What difference do the two examples show?", "They show that the express choice changes the result.")]
     ),
     R(
       "l02-parameters-arguments", "lecture-02-parameters-and-arguments.html", "Make a Template and Input Inventory", "necessary",
@@ -248,14 +248,14 @@ const CS1101_READING_SETS_DATA = (() => {
       "Local names make the body read like the plan. They also let a programmer inspect one subresult at a time when an answer is surprising.",
       `// 1. Start with the value the function must return.
 fun shippingCost(weightKg: Double, express: Boolean): Double {
-    val overallCost = ???
+    val overallCost: Double = TODO()
     return overallCost
 }
 
 // 2. Ask what values are needed to make that answer.
 fun shippingCost(weightKg: Double, express: Boolean): Double {
-    val baseCost = ???
-    val expressSurcharge = ???
+    val baseCost: Double = TODO()
+    val expressSurcharge: Double = TODO()
     val overallCost = baseCost + expressSurcharge
     return overallCost
 }
@@ -267,7 +267,7 @@ fun shippingCost(weightKg: Double, express: Boolean): Double {
     return baseCost + expressSurcharge
 }`,
       "First, name the desired answer: <code>overallCost</code>. Next, ask what values must be combined to produce it: <code>baseCost</code> and <code>expressSurcharge</code>. Finally, work backward to the inputs: <code>weightKg</code> determines the base cost, and <code>express</code> determines the surcharge. The completed version can return the final sum directly because the two intermediate values already have meaningful names.",
-      "The return expression must produce the type promised by the signature. Here, both local values and their sum are <code>Double</code>s.",
+      "The <code>: Double</code> annotations record the intended types while expressions are unfinished. Each <code>TODO()</code> compiles but throws <code>NotImplementedError</code> if reached. Execution stops at the first one; after replacing it, run again to discover the next unfinished step. The completed return expression must produce the type promised by the signature.",
       [Q("What should <code>overallCost</code> represent in the first stage?", "The total shipping cost that the function promises to return."), Q("Which two named values are combined to make <code>overallCost</code>?", "<code>baseCost</code> and <code>expressSurcharge</code>."), Q("Why use local names instead of one long expression?", "They make meaningful subcomputations easier to read, inspect, and connect back to the inputs.")]
     ),
     R(
@@ -1044,7 +1044,7 @@ val twoWords = SLNode("design", SLNode("data", SLEmpty))`,
           "Following the template ensures that every data variant is handled and that the recursive call follows the recursive field.",
           `fun wordCount(words: StringList): Int {
     return when (words) {
-        SLEmpty -&gt; 0
+        is SLEmpty -&gt; 0
         is SLNode -&gt; 1 + wordCount(words.rest)
     }
 }`,
@@ -1068,7 +1068,7 @@ val twoWords = SLNode("design", SLNode("data", SLEmpty))`,
           "Recognizing the pattern narrows the design choices before writing details.",
           `fun anyShort(words: StringList): Boolean {
     return when (words) {
-        SLEmpty -&gt; false
+        is SLEmpty -&gt; false
         is SLNode -&gt; words.first.length &lt; 4 || anyShort(words.rest)
     }
 }`,
@@ -1135,7 +1135,7 @@ val twoWords = SLNode("design", SLNode("data", SLEmpty))`,
     val count = temperatureCount(readings)
     return total.toDouble() / count
 }`,
-          "The main function names the two conceptual pieces that are numerical (arithmetic) rather than recursive. Separate helpers should follow the recursive list template to compute each numerical piece.",
+          "<code>averageTemperature</code> names the two numerical pieces needed by the formula. The supplied helpers follow the recursive list template to compute each piece. The <code>main</code> function builds sample readings, calls averageTemperature, and prints its result.",
           "The final return line should read like the mathematical definition of average.",
           [
             Q("What two results are required?", "A total and a count."),
@@ -1874,7 +1874,8 @@ fun totalItemCount(item: MenuItem): Int {
           "In a tree search, this provides a compact way to keep the first found answer while trying later children only after failure.",
           `fun findLabel(item: MenuItem, target: String): MenuItem? {
     if (item.label == target) return item
-    return item.children.fold&lt;MenuItem?&gt;(null) { found, child -&gt;
+    val notFound: MenuItem? = null
+    return item.children.fold(notFound) { found, child -&gt;
         found ?: findLabel(child, target)
     }
 }`,
@@ -1901,7 +1902,8 @@ fun totalItemCount(item: MenuItem): Int {
         return listOf(item.label)
     }
 
-    val pathFromAChild = item.children.fold&lt;List&lt;String&gt;?&gt;(null) { pathSoFar, child -&gt;
+    val noPath: List&lt;String&gt;? = null
+    val pathFromAChild = item.children.fold(noPath) { pathSoFar, child -&gt;
         if (pathSoFar != null) {
             pathSoFar
         } else {
@@ -1980,7 +1982,7 @@ val label = result.first`,
           "l20-styles",
           "lecture-20-return-style-versus-accumulator.html",
           "Return-Path Style versus Accumulator Style",
-          "optional",
+          "necessary",
           "Recursive context can be added while returning or carried downward in an accumulator.",
           "Choose a recursive style based on when information becomes available.",
           ["accumulator", "recursion", "decomposition"],
@@ -1991,7 +1993,7 @@ return childTotal?.let { itemCost + it }
 
 // Accumulator:
 return visit(child, totalSoFar + itemCost)`,
-          "The first example adds information after success returns. The second carries the updated total into the child call.",
+          "<code>labelsReturning</code> adds the current label after a child returns a successful path. The safe call <code>?.let</code> transforms that path only when it is non-null. labelsAccumulating carries the path so far down into the child call. Both folds keep the first path found, and both functions return null when the target is absent.",
           "Do not add an accumulator merely because recursion is present. Add one when a downward-moving context simplifies the design.",
           [
             Q("Which style passes context into the recursive call?", "Accumulator style."),
@@ -2230,7 +2232,7 @@ for (countdown in 5 downTo 1) {
           ["graph", "edge", "cycle"],
           "A <strong>graph</strong> is a collection of nodes and <strong>edges</strong>. A directed edge from A to B does not automatically create an edge from B to A. A <strong>cycle</strong> is a path that eventually returns to a previously visited node.",
           "Unlike a tree, a graph node may have several incoming edges, and there may be no single root.",
-          `data class Station(
+          `class Station(
     val name: String,
     val next: MutableList&lt;Station&gt;
 )
@@ -2366,7 +2368,7 @@ while (queue.isNotEmpty()) {
 ): List&lt;String&gt; {
     if (current.name == target) return path + current.name
     if (!visited.add(current.name)) return emptyList()
-    return current.next.fold(emptyList()) { found, neighbor -&gt;
+    return current.next.fold(emptyList&lt;String&gt;()) { found, neighbor -&gt;
         if (found.isNotEmpty()) found
         else pathFrom(neighbor, target, path + current.name, visited)
     }

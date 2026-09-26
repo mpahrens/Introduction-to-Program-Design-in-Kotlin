@@ -13,13 +13,13 @@ fun assertSoftly(block: () -> Unit) {
     
     try {
         block()
-    } finally {
+    } catch(e: NotImplementedError) { collectedErrors.add("TODO() prevented tests from completing") } finally {
         softAssertMode = false
         if (collectedErrors.isNotEmpty()) {
             val failureMessage = buildString {
                 append("\n❌ assertSoftly failed with ${collectedErrors.size} assertion(s):\n")
-                collectedErrors.forEachIndexed { index, err -> 
-                    append("  ${index + 1}) $err\n") 
+                collectedErrors.forEachIndexed { index, err ->
+                    append("  ${index + 1}) $err\n")
                 }
             }
             throw AssertionError(failureMessage)

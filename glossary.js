@@ -144,7 +144,7 @@ addGlossaryEntries("Lecture 2: Function Design Recipe", "lecture-02-function-sig
   ["function-signature", "Function signature", "The first line of a function definition: its name, parameters, parameter types, and return type."],
   ["parameter", "Parameter", "A local input name listed in a function definition."],
   ["return-type", "Return type", "The type of value a function promises to produce, written after the parameter list."],
-  ["stub", "Stub", "A temporary function body that returns a simple value of the promised type."],
+  ["stub", "Stub", "A temporary body for an unfinished function. A Kotlin TODO() stub compiles but throws NotImplementedError when called."],
   ["inventory", "Input inventory", "A planning list of what each function input represents and the operations or subproblems it suggests."],
   ["code-coverage", "Code coverage", "The extent to which tests exercise the important branches and cases in a program."],
   ["helper-function", "Helper function", "A function that solves a smaller named subproblem for another function."],

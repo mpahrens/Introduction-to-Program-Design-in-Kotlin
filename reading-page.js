@@ -92,6 +92,32 @@ function vocabularyMarkup(keys) {
   }).join("");
 }
 
+function escapeExample(text) {
+  return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function readingExamplesMarkup(reading) {
+  // Keep the catalog's readable fallback if the example companion fails to load.
+  if (!reading.examples) return `<pre><code>${reading.code}</code></pre>`;
+  return reading.examples.map(example => {
+    const title = escapeExample(example.title);
+    const note = example.note ? `<p class="example-note">${escapeExample(example.note)}</p>` : "";
+    if (example.kind === "text") {
+      return `<h3>${title}</h3>${note}<pre><code>${escapeExample(example.code)}</code></pre>`;
+    }
+    const dependencies = example.dependencies.length
+      ? ` data-kotlin-dependencies="${escapeExample(example.dependencies.join(" "))}" data-kotlin-show-dependencies="true"` : "";
+    const expected = example.expected == null ? "" : `<details class="answer example-expected">
+      <summary>Check the original program's output</summary><pre><code>${escapeExample(example.expected)}</code></pre>
+    </details>`;
+    return `${reading.examples.length > 1 ? `<h3>${title}</h3>` : ""}${note}<figure class="kotlin-example" aria-label="${title}">
+      <figcaption>Try it <span>${escapeExample(example.prompt)}</span></figcaption>
+      <pre data-kotlin-editor aria-label="${title}"${dependencies}><code>${escapeExample(example.code)}</code></pre>
+    </figure>${expected}`;
+  }).join("\n");
+}
+
 function renderReading(set, reading) {
   document.title = `${set.lecture}: ${reading.title}`;
   const readingIndex = set.readings.indexOf(reading);
@@ -131,8 +157,9 @@ function renderReading(set, reading) {
           <p>${reading.definition}</p>
           <p>${reading.why}</p>
 
-          <h2>Read This Example</h2>
-          <pre><code>${reading.code}</code></pre>
+          <h2>${reading.examples?.some(example => example.kind === "kotlin") ? "Read, Run, and Change" : "Read This Example"}</h2>
+          ${reading.examples?.some(example => example.kind === "kotlin") ? '<p>Predict the output, then select <strong>Run code</strong>. Edit the example and run it again to test your prediction. <strong>Reset</strong> restores the original program. Each example runs independently.</p>' : ""}
+          ${readingExamplesMarkup(reading)}
           <p>${reading.walkthrough}</p>
 
           <div class="callout"><strong>Notice:</strong> ${reading.notice}</div>
@@ -170,6 +197,7 @@ function renderReading(set, reading) {
   `;
 
   if (typeof applyGlossaryTerms === "function") applyGlossaryTerms();
+  window.CS1101Kotlin?.initialize(document.getElementById("reading-app"));
 }
 
 document.addEventListener("DOMContentLoaded", () => {

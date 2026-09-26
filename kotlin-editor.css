@@ -62,6 +62,18 @@
 .kotlin-editor-host { padding: 10px 0 0; }
 .kotlin-editor-host > textarea { display: none; }
 
+.kotlin-support {
+  border-top: 1px solid #45535f;
+  padding: 12px 16px;
+  color: var(--code-ink);
+  font-size: 0.85rem;
+}
+.kotlin-support summary { cursor: pointer; color: #bce5cd; }
+.kotlin-support p, .kotlin-support h4 { color: var(--code-ink); }
+.kotlin-support pre { margin-bottom: 0; overflow-x: auto; }
+.example-note { border-left: 3px solid var(--green); padding-left: 14px; }
+.example-expected { margin: -8px 0 22px; }
+
 /* Scope overrides to these editors so other reading code stays untouched. */
 .kotlin-example .executable-fragment .CodeMirror {
   height: auto;

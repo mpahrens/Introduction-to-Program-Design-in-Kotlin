@@ -72,6 +72,7 @@
     let host;
     let mountedNode;
     let observer;
+    let supportingCode;
     try {
       if (typeof window.KotlinPlayground !== "function") throw new Error("Playground unavailable");
       const paths = (original.dataset.kotlinDependencies || "").split(/\s+/).filter(Boolean);
@@ -95,6 +96,26 @@
         host.append(hidden);
       }
       original.after(host);
+      if (dependencies.length && original.dataset.kotlinShowDependencies === "true") {
+        supportingCode = document.createElement("details");
+        supportingCode.className = "kotlin-support";
+        const summary = document.createElement("summary");
+        summary.textContent = "Supporting code included with this example";
+        supportingCode.append(summary);
+        const explanation = document.createElement("p");
+        explanation.textContent = "These definitions are loaded automatically each time you run. The editable program above supplies this example's inputs.";
+        supportingCode.append(explanation);
+        dependencies.forEach((dependency, index) => {
+          const heading = document.createElement("h4");
+          heading.textContent = paths[index].split("/").pop();
+          const pre = document.createElement("pre");
+          const code = document.createElement("code");
+          code.textContent = dependency;
+          pre.append(code);
+          supportingCode.append(heading, pre);
+        });
+        host.after(supportingCode);
+      }
       const playgrounds = await window.KotlinPlayground(host, {
         getInstance(instance) {
           run.disabled = false;
@@ -134,6 +155,7 @@
         playgrounds.forEach((playground) => playground.destroy());
         mountedNode?.remove();
         host.remove();
+        supportingCode?.remove();
         toolbar.remove();
         original.hidden = false;
         delete original.dataset.kotlinMounted;
@@ -144,6 +166,7 @@
       observer?.disconnect();
       mountedNode?.remove();
       host?.remove();
+      supportingCode?.remove();
       original.hidden = false;
       run.disabled = true;
       reset.disabled = true;
