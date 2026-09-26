@@ -1989,11 +1989,11 @@ val label = result.first`,
           "Return-path style lets a child solve its problem first, then combines that answer with the current node. Accumulator style computes new context before the recursive call and passes it downward.",
           "Both styles can solve some of the same problems. The clearer choice is the one whose helper meaning is easiest to state and test.",
           `// Return path:
-return childTotal?.let { itemCost + it }
+return if (childTotal != null) itemCost + childTotal else null
 
 // Accumulator:
 return visit(child, totalSoFar + itemCost)`,
-          "<code>labelsReturning</code> adds the current label after a child returns a successful path. The safe call <code>?.let</code> transforms that path only when it is non-null. labelsAccumulating carries the path so far down into the child call. Both folds keep the first path found, and both functions return null when the target is absent.",
+          "The first example makes each null check explicit so you can focus on when the path is built: after the child call in <code>labelsReturning</code>, or before it in <code>labelsAccumulating</code>. The second example shortens the return-path version with <code>?:</code> and <code>?.let</code>. Both versions keep the first path found and return <code>null</code> when the target is absent. The accumulator version can also shorten its fold body to <code>found ?: labelsAccumulating(child, target, pathHere)</code>.",
           "Do not add an accumulator merely because recursion is present. Add one when a downward-moving context simplifies the design.",
           [
             Q("Which style passes context into the recursive call?", "Accumulator style."),

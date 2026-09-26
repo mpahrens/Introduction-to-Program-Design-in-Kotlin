@@ -102,7 +102,8 @@ function readingExamplesMarkup(reading) {
   if (!reading.examples) return `<pre><code>${reading.code}</code></pre>`;
   return reading.examples.map(example => {
     const title = escapeExample(example.title);
-    const note = example.note ? `<p class="example-note">${escapeExample(example.note)}</p>` : "";
+    // Notes are author-supplied HTML, like the catalog's explanatory prose.
+    const note = example.note ? `<div class="example-note">${example.note}</div>` : "";
     if (example.kind === "text") {
       return `<h3>${title}</h3>${note}<pre><code>${escapeExample(example.code)}</code></pre>`;
     }

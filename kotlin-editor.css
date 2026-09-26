@@ -71,7 +71,7 @@
 .kotlin-support summary { cursor: pointer; color: #bce5cd; }
 .kotlin-support p, .kotlin-support h4 { color: var(--code-ink); }
 .kotlin-support pre { margin-bottom: 0; overflow-x: auto; }
-.example-note { border-left: 3px solid var(--green); padding-left: 14px; }
+.example-note { margin: 1em 0; border-left: 3px solid var(--green); padding-left: 14px; }
 .example-expected { margin: -8px 0 22px; }
 
 /* Scope overrides to these editors so other reading code stays untouched. */
@@ -82,6 +82,13 @@
   font-family: "Cascadia Code", Consolas, ui-monospace, monospace;
   font-size: 14px;
   line-height: 1.65;
+}
+
+/* Keep operators such as != visible as the individual characters students type. */
+.kotlin-example .executable-fragment .CodeMirror,
+.kotlin-example .CodeMirror pre {
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
 }
 
 .kotlin-example .CodeMirror pre {

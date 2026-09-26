@@ -159,8 +159,15 @@ fun labelsReturning(item: MenuItem, target: String): List<String>? {
     if (item.label == target) return listOf(item.label)
     val noPath: List<String>? = null
     return item.children.fold(noPath) { found, child ->
-        found ?: labelsReturning(child, target)?.let { childPath ->
-            listOf(item.label) + childPath
+        if (found != null) {
+            found
+        } else {
+            val childPath = labelsReturning(child, target)
+            if (childPath != null) {
+                listOf(item.label) + childPath
+            } else {
+                null
+            }
         }
     }
 }
@@ -171,11 +178,38 @@ fun labelsAccumulating(item: MenuItem, target: String, path: List<String>): List
     if (item.label == target) return pathHere
     val noPath: List<String>? = null
     return item.children.fold(noPath) { found, child ->
-        found ?: labelsAccumulating(child, target, pathHere)
+        if (found != null) {
+            found
+        } else {
+            labelsAccumulating(child, target, pathHere)
+        }
     }
 }
 
 ${main(menu + '\nprintln(labelsReturning(drinks, "Tea"))\nprintln(labelsAccumulating(drinks, "Tea", emptyList()))')}`, "Change both targets together. Both styles should find the same path or return null.", "[Drinks, Tea]\n[Drinks, Tea]", ["MenuItem"]);
+    readings.get("l20-styles").examples[0].title = "Compare the two styles with explicit null checks";
+    readings.get("l20-styles").examples[0].note = "labelsReturning adds the current label after a child returns a successful path. labelsAccumulating builds pathHere before the child call and passes it downward. In both folds, the explicit found != null check keeps the first path found.";
+    readings.get("l20-styles").examples.push({
+      kind: "kotlin",
+      title: "Simplify null handling with ?: and ?.let",
+      note: "We can shorten the null checks in <code>labelsReturning</code> above. The Elvis operator ?: keeps <code>found</code> when it is non-null; However, when it <em>is</em> null, the expression on the right side searches the next child.<br> The safe call <code>?.let</code> checks if the function called produces null and <em>only</em> runs its lambda when the result is non-null, like finding a path amongst the children nodes. We give this non-null value a parameter name in the lambda, <code>childPath</code>; have the lambda continue the computation; and returns the extended path. <br>If searching the child returned null, the whole safe-call expression produces null. These two operators make the same return-path algorithm easier to read (no nested-ifs) without changing when it searches or builds the answer path.",
+      code: `fun labelsReturning(item: MenuItem, target: String): List<String>? {
+    if (item.label == target) return listOf(item.label)
+    val noPath: List<String>? = null
+    return item.children.fold(noPath) { found, child ->
+        // Keep a path already found; otherwise search this child.
+        found ?: labelsReturning(child, target)?.let { childPath ->
+            // Extend only a successful child path.
+            listOf(item.label) + childPath
+        }
+    }
+}
+
+${main(menu + '\nprintln(labelsReturning(drinks, "Tea"))\nprintln(labelsReturning(drinks, "Drinks"))\nprintln(labelsReturning(drinks, "Coffee"))')}`,
+      prompt: "Compare this version with the explicit null checks above. Try a child label, the root label, and a missing label in both versions.",
+      expected: "[Drinks, Tea]\n[Drinks]\nnull",
+      dependencies: ["kotlin-dependencies/MenuItem.kt"]
+    });
 
     statements("l21-var", "", "Change the starting score and predict the final value.", "26");
     example("l21-mutable-data", 'data class Player(val name: String, var points: Int)\n\n' + main(source("l21-mutable-data").split("\n\n")[1] + '\nprintln(roster)'), "Change ari.points after adding Ari and inspect the player in the roster.", "[Player(name=Ari, points=7)]");

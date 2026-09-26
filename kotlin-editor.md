@@ -40,7 +40,7 @@ Example fields:
 - `title`, `code`: an accessible name and plain, **unescaped** source text. The renderer escapes it exactly once.
 - `prompt`: a specific change or prediction for the student to try.
 - `dependencies`: an array of reusable `.kt` paths. Inputs and calls stay visible in the editor.
-- `note`: optional plain-text guidance, such as a precondition or expected failure.
+- `note`: optional author-supplied HTML guidance, such as a precondition or expected failure. Supports tags such as `<code>`, `<em>`, `<strong>`, `<br>`, `<p>`, and `<ul>`. Use `&lt;` and `&amp;` for literal less-than signs and ampersands. Notes are rendered as HTML without escaping; use only trusted reading content.
 - `expected`: original stdout, also available to readers in a collapsed disclosure.
 - `expectedError`: a diagnostic substring for an intentionally failing exercise, instead of `expected`.
 
