@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A printable Kotlin-to-TypeScript reference for CS1101: WebStorm, strict types, functions, tests, objects, unions, arrays, mutation, and loops.">
+  <title>Transfer Reference to TypeScript | CS1101</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="transfer-reference.css">
+</head>
+<body>
+  <div class="toolbar"><a href="transfer-references.html">← Transfer references</a><button type="button" onclick="window.print()">Print / Save as PDF</button></div>
+  <main id="main">
+    <header class="cover">
+      <div class="eyebrow">CS1101 · Beyond Kotlin · Transfer reference 04</div>
+      <h1>Transfer Reference<br>to <span>TypeScript</span></h1>
+      <p class="intro">Keep the design habits. Learn the new spelling. Turn the functions, tests, and data you know from Kotlin into TypeScript programs.</p>
+      <div class="metadata"><span>TypeScript 5.8+ · strict checking</span><span>Node.js 24+ · WebStorm</span><span>Kotlin first, TypeScript second</span><span>12 topic sheets</span></div>
+      <p>Read each comparison from left to right (top to bottom on a phone). Examples are independent unless reuse is stated. Kotlin executable statements belong in <code>main</code>; definitions can go at file level. TypeScript statements and definitions can both go at file level. Comments show expected results.</p>
+      <nav aria-label="Reference contents"><ol class="contents">
+        <li><a href="#start"><span>01</span>Files, running &amp; debugging</a></li>
+        <li><a href="#names"><span>02</span>Names, assignment &amp; scope</a></li>
+        <li><a href="#values"><span>03</span>Numbers &amp; Booleans</a></li>
+        <li><a href="#text"><span>04</span>Strings &amp; missing values</a></li>
+        <li><a href="#decisions"><span>05</span>if, when &amp; named choices</a></li>
+        <li><a href="#functions"><span>06</span>Function design &amp; testing</a></li>
+        <li><a href="#records"><span>07</span>Compound data &amp; copies</a></li>
+        <li><a href="#variants"><span>08</span>Sum types &amp; type checks</a></li>
+        <li><a href="#lists"><span>09</span>Lists &amp; operations</a></li>
+        <li><a href="#higher-order"><span>10</span>Lambdas, map, filter &amp; fold</a></li>
+        <li><a href="#mutation"><span>11</span>Mutation &amp; shared values</a></li>
+        <li><a href="#loops"><span>12</span>Loops, ranges &amp; input</a></li>
+      </ol></nav>
+      <div class="note"><strong>Carry these habits forward:</strong> state a purpose, describe inputs and outputs, write examples, inventory the data, then implement and test. TypeScript changes how you express that plan.</div>
+      <p class="screen-only">Use <strong>Print / Save as PDF</strong> for a paper copy. Choose portrait, Letter or A4, 100% scale, and turn off browser headers and footers. Numbered topics start on fresh pages; sheet 1 continues onto a second page.</p>
+    </header>
+
+    <section class="sheet" id="start" aria-labelledby="start-title">
+      <div class="sheet-number">01 / Files, running &amp; debugging</div>
+      <h2 id="start-title">Use WebStorm. Check types, then run.</h2>
+      <p class="lede">This guide uses small console programs in JetBrains WebStorm, with Node.js 24 or newer as the runtime.</p>
+      <h3>A complete starting file</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin · hello.kt</div><pre><code>fun main() {
+    val name = "Gompei"
+    println("Hello, $name!")
+}</code></pre></div>
+        <div class="example typescript"><div class="language">TypeScript · hello.ts</div><pre><code>const name = "Gompei";
+console.log(`Hello, ${name}!`);
+
+export {};</code></pre></div>
+      </div>
+      <p>Top-level statements run in order. No special <code>main</code> function is required. Backticks make an interpolated string; <code>${name}</code> inserts a value. Braces group statements, <code>//</code> starts a comment, and this guide consistently ends statements with semicolons. An empty <code>export {}</code> makes a file a module, keeping its names local to that file.</p>
+      <ol class="steps">
+        <li><strong>Create:</strong> open an empty project folder in WebStorm. Install Node.js 24+ if needed and select it as the project’s Node runtime in Settings. Add <code>hello.ts</code>.</li>
+        <li><strong>Configure:</strong> follow the one-time setup on the next page. In Settings, search for TypeScript, select the project’s installed TypeScript package, and enable its language service.</li>
+        <li><strong>Check:</strong> read editor diagnostics and run <code>npx tsc --noEmit</code> in the project terminal. Fix type errors before running.</li>
+        <li><strong>Run:</strong> in current WebStorm, right-click <code>hello.ts</code> and choose Run. Its Node runtime must be 24+. Output appears in the Run window. The terminal equivalent is <code>node hello.ts</code>.</li>
+        <li><strong>Debug:</strong> click the gutter to set a breakpoint, then choose Debug for that file. Inspect variables, Step Over a line, Step Into a call, and Resume.</li>
+      </ol>
+      <p class="note"><strong>Running does not check types.</strong> Node removes supported type annotations and executes the program. It does not read your type-checking configuration. WebStorm and <code>tsc</code> check the code separately. Types do not validate external data at runtime; sheet 8 shows an explicit check.</p>
+      <p>For a runtime failure, read the error message and find your first relevant source line in the stack trace. A successful type check does not rule out incorrect calculations, failed input, or other runtime problems.</p>
+      <p class="sources">Official references: <a href="https://www.jetbrains.com/help/webstorm/running-and-debugging-typescript.html">WebStorm running &amp; debugging</a> <a href="https://nodejs.org/api/typescript.html">Running TypeScript in Node</a></p>
+
+      <div class="sheet-continuation">
+        <div class="sheet-number print-only">01 / Files, running &amp; debugging · continued</div>
+        <h3>One-time project setup</h3>
+        <p>In WebStorm’s Terminal, run these commands in a new project folder. The first creates <code>package.json</code>; the second enables modules. The final command installs the type checker and type descriptions for the runtime’s built-in APIs.</p>
+        <pre><code>npm init -y
+npm pkg set type=module
+npm install --save-dev typescript @types/node@24</code></pre>
+        <p>Create <code>tsconfig.json</code> at the project root with these contents:</p>
+        <pre><code>{
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "NodeNext",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+    "types": ["node"]
+  },
+  "include": ["*.ts"]
+}</code></pre>
+        <p><code>strict</code> enables stronger checks, including checks for missing values. <code>noUncheckedIndexedAccess</code> makes an array lookup potentially <code>undefined</code>. <code>exactOptionalPropertyTypes</code> distinguishes an absent property from a present property set to <code>undefined</code>. <code>erasableSyntaxOnly</code> keeps examples compatible with direct execution. <code>noEmit</code> makes the checker report errors without producing output files.</p>
+        <h3>Share definitions explicitly</h3>
+        <div class="pair">
+          <div class="example kotlin"><div class="language">Kotlin</div><pre><code>// In helpers.kt:
+fun square(n: Int): Int = n * n
+
+// In app.kt, same package:
+fun main() {
+    println(square(3)) // 9
+}</code></pre></div>
+          <div class="example typescript"><div class="language">TypeScript</div><pre><code>// In helpers.ts:
+export function square(n: number): number {
+  return n * n;
+}
+
+// In app.ts:
+import { square } from "./helpers.ts";
+console.log(square(3)); // 9</code></pre></div>
+        </div>
+        <p>With this setup, include <code>.ts</code> in relative imports. Use <code>import type { Book } from "./book.ts";</code> for an exported type. Importing a module also executes its top-level statements on its first load, so keep demonstrations in a separate file from reusable definitions.</p>
+        <p class="note"><strong>Snippet convention:</strong> use a separate <code>.ts</code> file for each independent example; add <code>export {};</code> if it has no imports or exports. Copy an explicitly reused definition when needed. The configuration above checks files at the project root. No application framework or testing package is needed for this guide.</p>
+        <p class="sources">Official references: <a href="https://www.typescriptlang.org/tsconfig/">Compiler configuration</a> <a href="https://www.typescriptlang.org/docs/handbook/2/modules.html">Modules</a></p>
+      </div>
+    </section>
+
+    <section class="sheet" id="names" aria-labelledby="names-title">
+      <div class="sheet-number">02 / Names, assignment &amp; scope</div>
+      <h2 id="names-title">Prefer const. Use let for reassignment.</h2>
+      <p class="lede">Type annotations follow the name, as in Kotlin. Inference usually handles local initial values.</p>
+      <h3>Fixed bindings and changing values</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val limit: Int = 3
+var count: Int = 0
+count += 1
+val label = "ready"
+// limit = 4 is not allowed.</code></pre></div>
+        <div class="example typescript"><div class="language">TypeScript</div><pre><code>const limit: number = 3;
+let count = 0; // inferred number
+count += 1;
+const label = "ready";
+// limit = 4 is not allowed.
+// count = "one" is a type error.</code></pre></div>
+      </div>
+      <p><code>const</code> prevents reassignment of the binding, much like <code>val</code>. <code>let</code> permits reassignment, like Kotlin <code>var</code>. TypeScript also has a keyword spelled <code>var</code>, but its older scope rules differ; prefer <code>const</code> and <code>let</code>.</p>
+      <h3>Blocks and function calls have local names</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>fun nextCount(count: Int): Int {
+    val next = count + 1
+    return next
+}
+val ready = true
+if (ready) {
+    val message = "go"
+    println(message)
+}
+// message is out of scope.</code></pre></div>
+        <div class="example typescript"><div class="language">TypeScript</div><pre><code>function nextCount(count: number): number {
+  const next = count + 1;
+  return next;
+}
+const ready = true;
+if (ready) {
+  const message = "go";
+  console.log(message);
+}
+// message is out of scope.</code></pre></div>
+      </div>
+      <p>Use a local name only after its declaration and initialization. Parameters belong to their function call. Unlike Kotlin parameters, TypeScript parameters can be reassigned; doing so does not reassign the caller’s variable. Choose a separate local name when it makes a calculation clearer.</p>
+      <p class="note"><strong>A fixed binding is not an immutable object.</strong> <code>const scores = [10, 20];</code> still permits <code>scores.push(30)</code>. A read-only array type restricts updates through that reference; see sheets 9 and 11.</p>
+      <p class="sources">Official references: <a href="https://www.typescriptlang.org/docs/handbook/variable-declarations.html">Declarations &amp; scope</a> <a href="https://www.typescriptlang.org/docs/handbook/type-inference.html">Type inference</a></p>
+    </section>
+
+    <section class="sheet" id="values" aria-labelledby="values-title">
+      <div class="sheet-number">03 / Numbers &amp; Booleans</div>
+      <h2 id="values-title">Use number for everyday arithmetic.</h2>
+      <p class="lede">TypeScript’s number type represents both whole and fractional values. Division does not switch behavior based on the operands’ spelling.</p>
+      <h3>Arithmetic and conversion</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val whole = 7 / 2        // 3
+val decimal = 7.0 / 2    // 3.5
+val remainder = -7 % 2   // -1
+val parsed = "42".toInt()
+val text = 42.toString()
+val root = kotlin.math.sqrt(81.0)</code></pre></div>
+        <div class="example typescript"><div class="language">TypeScript</div><pre><code>const whole = Math.trunc(7 / 2); // 3
+const decimal = 7 / 2;          // 3.5
+const remainder = -7 % 2;       // -1
+const parsed = Number("42");   // 42
+const text = String(42);       // "42"
+const root = Math.sqrt(81);     // 9</code></pre></div>
+      </div>
+      <p><code>Math.trunc</code> discards the fractional part toward zero; <code>Math.floor</code> rounds downward, which differs for negative values. <code>**</code> means exponentiation: <code>2 ** 3</code> is 8. Number arithmetic uses binary floating point; compare calculated decimals with a suitable tolerance.</p>
+      <h3>Compare values and combine conditions</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val age = 20
+val enrolled = true
+val eligible = age &gt;= 18 &amp;&amp; enrolled
+val needsHelp = !enrolled || age &lt; 18
+val same = age == 20
+val different = age != 21</code></pre></div>
+        <div class="example typescript"><div class="language">TypeScript</div><pre><code>const age: number = 20;
+const enrolled = true;
+const eligible = age &gt;= 18 &amp;&amp; enrolled;
+const needsHelp = !enrolled || age &lt; 18;
+const same = age === 20;
+const different = age !== 21;</code></pre></div>
+      </div>
+      <p>Use <code>===</code> and <code>!==</code> for equality without coercion. <code>&amp;&amp;</code> and <code>||</code> short-circuit. Prefer Boolean conditions: <code>if (count &gt; 0)</code> says more than <code>if (count)</code>. Conditions also accept other values; zero, an empty string, <code>null</code>, <code>undefined</code>, and <code>NaN</code> act as false.</p>
+      <table><thead><tr><th>Kotlin idea</th><th>TypeScript choice</th><th>Behavior to remember</th></tr></thead><tbody>
+        <tr><td>Int or Double calculation</td><td><code>number</code></td><td>Exact integers only through ±(2<sup>53</sup> − 1).</td></tr>
+        <tr><td>Exact large integer</td><td><code>bigint</code>, e.g. <code>42n</code></td><td>A separate type; do not mix with number arithmetic.</td></tr>
+        <tr><td>Boolean</td><td><code>boolean</code></td><td>Values are <code>true</code> and <code>false</code>.</td></tr>
+      </tbody></table>
+      <p class="note"><strong>Validate converted input.</strong> <code>Number("oops")</code> gives <code>NaN</code>; <code>Number("")</code> gives 0. Reject blank text before conversion, then use <code>Number.isFinite(n)</code> for a finite number or <code>Number.isSafeInteger(n)</code> for a safe integer. <code>Number.parseInt("12cats", 10)</code> accepts a numeric prefix, so it is not a whole-input validator.</p>
+      <p class="sources">Official references: <a href="https://www.typescriptlang.org/docs/handbook/2/everyday-types.html">Primitive types</a></p>
+    </section>
+
+    <section class="sheet" id="text" aria-labelledby="text-title">
+      <div class="sheet-number">04 / Strings &amp; missing values</div>
+      <h2 id="text-title">Use unions to describe missing values.</h2>
+      <p class="lede">TypeScript has two missing-value markers: null and undefined. Under strict checking, include the intended marker in the type.</p>
+      <h3>Read, compare, and build text</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val name = "Gompei"
+val first = name[0]           // 'G'
+val size = name.length       // 6
+val greeting = "Hi, $name"
+val same = name == "Gompei"
+val part = name.substring(0, 3)</code></pre></div>
+        <div class="example typescript"><div class="language">TypeScript</div><pre><code>const name = "Gompei";
+const first = name[0];        // "G"
+const size = name.length;    // 6
+const greeting = `Hi, ${name}`;
+const same = name === "Gompei";
+const part = name.slice(0, 3); // "Gom"</code></pre></div>
+      </div>
+      <p>Strings are immutable and indexed from zero. TypeScript has no separate character type: indexing returns a string or <code>undefined</code> when out of bounds. <code>slice(start, end)</code> excludes the end. String length and indexing count UTF-16 code units, so a visible symbol may occupy more than one position.</p>
+      <h3>Safe access and a default</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>fun display(nickname: String?): String {
+    return nickname ?: "guest"
+}
+fun nameLength(nickname: String?): Int {
+    return nickname?.length ?: 0
+}
+println(display(null)) // guest</code></pre></div>
+        <div class="example typescript"><div class="language">TypeScript</div><pre><code>function display(
+  nickname: string | null
+): string {
+  return nickname ?? "guest";
+}
+function nameLength(
+  nickname: string | null
+): number {
+  return nickname?.length ?? 0;
+}
+console.log(display(null)); // guest</code></pre></div>
+      </div>
+      <p><code>|</code> means “one of these types.” <code>?.</code> stops on either missing marker and produces <code>undefined</code>; <code>??</code> supplies a fallback for either marker. It preserves <code>""</code>, <code>0</code>, and <code>false</code>. Using <code>||</code> instead would replace those values too.</p>
+      <p>A failed array <code>find</code> returns <code>undefined</code>. You may choose <code>null</code> to represent explicit absence in your own data. Follow each function’s return type; use <code>string | null | undefined</code> only when all three cases are part of the contract.</p>
+      <p class="note"><strong>A non-null assertion is not a check.</strong> TypeScript’s <code>value!</code> tells the checker to assume a value is present; it adds no runtime protection. Kotlin’s <code>!!</code> performs a runtime check. Prefer a branch, optional access, or a default to either assertion when absence is expected.</p>
+      <p class="sources">Official references: <a href="https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#null-and-undefined">Missing values</a> <a href="https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html">Optional access &amp; defaults</a></p>
+    </section>
+
+    <section class="sheet" id="decisions" aria-labelledby="decisions-title">
+      <div class="sheet-number">05 / if, when &amp; named choices</div>
+      <h2 id="decisions-title">Use branches and literal unions.</h2>
+      <p class="lede">TypeScript if and switch are statements. Use a conditional expression for a simple value choice, or return from branches.</p>
+      <h3>Choose one of two values</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val age = 20
+val label = if (age &gt;= 18) "adult" else "youth"
+
+fun sign(n: Int): String {
+    if (n &gt; 0) return "positive"
+    if (n &lt; 0) return "negative"
+    return "zero"
+}</code></pre></div>
+        <div class="example typescript"><div class="language">TypeScript</div><pre><code>const age = 20;
+const label = age &gt;= 18 ? "adult" : "youth";
+
+function sign(n: number): string {
+  if (n &gt; 0) return "positive";
+  if (n &lt; 0) return "negative";
+  return "zero";
+}</code></pre></div>
+      </div>
+      <h3>Name a finite set of choices</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>enum class Season {
+    SPRING, SUMMER, FALL, WINTER
+}
+fun clothing(s: Season): String = when (s) {
+    Season.SUMMER -&gt; "shorts"
+    Season.WINTER -&gt; "coat"
+    Season.SPRING, Season.FALL -&gt; "jacket"
+}
+val outfit = clothing(Season.FALL)</code></pre></div>
+        <div class="example typescript"><div class="language">TypeScript</div><pre><code>type Season =
+  | "spring" | "summer" | "fall" | "winter";
+
+function clothing(s: Season): string {
+  switch (s) {
+    case "summer": return "shorts";
+    case "winter": return "coat";
+    case "spring":
+    case "fall": return "jacket";
+  }
+}
+const outfit = clothing("fall");</code></pre></div>
+      </div>
+      <p>A string literal type permits that exact spelling. The union rejects a call such as <code>clothing("autumn")</code> during checking. A <code>type</code> declaration introduces a type name, not a runtime object or constructor. Literal unions work well for a small set of named choices and with the direct-running setup on sheet 1.</p>
+      <p>A <code>switch</code> compares cases using strict equality. A case continues into the next case unless it returns, throws, or uses <code>break</code>. Here each result returns immediately; the two adjacent cases intentionally share one result.</p>
+      <p class="note"><strong>Keep the cases complete.</strong> The explicit <code>: string</code> return type and strict checking catch a newly added choice that leaves a path without a return. Sheet 8 adds a <code>never</code> check to make exhaustive handling explicit.</p>
+      <p class="sources">Official references: <a href="https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#literal-types">Literal types</a> <a href="https://www.typescriptlang.org/docs/handbook/2/narrowing.html">Control flow &amp; narrowing</a></p>
+    </section>
+
+    <section class="sheet" id="functions" aria-labelledby="functions-title">
+      <div class="sheet-number">06 / Function design &amp; testing</div>
+      <h2 id="functions-title">Keep the contract and the examples.</h2>
+      <p class="lede">Write a purpose, type the inputs and result, and test representative and boundary cases before adding complexity.</p>
+      <h3>A complete function and executable examples</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>// Charge $2 per item; orders of at least
+// 10 items receive a $3 discount.
+// Requires count &gt;= 0.
+fun cost(count: Int): Int {
+    return if (count &gt;= 10) {
+        count * 2 - 3
+    } else {
+        count * 2
+    }
+}
+check(cost(0) == 0)
+check(cost(9) == 18)
+check(cost(10) == 17)
+check(cost(12) == 21)</code></pre></div>
+        <div class="example typescript"><div class="language">TypeScript</div><pre><code>import assert from "node:assert/strict";
+
+// Charge $2 per item; orders of at least
+// 10 items receive a $3 discount.
+// Requires a nonnegative integer count.
+function cost(count: number): number {
+  return count &gt;= 10
+    ? count * 2 - 3
+    : count * 2;
+}
+assert.equal(cost(0), 0);
+assert.equal(cost(9), 18);
+assert.equal(cost(10), 17);
+assert.equal(cost(12), 21);</code></pre></div>
+      </div>
+      <p>Run the file in WebStorm. Passing assertions are silent; a failure throws an error showing the mismatch. <code>assert.equal(actual, expected)</code> checks scalar results; <code>assert.deepEqual</code> checks the contents of simple arrays and objects. For a calculated decimal, test a tolerance, such as <code>assert.ok(Math.abs(actual - expected) &lt; 1e-9)</code>.</p>
+      <h3>Default arguments and functions without a result</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>fun greet(name: String = "guest"): String {
+    return "Hi, $name"
+}
+fun announce(message: String): Unit {
+    println(message)
+}
+announce(greet()) // Hi, guest</code></pre></div>
+        <div class="example typescript"><div class="language">TypeScript</div><pre><code>function greet(name = "guest"): string {
+  return `Hi, ${name}`;
+}
+function announce(message: string): void {
+  console.log(message);
+}
+announce(greet()); // Hi, guest</code></pre></div>
+      </div>
+      <p>Use <code>function</code> instead of <code>fun</code>. A block body needs <code>return</code> to produce a result. Return annotations are useful contracts even when inference could supply them. <code>void</code> describes a function whose result callers should ignore. A default applies to an omitted argument or <code>undefined</code>, but not <code>null</code>.</p>
+      <p class="note"><strong>Types do not express every precondition.</strong> A <code>number</code> parameter also accepts fractions and negative values. Check these when accepting outside input. TypeScript has no Kotlin-style named call arguments; an options object can give several parameters readable names. Keep <code>any</code> out of these contracts because it bypasses checking.</p>
+      <p class="sources">Official references: <a href="https://www.typescriptlang.org/docs/handbook/2/functions.html">Functions</a> <a href="https://nodejs.org/api/assert.html">Assertions</a></p>
+    </section>
+
+    <section class="sheet" id="records" aria-labelledby="records-title">
+      <div class="sheet-number">07 / Compound data &amp; copies</div>
+      <h2 id="records-title">Describe a shape. Create an object.</h2>
+      <p class="lede">An interface describes an object’s fields. It does not create a constructor or generate equality and copy methods.</p>
+      <h3>A record and a changed copy</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>data class Book(
+    val title: String,
+    val pages: Int
+)
+val book = Book("Trees", 80)
+val revised = book.copy(pages = 96)
+val title = book.title
+val (name, pageCount) = book
+// book.pages is still 80.</code></pre></div>
+        <div class="example typescript"><div class="language">TypeScript</div><pre><code>interface Book {
+  readonly title: string;
+  readonly pages: number;
+}
+const book: Book = {
+  title: "Trees", pages: 80
+};
+const revised: Book = { ...book, pages: 96 };
+const title = book.title;
+const { title: name, pages: pageCount } = book;
+// book.pages is still 80.</code></pre></div>
+      </div>
+      <p><code>readonly</code> prevents field assignment through this type. Object spread copies the fields into a new object; later fields override earlier ones. Destructuring uses property names, with <code>title: name</code> giving a local name. Spread is shallow: nested objects remain shared.</p>
+      <h3>Compare contents deliberately</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin · reuses Book</div><pre><code>val a = Book("Trees", 80)
+val b = Book("Trees", 80)
+val same = a == b      // true
+val identical = a === b // false</code></pre></div>
+        <div class="example typescript"><div class="language">TypeScript · reuses Book</div><pre><code>const a: Book = { title: "Trees", pages: 80 };
+const b: Book = { title: "Trees", pages: 80 };
+const same = a.title === b.title
+  &amp;&amp; a.pages === b.pages; // true
+const identical = a === b; // false</code></pre></div>
+      </div>
+      <p>For objects and arrays, <code>===</code> compares identity. Two objects with matching contents are still distinct. In tests, use <code>assert.deepEqual(a, b)</code> from sheet 6 for these simple records.</p>
+      <p>TypeScript uses <strong>structural typing</strong>: compatibility follows the required members. A value need not declare that it implements <code>Book</code> to satisfy that type. Fresh object literals receive extra checks that can catch misspelled fields. Classes are available when you need constructors and methods; plain objects suit these data descriptions.</p>
+      <p class="note"><strong>Optional means the property may be absent.</strong> <code>subtitle?: string</code> permits leaving out <code>subtitle</code>. Reading it yields <code>string | undefined</code>. With this guide’s settings, explicitly storing <code>undefined</code> requires a type that includes it. <code>readonly</code> is a checking rule, not a runtime freeze, and does not recursively freeze nested data.</p>
+      <p class="sources">Official references: <a href="https://www.typescriptlang.org/docs/handbook/2/objects.html">Object types &amp; read-only fields</a> <a href="https://www.typescriptlang.org/docs/handbook/type-compatibility.html">Structural compatibility</a></p>
+    </section>
+
+    <section class="sheet" id="variants" aria-labelledby="variants-title">
+      <div class="sheet-number">08 / Sum types &amp; type checks</div>
+      <h2 id="variants-title">Tag each case of a union.</h2>
+      <p class="lede">A discriminated union describes alternatives with different fields. A shared tag lets a branch identify the case and its available data.</p>
+      <h3>Inventory the fields for each case</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>sealed interface Shape
+data class Circle(val radius: Double): Shape
+data class Rectangle(
+    val width: Double,
+    val height: Double
+): Shape
+
+fun area(s: Shape): Double = when (s) {
+    is Circle -&gt; Math.PI * s.radius * s.radius
+    is Rectangle -&gt; s.width * s.height
+}
+val disk: Shape = Circle(2.0)
+val result = area(disk)</code></pre></div>
+        <div class="example typescript"><div class="language">TypeScript</div><pre><code>type Shape =
+  | { readonly kind: "circle";
+      readonly radius: number }
+  | { readonly kind: "rectangle";
+      readonly width: number;
+      readonly height: number };
+
+function area(s: Shape): number {
+  switch (s.kind) {
+    case "circle":
+      return Math.PI * s.radius ** 2;
+    case "rectangle":
+      return s.width * s.height;
+    default: return unreachable(s);
+  }
+}
+function unreachable(value: never): never {
+  throw new Error(`Unexpected case: ${value}`);
+}
+const disk: Shape = { kind: "circle", radius: 2 };
+const result = area(disk);</code></pre></div>
+      </div>
+      <p>The literal <code>kind</code> is the discriminant. Inside each case, the checker narrows <code>s</code> to the matching shape, similar to Kotlin’s smart cast. After every case is handled, no possible member remains: its type is <code>never</code>. Adding a variant without handling it makes the call to <code>unreachable</code> a type error.</p>
+      <h3>Check an unknown value before using it</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>fun textLength(value: Any?): Int {
+    return if (value is String) {
+        value.length
+    } else {
+        0
+    }
+}</code></pre></div>
+        <div class="example typescript"><div class="language">TypeScript</div><pre><code>function textLength(value: unknown): number {
+  if (typeof value === "string") {
+    return value.length;
+  }
+  return 0;
+}</code></pre></div>
+      </div>
+      <p><code>unknown</code> accepts any input but requires evidence before you use its fields or operations. <code>typeof</code> checks primitive categories. For object input, check that it is non-null, then validate the tag and required fields. A tag alone does not prove that the remaining fields are valid.</p>
+      <p class="note"><strong>Type names disappear at runtime.</strong> You cannot use <code>instanceof Shape</code> for this union or <code>instanceof Book</code> for an interface. Use tags and field checks; <code>instanceof</code> needs a runtime constructor. Writing <code>value as Shape</code> merely asserts a type to the checker; it neither converts nor validates the value.</p>
+      <p class="sources">Official references: <a href="https://www.typescriptlang.org/docs/handbook/2/narrowing.html#discriminated-unions">Discriminated unions &amp; exhaustiveness</a> <a href="https://www.typescriptlang.org/docs/handbook/2/functions.html#unknown">Unknown inputs</a></p>
+    </section>
+
+    <section class="sheet" id="lists" aria-labelledby="lists-title">
+      <div class="sheet-number">09 / Lists &amp; operations</div>
+      <h2 id="lists-title">Use arrays for ordered collections.</h2>
+      <p class="lede">A number[] is a mutable array of numbers. A readonly number[] exposes a read-only view, similar to Kotlin List&lt;Int&gt;.</p>
+      <h3>Create, inspect, and rebuild</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val scores: List&lt;Int&gt; = listOf(10, 20, 30)
+val empty: List&lt;Int&gt; = emptyList()
+val size = scores.size            // 3
+val first = scores.firstOrNull()  // 10
+val missing = scores.getOrNull(8) // null
+val rest = scores.drop(1)         // [20, 30]
+val more = scores + 40
+val has20 = 20 in scores          // true</code></pre></div>
+        <div class="example typescript"><div class="language">TypeScript</div><pre><code>const scores: readonly number[] = [10, 20, 30];
+const empty: readonly number[] = [];
+const size = scores.length;    // 3
+const first = scores[0];       // 10
+const missing = scores[8];     // undefined
+const rest = scores.slice(1);  // [20, 30]
+const more = [...scores, 40];
+const has20 = scores.includes(20); // true</code></pre></div>
+      </div>
+      <p>Indices start at zero. With <code>noUncheckedIndexedAccess</code>, an ordinary array lookup has type <code>number | undefined</code>, even when this particular example has an element there. Check before using the result, or use a default when it fits the contract. Out-of-range reads do not throw.</p>
+      <h3>Sort without changing the original</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val values = listOf(3, 20, 1)
+val sorted = values.sorted() // [1, 3, 20]
+val reversed = values.reversed()
+val words = listOf("red", "blue")
+val text = words.joinToString(", ")</code></pre></div>
+        <div class="example typescript"><div class="language">TypeScript</div><pre><code>const values = [3, 20, 1];
+const sorted = values.toSorted((a, b) =&gt; a - b);
+// [1, 3, 20]; values stays [3, 20, 1].
+const reversed = values.toReversed();
+const words = ["red", "blue"];
+const text = words.join(", ");</code></pre></div>
+      </div>
+      <p><code>toSorted</code> and <code>toReversed</code> return new arrays and are available in the chosen runtime. Numeric sorting needs a comparator: a negative result puts <code>a</code> first, zero ties, and a positive result puts <code>b</code> first. Without one, numbers sort by their string forms.</p>
+      <table><thead><tr><th>Kotlin</th><th>TypeScript</th><th>Result</th></tr></thead><tbody>
+        <tr><td><code>xs.isEmpty()</code></td><td><code>xs.length === 0</code></td><td>Boolean empty check</td></tr>
+        <tr><td><code>xs.take(2)</code></td><td><code>xs.slice(0, 2)</code></td><td>Up to two leading elements</td></tr>
+        <tr><td><code>xs.lastOrNull()</code></td><td><code>xs.at(-1)</code></td><td>Last element, or a missing marker</td></tr>
+      </tbody></table>
+      <p class="note"><strong>Check equality and membership intentionally.</strong> Arrays use identity equality; compare contents explicitly or use deep assertions in tests. <code>includes</code> finds an object by identity, so use <code>some</code> with a field comparison to find matching data. <code>in</code> checks property keys, not array membership. Empty arrays act as true in conditions.</p>
+      <p class="sources">Official references: <a href="https://www.typescriptlang.org/docs/handbook/2/objects.html#the-readonlyarray-type">Read-only arrays</a> <a href="https://www.typescriptlang.org/tsconfig/lib.html">Built-in API types</a></p>
+    </section>
+
+    <section class="sheet" id="higher-order" aria-labelledby="higher-order-title">
+      <div class="sheet-number">10 / Lambdas, map, filter &amp; fold</div>
+      <h2 id="higher-order-title">Pass an arrow function.</h2>
+      <p class="lede">Array operations keep the familiar “transform, select, combine” design. TypeScript writes the callback inside the call’s parentheses.</p>
+      <h3>Transform, select, reduce, and search</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val scores = listOf(10, 20, 30)
+val doubled = scores.map { it * 2 }
+// [20, 40, 60]
+val high = scores.filter { it &gt;= 20 }
+// [20, 30]
+val total = scores.fold(0) { acc, n -&gt;
+    acc + n
+} // 60
+val found = scores.find { it &gt; 15 } // 20
+val anyHigh = scores.any { it &gt;= 20 }
+val allHigh = scores.all { it &gt;= 20 }</code></pre></div>
+        <div class="example typescript"><div class="language">TypeScript</div><pre><code>const scores = [10, 20, 30];
+const doubled = scores.map(n =&gt; n * 2);
+// [20, 40, 60]
+const high = scores.filter(n =&gt; n &gt;= 20);
+// [20, 30]
+const total = scores.reduce(
+  (acc, n) =&gt; acc + n, 0
+); // 60
+const found = scores.find(n =&gt; n &gt; 15); // 20
+const anyHigh = scores.some(n =&gt; n &gt;= 20);
+const allHigh = scores.every(n =&gt; n &gt;= 20);</code></pre></div>
+      </div>
+      <p><code>reduce(callback, initial)</code> puts the initial accumulator last. Always supply it for a fold: on an empty array this returns the initial value; omitting it throws. <code>find</code> returns the first match or <code>undefined</code>. <code>some</code> is false on an empty array; <code>every</code> is true.</p>
+      <h3>A function that accepts a function</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>fun applyTwice(
+    n: Int, f: (Int) -&gt; Int
+): Int = f(f(n))
+
+val result = applyTwice(3) { it + 1 }
+// 5</code></pre></div>
+        <div class="example typescript"><div class="language">TypeScript</div><pre><code>function applyTwice(
+  n: number, f: (x: number) =&gt; number
+): number {
+  return f(f(n));
+}
+const result = applyTwice(3, x =&gt; x + 1);
+// 5</code></pre></div>
+      </div>
+      <p>An expression arrow, <code>n =&gt; n * 2</code>, returns its expression. A block arrow, <code>n =&gt; { return n * 2; }</code>, needs an explicit return. Wrap an object result in parentheses: <code>n =&gt; ({ value: n })</code>. Callback parameter types are usually inferred from the array or function contract.</p>
+      <p class="note"><strong>Know what a callback receives.</strong> Array callbacks can receive the element, index, and array. Write <code>texts.map(text =&gt; Number.parseInt(text, 10))</code> when you need to fix the radix; passing <code>Number.parseInt</code> directly accidentally uses the index as the radix. Use <code>map</code> for result values and <code>for…of</code> for a sequence of effects.</p>
+      <p class="sources">Official references: <a href="https://www.typescriptlang.org/docs/handbook/2/functions.html#function-type-expressions">Function types &amp; callbacks</a></p>
+    </section>
+
+    <section class="sheet" id="mutation" aria-labelledby="mutation-title">
+      <div class="sheet-number">11 / Mutation &amp; shared values</div>
+      <h2 id="mutation-title">Assignment can share an object.</h2>
+      <p class="lede">Reassigning a variable and changing an object are different operations. const prevents only the first.</p>
+      <h3>Update numbers and array elements</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>var count = 1
+count += 2
+count++ // 4
+
+val scores = mutableListOf(10, 20)
+scores[0] = 11
+scores.add(30)
+val removed = scores.removeAt(1)
+// removed: 20; scores: [11, 30]</code></pre></div>
+        <div class="example typescript"><div class="language">TypeScript</div><pre><code>let count = 1;
+count += 2;
+count++; // 4
+
+const scores = [10, 20];
+scores[0] = 11;
+scores.push(30);
+const removed = scores.splice(1, 1)[0];
+// removed: 20; scores: [11, 30]</code></pre></div>
+      </div>
+      <p><code>splice(start, count)</code> removes elements in place and returns an array of removed elements; its first element may be <code>undefined</code> if none was removed. <code>slice</code> creates a copy without changing the original. <code>pop()</code> removes the last element, or returns <code>undefined</code> if empty.</p>
+      <h3>Distinguish an alias from a copy</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val original = mutableListOf(1, 2)
+val alias = original
+alias[0] = 99
+// original is now [99, 2].
+
+val separate = original.toMutableList()
+separate[0] = 7
+// original is still [99, 2].</code></pre></div>
+        <div class="example typescript"><div class="language">TypeScript</div><pre><code>const original = [1, 2];
+const alias = original;
+alias[0] = 99;
+// original is now [99, 2].
+
+const separate = [...original];
+separate[0] = 7;
+// original is still [99, 2].</code></pre></div>
+      </div>
+      <p>A function that mutates an array or object parameter can affect the caller’s data. For a function that only reads an array, accept <code>readonly number[]</code>. Both mutable and read-only arrays can then be passed in, and the function cannot call mutating array methods through that parameter.</p>
+      <p class="note"><strong>Copies and read-only views are shallow.</strong> Spreading an array copies the array, not its element objects. Mutating a shared element still affects both arrays. Likewise, a read-only array of mutable objects permits changing their fields. Choose read-only field types too when the design requires them, and rebuild nested objects when making independent changed copies.</p>
+      <p><code>sort</code> and <code>reverse</code> mutate; <code>toSorted</code> and <code>toReversed</code> return new arrays. Avoid assigning beyond the end or using <code>delete scores[i]</code>, which can create gaps; use array operations that preserve the intended sequence.</p>
+      <p class="sources">Official references: <a href="https://www.typescriptlang.org/docs/handbook/2/objects.html#readonly-properties">Read-only properties</a> <a href="https://www.typescriptlang.org/docs/handbook/variable-declarations.html#spread">Spread &amp; copies</a></p>
+    </section>
+
+    <section class="sheet" id="loops" aria-labelledby="loops-title">
+      <div class="sheet-number">12 / Loops, ranges &amp; input</div>
+      <h2 id="loops-title">Visit values with for…of.</h2>
+      <p class="lede">A for…of loop visits array elements. A counter loop expresses a range; a while loop repeats while its condition holds.</p>
+      <h3>Visit values and count through a range</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>val scores = listOf(10, 20, 30)
+var total = 0
+for (score in scores) {
+    total += score
+} // 60
+for (i in 1..3) println(i) // 1, 2, 3
+for (i in 0 until 3) println(i) // 0, 1, 2
+for (i in 3 downTo 1) println(i) // 3, 2, 1</code></pre></div>
+        <div class="example typescript"><div class="language">TypeScript</div><pre><code>const scores = [10, 20, 30];
+let total = 0;
+for (const score of scores) {
+  total += score;
+} // 60
+for (let i = 1; i &lt;= 3; i++) console.log(i);
+for (let i = 0; i &lt; 3; i++) console.log(i);
+for (let i = 3; i &gt;= 1; i--) console.log(i);</code></pre></div>
+      </div>
+      <p>A counter loop has initialization, a condition checked before each iteration, and an update afterward. Use <code>i += 2</code> for a step of two. For both index and value, use <code>for (const [i, score] of scores.entries())</code>. Avoid <code>for…in</code> for array values: it visits property keys.</p>
+      <h3>Read text until a sentinel</h3>
+      <div class="pair">
+        <div class="example kotlin"><div class="language">Kotlin</div><pre><code>while (true) {
+    print("Word (quit to stop): ")
+    val word = readlnOrNull() ?: break
+    if (word == "quit") break
+    if (word.isEmpty()) continue
+    println(word.uppercase())
+}</code></pre></div>
+        <div class="example typescript"><div class="language">TypeScript · input.ts</div><pre><code>import { createInterface } from "node:readline";
+import { stdin, stdout } from "node:process";
+
+const lines = createInterface({
+  input: stdin, output: stdout,
+  terminal: false
+});
+console.log("Words (quit to stop):");
+try {
+  for await (const word of lines) {
+    if (word === "quit") break;
+    if (word.length === 0) continue;
+    console.log(word.toUpperCase());
+  }
+} finally {
+  lines.close();
+}</code></pre></div>
+      </div>
+      <p>Run <code>input.ts</code> in WebStorm’s Terminal with <code>node input.ts</code> for interactive input. <code>for await…of</code> waits for each incoming line and ends at end-of-input. The imports make this a module, where top-level <code>await</code> is allowed by the setup on sheet 1. <code>finally</code> closes the input interface even when a loop exits early or throws.</p>
+      <p class="note"><strong>Input is text.</strong> The input loop prints one initial prompt and echoes nonempty words in uppercase. Convert numeric text deliberately using the checks on sheet 3. <code>break</code> exits the nearest loop; <code>continue</code> skips to its next iteration. An ordinary <code>while (condition) { … }</code> is also available when the repetition is driven by changing state.</p>
+      <p class="sources">Official references: <a href="https://www.typescriptlang.org/docs/handbook/iterators-and-generators.html">Iteration</a> <a href="https://nodejs.org/api/readline.html#rlsymbolasynciterator">Line input &amp; asynchronous iteration</a></p>
+    </section>
+  </main>
+  <footer class="footer"><p>CS1101 · Transfer Reference to TypeScript · <a href="#main">Back to contents</a> · <a href="index.html">All readings</a></p></footer>
+</body>
+</html>
