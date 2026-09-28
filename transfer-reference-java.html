@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="A printable Kotlin-to-Java reference for CS1101: functions, tests, records, sealed interfaces, lists, streams, mutation, and loops."><title>Transfer Reference to Java | CS1101</title><link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="transfer-reference.css"></head><body>
+<div class="toolbar"><a href="transfer-references.html">← Transfer references</a><button type="button" onclick="window.print()">Print / Save as PDF</button></div>
+<main id="main"><header class="cover"><div class="eyebrow">CS1101 · Beyond Kotlin · Transfer reference 03</div><h1>Transfer Reference<br>to <span>Java</span></h1><p class="intro">Keep the design habits. Learn the new spelling. Turn the functions, tests, and data you know from Kotlin into Java programs.</p><div class="metadata"><span>Java 21–24</span><span>Standard library only</span><span>Kotlin first, Java second</span><span>12 topic sheets</span></div><p>Read each comparison from left to right (top to bottom on a phone). Examples are independent unless reuse is stated. Kotlin executable statements belong in <code>main</code>; definitions can go at file level. Java placement is explained on sheet 1. Comments show expected results.</p><nav aria-label="Reference contents"><ol class="contents"><li><a href="#start"><span>01</span>Files, running &amp; debugging</a></li>
+<li><a href="#names"><span>02</span>Names, assignment &amp; scope</a></li>
+<li><a href="#values"><span>03</span>Numbers &amp; Booleans</a></li>
+<li><a href="#text"><span>04</span>Strings &amp; missing values</a></li>
+<li><a href="#decisions"><span>05</span>if, when &amp; named choices</a></li>
+<li><a href="#functions"><span>06</span>Function design &amp; testing</a></li>
+<li><a href="#records"><span>07</span>Compound data &amp; copies</a></li>
+<li><a href="#variants"><span>08</span>Sum types &amp; type checks</a></li>
+<li><a href="#lists"><span>09</span>Lists &amp; operations</a></li>
+<li><a href="#higher-order"><span>10</span>Lambdas, map, filter &amp; fold</a></li>
+<li><a href="#mutation"><span>11</span>Mutation &amp; shared values</a></li>
+<li><a href="#loops"><span>12</span>Loops, ranges &amp; input</a></li></ol></nav><div class="note"><strong>Carry these habits forward:</strong> state a purpose, describe inputs and outputs, write examples, inventory the data, then implement and test. Java changes how you express that plan.</div><p class="screen-only">Use <strong>Print / Save as PDF</strong> for a paper copy. Choose portrait, Letter or A4, 100% scale, and turn off browser headers and footers. Numbered topics start on fresh pages; sheets 6, 7, and 8 continue onto a second page.</p></header>
+<section class="sheet" id="start" aria-labelledby="start-title"><div class="sheet-number">01 / Files, running &amp; debugging</div><h2 id="start-title">Keep IntelliJ. Add a Java class.</h2><p class="lede">A JDK supplies the compiler and runtime. This guide uses Java 21–24 with no preview features.</p><h3>A complete starting file</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>fun main() {
+    val name = "Gompei"
+    println("Hello, $name!")
+}</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>public class Hello {
+    public static void main(String[] args) {
+        final String name = "Gompei";
+        System.out.println("Hello, " + name + "!");
+    }
+}</code></pre></div></div><p>Save the Java program as <code>Hello.java</code>: the public class and filename must agree. Braces group statements; most statements end with a semicolon. <code>public</code> makes the entry point accessible, <code>static</code> means it needs no object, and <code>void</code> means it returns no result. <code>args</code> holds command-line arguments.</p><h3>Library calls and imports</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>import kotlin.math.sqrt
+
+fun main() {
+    println(sqrt(81.0)) // 9.0
+}</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>public class Roots {
+    public static void main(String[] args) {
+        System.out.println(Math.sqrt(81.0));
+    }
+}</code></pre></div></div><ol class="steps"><li><strong>Create:</strong> make a Java project in IntelliJ IDEA, select a JDK from 21 through 24, and add a Java class. Match the project language level to that JDK.</li><li><strong>Run in IntelliJ:</strong> just as with Kotlin, click the gutter arrow beside <code>main</code> and choose Run. The IDE compiles and runs the program; read its output in the Run window.</li><li><strong>Debug in IntelliJ:</strong> use the same workflow as Kotlin: click the gutter to set a breakpoint, then choose Debug instead of Run. Inspect variables, Step Over a line, Step Into a call, and Resume.</li><li><strong>Read errors:</strong> fix compiler errors before running. For a runtime exception, read its type and message, then locate your first relevant source line in the stack trace.</li></ol><p class="note"><strong>Optional terminal workflow:</strong> run <code>javac Hello.java</code>, then <code>java Hello</code> from the same directory. These commands compile and run separately; IntelliJ handles those steps when you use Run or Debug.</p><p class="note"><strong>Snippet convention:</strong> unless a complete class is shown, put Java methods and nested type declarations inside <code>class Demo { … }</code>, and executable statements inside its <code>public static void main(String[] args)</code>. Put imports before the class; a comment such as <code>// import java.util.List;</code> names an import to add there without the comment markers. Examples are independent except where reuse is stated. <code>Math</code> and <code>String</code> need no import; types such as <code>List</code> do.</p><p class="sources">Official references: <a href="https://www.jetbrains.com/help/idea/running-applications.html">Running in IntelliJ</a><a href="https://docs.oracle.com/en/java/javase/24/docs/specs/man/javac.html">javac</a><a href="https://docs.oracle.com/en/java/javase/24/docs/specs/man/java.html">java launcher</a></p></section>
+<section class="sheet" id="names" aria-labelledby="names-title"><div class="sheet-number">02 / Names, assignment &amp; scope</div><h2 id="names-title">Put the type before the name.</h2><p class="lede">Java checks types at compile time. Local type inference does not make a variable dynamically typed.</p><h3>Fixed bindings and reassignment</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>val limit: Int = 3
+var count: Int = 0
+count += 1
+val label = "ready"</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>final int limit = 3;
+int count = 0;
+count += 1;
+var label = "ready"; // inferred String
+// label = 7; // compile error</code></pre></div></div><p><code>final</code> prevents a variable from being reassigned, like a Kotlin <code>val</code>. After <code>final int limit = 3;</code>, you cannot assign <code>limit = 4;</code>. A Java local <code>var</code> infers a fixed type but permits reassignment, unlike Kotlin <code>val</code>. Use <code>final var</code> to infer the type while preventing reassignment. Java <code>var</code> needs an initializer and cannot replace a method parameter or return type.</p><h3>What does static mean?</h3><p><code>static</code> means a member belongs to the class, rather than to each object. Call <code>Math.sqrt(81.0)</code> without creating a <code>Math</code> object. A static field is shared by the class instead of having a separate value for each object. <code>final</code> answers whether a variable can be reassigned; <code>static</code> answers whether a member belongs to the class or to an object. Sheet 6 explains when to choose a static method.</p><h3>Blocks and parameters have local names</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>fun nextCount(count: Int): Int {
+    val next = count + 1
+    return next
+}
+val ready = true
+if (ready) {
+    val message = "go"
+    println(message)
+}
+// message is out of scope.</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>static int nextCount(int count) {
+    int next = count + 1;
+    return next;
+}
+// In main:
+boolean ready = true;
+if (ready) {
+    String message = "go";
+    System.out.println(message);
+}
+// message is out of scope.</code></pre></div></div><p>Parameters and local declarations belong to their method or block. Local variables must be assigned before use: <code>int total;</code> does not give a local variable a usable zero value. Fields and array elements do receive default values, but explicit initialization often communicates intent better.</p><p class="note"><strong>final does not freeze an object.</strong> <code>final</code> prevents a variable from being reassigned. If it holds a mutable list, you can still add or remove elements; you just cannot assign a different list to that variable. See sheet 11.</p><p class="sources">Official references: <a href="https://docs.oracle.com/en/java/javase/24/language/local-variable-type-inference.html">Local type inference</a><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/package-summary.html">Core types</a></p></section>
+<section class="sheet" id="values" aria-labelledby="values-title"><div class="sheet-number">03 / Numbers &amp; Booleans</div><h2 id="values-title">Recognize primitives and their boxed forms.</h2><p class="lede">Kotlin Int, Double, and Boolean usually become Java int, double, and boolean in simple calculations.</p><h3>Arithmetic and conversion</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>val whole = 7 / 2          // 3
+val decimal = 7.0 / 2      // 3.5
+val remainder = -7 % 2     // -1
+val converted = 7.toDouble()
+val parsed = "42".toInt()
+val text = 42.toString()</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>int whole = 7 / 2;         // 3
+double decimal = 7.0 / 2;   // 3.5
+int remainder = -7 % 2;    // -1
+double converted = (double) 7;
+int parsed = Integer.parseInt("42");
+String text = Integer.toString(42);</code></pre></div></div><p>Both languages truncate integer division toward zero. Converting after division cannot recover a fraction: <code>(double) (7 / 2)</code> is <code>3.0</code>. Convert an operand first. Java allows widening conversions such as <code>int</code> to <code>double</code>; narrowing usually needs a cast. Invalid integer text throws <code>NumberFormatException</code>.</p><h3>Comparisons and short-circuit logic</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>val age = 20
+val enrolled = true
+val eligible = age &gt;= 18 &amp;&amp; enrolled
+val needsHelp = !enrolled || age &lt; 18
+val squareRoot = kotlin.math.sqrt(81.0)</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>int age = 20;
+boolean enrolled = true;
+boolean eligible = age &gt;= 18 &amp;&amp; enrolled;
+boolean needsHelp = !enrolled || age &lt; 18;
+double squareRoot = Math.sqrt(81.0);</code></pre></div></div><h3>Why are there two forms of each primitive type?</h3><p>Java separates simple values from objects. A primitive such as <code>int</code> stores an integer value directly and cannot be null. Its wrapper class, <code>Integer</code>, represents an integer as an object. Each primitive has a wrapper; the same distinction applies to the other pairs below.</p><p>Primitives support calculations without requiring a wrapper object. Wrappers let values participate in APIs that expect objects, including generic collections: <code>List&lt;Integer&gt;</code> is valid, but <code>List&lt;int&gt;</code> is not. A wrapper variable can also hold <code>null</code> for a missing value. Prefer primitives for ordinary calculations; use wrappers when an API or missing-value convention requires them.</p><table><thead><tr><th>Kotlin</th><th>Java primitive</th><th>Java wrapper / generic argument</th></tr></thead><tbody><tr><td>Byte</td><td>byte</td><td>Byte</td></tr><tr><td>Short</td><td>short</td><td>Short</td></tr><tr><td>Float</td><td>float</td><td>Float</td></tr><tr><td>Int</td><td>int</td><td>Integer</td></tr><tr><td>Long</td><td>long</td><td>Long</td></tr><tr><td>Double</td><td>double</td><td>Double</td></tr><tr><td>Boolean</td><td>boolean</td><td>Boolean</td></tr><tr><td>Char</td><td>char</td><td>Character</td></tr></tbody></table><p class="note"><strong>Numbers have limits.</strong> Java <code>int</code> is a signed 32-bit integer; overflow wraps. <code>double</code> uses binary floating point, so use a tolerance for calculated decimal results. Java often converts automatically: <code>Integer boxed = 7;</code> boxes an <code>int</code>, and <code>int n = boxed;</code> unboxes it. Unboxing <code>null</code> throws <code>NullPointerException</code>. Compare wrapper contents with <code>equals</code>, not reference <code>==</code>.</p><p class="sources">Official references: <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Integer.html">Integer</a><a href="https://docs.oracle.com/javase/tutorial/java/data/autoboxing.html">Boxing and unboxing</a><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Math.html">Math</a></p></section>
+<section class="sheet" id="text" aria-labelledby="text-title"><div class="sheet-number">04 / Strings &amp; missing values</div><h2 id="text-title">Use equals for object contents.</h2><p class="lede">Java has no Kotlin-style nullable type suffix or safe-call operator. A String reference may hold null.</p><h3>Read, compare, and build text</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>val name = "Gompei"
+val first = name[0]           // 'G'
+val size = name.length       // 6
+val greeting = "Hi, $name"
+val same = name == "Gompei"
+val part = name.substring(0, 3) // "Gom"</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>String name = "Gompei";
+char first = name.charAt(0);  // 'G'
+int size = name.length();     // 6
+String greeting = "Hi, " + name;
+boolean same = name.equals("Gompei");
+String part = name.substring(0, 3);</code></pre></div></div><p>Strings are immutable in both languages. Indices start at zero and the substring end is excluded. Java <code>==</code> compares object identity for references, not string contents. Use <code>equals</code> for contents; <code>Objects.equals(a, b)</code> also handles null. For primitive numbers and enum constants, <code>==</code> is appropriate.</p><h3>Handle a missing value explicitly</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>val nickname: String? = null
+val length = nickname?.length ?: 0
+val display = nickname ?: "guest"
+println(display) // guest</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>String nickname = null;
+int length = nickname == null
+    ? 0 : nickname.length();
+String display = nickname == null
+    ? "guest" : nickname;
+System.out.println(display); // guest</code></pre></div></div><p>The conditional operator <code>condition ? yes : no</code> chooses one value. Check for null before calling an instance method. <code>nickname.length()</code> would throw <code>NullPointerException</code> here. Java reference types do not enforce the non-null promise that ordinary Kotlin types provide.</p><p class="note"><strong>Optional is another return convention.</strong> A search can return <code>Optional&lt;String&gt;</code> instead of a possibly-null string. Use <code>orElse("guest")</code> to supply a fallback. An empty Optional differs from an empty string. Follow the API’s stated convention; see the search example on sheet 10.</p><p class="sources">Official references: <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html">String</a><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Objects.html">Objects</a><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Optional.html">Optional</a></p></section>
+<section class="sheet" id="decisions" aria-labelledby="decisions-title"><div class="sheet-number">05 / if, when &amp; named choices</div><h2 id="decisions-title">Use if for actions, ?: or switch for values.</h2><p class="lede">Much everyday Java code uses statements and variable updates, unlike the expression-oriented style we have practiced in Kotlin.</p><p>An <strong>expression</strong> produces a value; a <strong>statement</strong> directs an action. In Kotlin we often assign the result of an entire <code>if</code> or <code>when</code>. Java commonly declares a variable and assigns or updates it inside a branch. Java <code>if</code> itself produces no value; <code>?:</code> and modern switch expressions offer value-producing alternatives.</p><h3>A common statement-oriented translation</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>val age = 21
+val label = if (age &gt; 21) {
+    "adult"
+} else {
+    "youth"
+}</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>int age = 21;
+String label;
+if (age &gt; 21) {
+    label = "adult";
+} else {
+    label = "youth";
+}
+System.out.println(label); // youth</code></pre></div></div><p>Both branches assign <code>label</code>, so it is safe to use afterward. This example assigns it once on either path; longer Java procedures often reassign variables as they work. That is common style, not a requirement to make everything mutable. Use <code>final</code> when reassignment is unnecessary, and expressions when they make the result clearer.</p><h3>Two choices and a named set of choices</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>val age = 21
+val label = if (age &gt; 21) "adult" else "youth"
+
+enum class Season { SPRING, SUMMER, FALL, WINTER }
+fun clothing(s: Season): String = when (s) {
+    Season.SUMMER -&gt; "shorts"
+    Season.WINTER -&gt; "coat"
+    Season.SPRING, Season.FALL -&gt; "jacket"
+}</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>// In main:
+int age = 21;
+String label = age &gt; 21 ? "adult" : "youth";
+
+// Inside Demo, outside main:
+enum Season { SPRING, SUMMER, FALL, WINTER }
+static String clothing(Season s) {
+    return switch (s) {
+        case SUMMER -&gt; "shorts";
+        case WINTER -&gt; "coat";
+        case SPRING, FALL -&gt; "jacket";
+    };
+}</code></pre></div></div><p>Each arrow chooses one branch without falling through. The semicolon after the closing brace ends the return statement. Covering every enum constant makes this switch exhaustive without a <code>default</code>. A block branch uses <code>yield</code> to supply its value. Pass a non-null season.</p><h3>Ordered conditions</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>fun signLabel(n: Int): String = when {
+    n &lt; 0 -&gt; "negative"
+    n == 0 -&gt; "zero"
+    else -&gt; "positive"
+}</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>static String signLabel(int n) {
+    if (n &lt; 0) {
+        return "negative";
+    } else if (n == 0) {
+        return "zero";
+    } else {
+        return "positive";
+    }
+}</code></pre></div></div><p class="note"><strong>Keep the same case analysis.</strong> A Kotlin <code>when</code> with arbitrary Boolean conditions often becomes an <code>if / else if / else</code> chain. Do not force every condition into a switch. Pattern switches over sealed data appear on sheet 8.</p><p class="sources">Official references: <a href="https://docs.oracle.com/en/java/javase/24/language/switch-expressions-and-statements.html">Switch expressions</a></p></section>
+<section class="sheet" id="functions" aria-labelledby="functions-title"><div class="sheet-number">06 / Function design &amp; testing</div><h2 id="functions-title">A static method can play the role of a function.</h2><p class="lede">Keep the purpose, signature, stub, examples, inventory, implementation, and debugging steps.</p><h3>Purpose, signature, and implementation</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>/** Computes a package's shipping cost. */
+fun shippingCost(weight: Double,
+                 express: Boolean): Double {
+    val base = if (weight &lt;= 1.0) 5.0
+        else 5.0 + (weight - 1.0) * 1.5
+    return base + if (express) 6.0 else 0.0
+}</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>/** Computes a package's shipping cost. */
+static double shippingCost(double weight,
+                           boolean express) {
+    double base = weight &lt;= 1.0 ? 5.0
+        : 5.0 + (weight - 1.0) * 1.5;
+    return base + (express ? 6.0 : 0.0);
+}</code></pre></div></div><p>Java puts the return type before the method name and each parameter type before its name. A stub could return <code>0.0</code> until the calculation is ready. Methods returning no result use <code>void</code>. Java has no named arguments or default parameter values: pass every argument in order, or define an overload that delegates to another method.</p><div class="sheet-continuation"><h3>Deciding whether a method should be static</h3><p>An instance call such as <code>player.awardPoint()</code> implicitly supplies <code>player</code> as <code>this</code>. Its fields are available without being listed as parameters. Use static only when an operation needs no such implicit object state. In idiomatic object-oriented Java, use static sparingly; many classes need no static methods. Independent utilities remain a useful exception.</p><ol class="steps"><li><strong>Does it read or change this object’s fields?</strong> Use an instance method, without <code>static</code>: <code>player.awardPoint()</code> updates that player’s points.</li><li><strong>Does it implement an interface operation or behavior that varies by object?</strong> Use an instance method, even if it currently needs no fields. See sheet 8.</li><li><strong>Is it an independent calculation with explicit inputs?</strong> A static utility can fit, as with <code>shippingCost(weight, express)</code>.</li><li><strong>Are you adding static just so main can call it?</strong> Create the appropriate object in <code>main</code> and call its instance method instead.</li></ol><p class="note"><strong>static does not guarantee purity.</strong> Java permits static methods to use shared fields or mutate explicit arguments. Avoid hiding utility inputs in shared state. These examples preserve the course’s function-based style; do not make every method static.</p><h3>Examples that run as tests</h3><p>These tests reuse <code>shippingCost</code> above.</p><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>// Course assertion library:
+assertSoftly {
+    shippingCost(2.0, false) shouldBe
+        (6.5 plusOrMinus 0.01)
+    shippingCost(2.0, true) shouldBe
+        (12.5 plusOrMinus 0.01)
+}</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>// In main; standard Java assertions:
+assert Math.abs(shippingCost(2.0, false)
+    - 6.5) &lt;= 0.01 : "standard shipping";
+assert Math.abs(shippingCost(2.0, true)
+    - 12.5) &lt;= 0.01 : "express shipping";</code></pre></div></div><p><strong>Enable Java assertions:</strong> run <code>java -ea Demo</code>, or add <code>-ea</code> to the run configuration’s VM options. Otherwise these assertions are skipped. A failed assertion throws <code>AssertionError</code> and stops this run at the first failure; it does not collect failures like <code>assertSoftly</code>. Passing assertions print nothing.</p><h3>A helper method and a call</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>fun doublePoints(points: Int): Int {
+    return points * 2
+}
+println(doublePoints(6)) // 12</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>static int doublePoints(int points) {
+    return points * 2;
+}
+// In main:
+System.out.println(doublePoints(6)); // 12</code></pre></div></div><p class="note"><strong>Test behavior, not the stub.</strong> Keep the expected results while replacing default values. Cover boundaries and alternative branches. Java has no standard <code>TODO()</code> expression; throwing an exception for unfinished code interrupts execution. Assertions are for checking assumptions and tests, not for required input validation.</p></div><p class="sources">Official references: <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/classvars.html">Class and instance members</a><a href="https://docs.oracle.com/en/java/javase/24/docs/specs/man/java.html">Assertion VM options</a><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/AssertionError.html">AssertionError</a></p></section>
+<section class="sheet" id="records" aria-labelledby="records-title"><div class="sheet-number">07 / Compound data &amp; copies</div><h2 id="records-title">Use a record for a fixed group of values.</h2><p class="lede">A Java record is a compact data carrier with a constructor, accessors, and generated equality.</p><h3>Define, construct, and select</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>data class Book(val title: String,
+                val pages: Int)
+val book = Book("Field Guide", 144)
+println(book.title) // Field Guide
+println(book.pages) // 144</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>record Book(String title, int pages) {}
+
+// In main:
+Book book = new Book("Field Guide", 144);
+System.out.println(book.title());
+System.out.println(book.pages());</code></pre></div></div><p>Use <code>new</code> to call the constructor. Access a component with a method such as <code>pages()</code>. Records are final and their component fields cannot be reassigned. They generate <code>equals</code>, <code>hashCode</code>, and <code>toString</code>. Use <code>equals</code> rather than reference <code>==</code> to compare their data.</p><h3>Build an updated value; keep the old one</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>// Reuses Book above.
+val original = Book("Field Guide", 144)
+val expanded = original.copy(pages = 160)
+println(original.pages) // 144
+println(expanded.pages) // 160
+println(original == Book("Field Guide", 144))</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>// Reuses Book above; in main:
+Book original = new Book("Field Guide", 144);
+Book expanded = new Book(original.title(), 160);
+System.out.println(original.pages()); // 144
+System.out.println(expanded.pages()); // 160
+System.out.println(original.equals(
+    new Book("Field Guide", 144))); // true</code></pre></div></div><p>Java records have no generated <code>copy</code> method or named constructor arguments. Pass unchanged components explicitly, or write a method such as <code>withPages</code> that constructs a new record. Nested data follows accessor chains: a record component called <code>book</code> can be read with <code>order.book().title()</code>.</p><p class="note"><strong>Record immutability is shallow.</strong> A record may hold a reference to a mutable list, and that list can still change. Use defensive copies when needed. Generated equality compares components; an array component does not automatically gain element-by-element equality.</p><div class="sheet-continuation"><h3>The traditional style: write the class explicitly</h3><p>A record is convenient for a fixed group of values, but an ordinary class lets you write the fields, constructor, and methods yourself. This is an alternative to the earlier <code>Book</code> record: remove that declaration before trying it. Save the public class below in its own <code>Book.java</code> file in the same package as <code>Demo</code>.</p><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>data class Book(val title: String,
+                val pages: Int)</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>// Book.java — a separate file, not inside Demo
+import java.util.Objects;
+
+public final class Book {
+    private final String title;
+    private final int pages;
+
+    public Book(String title, int pages) {
+        this.title = title;
+        this.pages = pages;
+    }
+
+    public String getTitle() {
+        return this.title;
+    }
+
+    public int getPages() {
+        return this.pages;
+    }
+
+    // Copy constructor: initialize a new book from another.
+    public Book(Book other) {
+        this(other.title, other.pages);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof Book book)) return false;
+        return this.pages == book.pages
+            &amp;&amp; Objects.equals(this.title, book.title);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.title, this.pages);
+    }
+}</code></pre></div></div><p>The <strong>fields</strong> store each book’s data. <code>private</code> keeps callers from accessing them directly, and <code>final</code> prevents a field from being reassigned after initialization. The <strong>constructor</strong> has the class’s name and no return type; <code>new Book(...)</code> calls it. In <code>this.title = title;</code>, the left side is this book’s field and the right side is the constructor parameter.</p><p>The public <strong>getter methods</strong> provide access to the values. Names such as <code>getTitle()</code> are conventional in traditional Java classes; a record generates <code>title()</code> instead. The getters, <code>equals</code>, and <code>hashCode</code> are instance methods, not static: they use the particular book’s fields. <code>final</code> on the class has a different meaning from final on a variable: it prevents another class from extending <code>Book</code>.</p><h3>Copy a book and compare its data</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>// Reuses the Kotlin data class above.
+val original = Book("Field Guide", 144)
+val copied = original.copy()
+println(copied.title) // Field Guide
+println(copied.pages) // 144
+println(original === copied) // false: different objects
+println(original == copied)  // true: equal data
+println(original.hashCode() == copied.hashCode()) // true</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>// In Demo.main; uses the class in Book.java
+Book original = new Book("Field Guide", 144);
+Book copied = new Book(original);
+System.out.println(copied.getTitle()); // Field Guide
+System.out.println(copied.getPages()); // 144
+System.out.println(original == copied); // false
+System.out.println(original.equals(copied)); // true
+System.out.println(original.hashCode()
+    == copied.hashCode()); // true</code></pre></div></div><p>The <strong>copy constructor</strong>, <code>Book(Book other)</code>, takes an existing book and initializes a new book with the same field values. <code>this(other.title, other.pages)</code> delegates to the two-argument constructor. This is a shallow copy; it is sufficient here because <code>String</code> is immutable and <code>int</code> is a primitive. There are no setters, so neither book’s fields can be changed afterward. To make a book with a different page count, use <code>new Book(original.getTitle(), 160)</code>.</p><p><code>equals(Object other)</code> first accepts the same object, then rejects null or a different type using <code>instanceof</code>. It compares both fields: <code>==</code> for the primitive page count and null-safe <code>Objects.equals</code> for the title. <code>@Override</code> asks the compiler to check that the method replaces an inherited method. Because <code>Book</code> is final, subclasses cannot introduce additional fields that complicate this equality rule.</p><p class="note"><strong>Equal objects must have equal hash codes.</strong> Our <code>hashCode</code> uses the same fields as <code>equals</code>, so equal books work correctly as keys in hash-based collections. Different books may still have the same hash code; compare with <code>equals</code>, not by comparing hash codes. An ordinary class needs these implementations (IntelliJ can generate them), while a record generates them automatically. We have not overridden <code>toString</code>, so this class still lacks a readable data-based string representation.</p></div><p class="sources">Official references: <a href="https://docs.oracle.com/en/java/javase/24/language/records.html">Record classes</a><a href="https://docs.oracle.com/javase/tutorial/java/javaOO/constructors.html">Constructors</a><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html">Object methods</a></p></section>
+<section class="sheet" id="variants" aria-labelledby="variants-title"><div class="sheet-number">08 / Sum types &amp; type checks</div><h2 id="variants-title">Keep a closed family; process each variant.</h2><p class="lede">Sealed interfaces and records support the functional style used with Kotlin in this course.</p><h3>Define alternatives and consume them</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>sealed interface Result
+data class Success(val message: String) : Result
+data class Failure(val reason: String) : Result
+
+fun describe(r: Result): String = when (r) {
+    is Success -&gt; r.message
+    is Failure -&gt; "Error: " + r.reason
+}</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>sealed interface Result permits Success, Failure {}
+record Success(String message) implements Result {}
+record Failure(String reason) implements Result {}
+
+static String describe(Result r) {
+    return switch (r) {
+        case Success s -&gt; s.message();
+        case Failure f -&gt; "Error: " + f.reason();
+    };
+}</code></pre></div></div><p>The variants hold data; a separate function handles each shape. Records are final, so they can implement this sealed interface. Keep these declarations together inside <code>Demo</code>. The switch covers both permitted variants and needs no <code>default</code>; adding a variant requires updating the cases when recompiling. These examples assume a non-null result.</p><h3>Dynamic type checks bind a narrowed name</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>// Reuses Result and Success above.
+val result: Result = Success("Saved")
+if (result is Success) {
+    println(result.message)
+}</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>// Reuses Result and Success above; in main:
+Result result = new Success("Saved");
+if (result instanceof Success s) {
+    System.out.println(s.message());
+}</code></pre></div></div><p><code>instanceof</code> checks the runtime type. When it matches, <code>s</code> names the value with type <code>Success</code>; no cast is needed. The name is available where the compiler knows the match succeeded. A null reference does not match. This corresponds to Kotlin’s <code>is</code> check and smart cast.</p><div class="sheet-continuation"><h3>Another design: an open interface with behavior</h3><p>Open interfaces are more typical in object-oriented programming: callers invoke a shared operation, and each implementation supplies its behavior. Java interfaces are open unless declared <code>sealed</code>; there is no <code>open</code> keyword. This alternative replaces the definitions above.</p><h3>Dispatch the operation to the object</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>interface Result {
+    fun describe(): String
+}
+data class Success(val message: String) : Result {
+    override fun describe(): String = message
+}
+data class Failure(val reason: String) : Result {
+    override fun describe(): String = "Error: " + reason
+}
+// In main:
+val r: Result = Success("Saved")
+println(r.describe())</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>interface Result {
+    String describe();
+}
+record Success(String message) implements Result {
+    public String describe() { return message; }
+}
+record Failure(String reason) implements Result {
+    public String describe() {
+        return "Error: " + reason;
+    }
+}
+// In main:
+Result r = new Success("Saved");
+System.out.println(r.describe());</code></pre></div></div><p class="note"><strong>Choose where change belongs.</strong> The sealed-data approach keeps each operation’s cases together and makes new operations straightforward. The open-interface approach lets new implementations provide the existing operations without changing callers. Callers usually need no dynamic type checks. Both designs are available in Kotlin and Java; use the one that fits the problem.</p></div><p class="sources">Official references: <a href="https://docs.oracle.com/en/java/javase/24/language/sealed-classes-and-interfaces.html">Sealed types</a><a href="https://docs.oracle.com/en/java/javase/24/language/pattern-matching-instanceof.html">instanceof patterns</a><a href="https://docs.oracle.com/en/java/javase/24/language/pattern-matching-switch.html">Pattern switch</a></p></section>
+<section class="sheet" id="lists" aria-labelledby="lists-title"><div class="sheet-number">09 / Lists &amp; operations</div><h2 id="lists-title">Separate a list interface from its implementation.</h2><p class="lede">List describes ordered access. The object determines whether updates are supported.</p><h3>Construct, index, and inspect</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>val scores = listOf(10, 20, 30)
+println(scores[0])       // 10
+println(scores.size)     // 3
+println(scores.isEmpty()) // false
+println(scores.contains(20)) // true
+val rest = scores.drop(1) // [20, 30]</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>// import java.util.List;
+List&lt;Integer&gt; scores = List.of(10, 20, 30);
+System.out.println(scores.get(0)); // 10
+System.out.println(scores.size()); // 3
+System.out.println(scores.isEmpty()); // false
+System.out.println(scores.contains(20)); // true
+List&lt;Integer&gt; rest = List.copyOf(
+    scores.subList(1, scores.size()));</code></pre></div></div><p>Java indices start at zero. <code>List.of</code> returns an unmodifiable list and rejects null elements. Kotlin’s read-only <code>List</code> interface limits operations through that reference; Java’s <code>List</code> exposes update methods even when its object rejects them. Invalid indices throw an exception.</p><h3>Use an ArrayList when updates are intended</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>val scores = mutableListOf(10, 20)
+scores.add(30)
+scores[0] = 12
+scores.removeAt(1)
+println(scores) // [12, 30]</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>// import java.util.ArrayList;
+// import java.util.List;
+List&lt;Integer&gt; scores = new ArrayList&lt;&gt;(List.of(10, 20));
+scores.add(30);
+scores.set(0, 12);
+scores.remove(1); // remove index 1
+System.out.println(scores); // [12, 30]</code></pre></div></div><p class="note"><strong>Watch overloaded removal.</strong> For <code>List&lt;Integer&gt;</code>, <code>remove(1)</code> removes an index. Use <code>remove(Integer.valueOf(20))</code> to remove a value. <code>subList</code> is a view backed by its source; <code>List.copyOf</code> makes an unmodifiable snapshot of the element references. Arrays such as <code>int[]</code> have fixed length and use <code>a[i]</code> and <code>a.length</code>.</p><p class="sources">Official references: <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html">List</a><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/ArrayList.html">ArrayList</a></p></section>
+<section class="sheet" id="higher-order" aria-labelledby="higher-order-title"><div class="sheet-number">10 / Lambdas, map, filter &amp; fold</div><h2 id="higher-order-title">Build a stream pipeline, then request a result.</h2><p class="lede">A Java lambda implements a functional interface: an interface with one abstract method.</p><h3>Transform and select values</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>val scores = listOf(1, 2, 3, 4)
+val doubled = scores.map { n -&gt; n * 2 }
+val evens = scores.filter { n -&gt; n % 2 == 0 }
+val total = scores.fold(0) { acc, n -&gt; acc + n }</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>// import java.util.List;
+List&lt;Integer&gt; scores = List.of(1, 2, 3, 4);
+List&lt;Integer&gt; doubled = scores.stream()
+    .map(n -&gt; n * 2).toList();
+List&lt;Integer&gt; evens = scores.stream()
+    .filter(n -&gt; n % 2 == 0).toList();
+int total = scores.stream().reduce(0, Integer::sum);</code></pre></div></div><p>Stream transformations are lazy: a terminal operation such as <code>toList</code> or <code>reduce</code> triggers work. A stream is used once; create another from the list for another computation. <code>toList()</code> returns an unmodifiable list. Keep pipeline functions free of mutations to shared state.</p><h3>Search, quantify, and name a function value</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>val names = listOf("Ari", "Bo", "Ada")
+val found = names.find { it.startsWith("A") }
+println(found ?: "nobody") // Ari
+val any = names.any { it.length &gt; 2 }
+val all = names.all { it.isNotEmpty() }
+val length: (String) -&gt; Int = String::length
+println(length("Ari")) // 3</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>// import java.util.List;
+// import java.util.function.Function;
+List&lt;String&gt; names = List.of("Ari", "Bo", "Ada");
+var found = names.stream()
+    .filter(n -&gt; n.startsWith("A")).findFirst();
+System.out.println(found.orElse("nobody"));
+boolean any = names.stream().anyMatch(n -&gt; n.length() &gt; 2);
+boolean all = names.stream().allMatch(n -&gt; !n.isEmpty());
+Function&lt;String, Integer&gt; length = String::length;
+System.out.println(length.apply("Ari")); // 3</code></pre></div></div><p class="note"><strong>reduce is not every fold.</strong> Stream reduction needs an associative combining operation and an identity; addition with zero fits here. For an order-dependent left fold, use an explicit accumulator loop. A lambda may capture local variables only if they are final or effectively final (never reassigned). <code>Predicate&lt;T&gt;</code> has <code>test</code>; <code>Function&lt;T,R&gt;</code> has <code>apply</code>.</p><p class="sources">Official references: <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/stream/Stream.html">Stream</a><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/package-summary.html">Functional interfaces</a></p></section>
+<section class="sheet" id="mutation" aria-labelledby="mutation-title"><div class="sheet-number">11 / Mutation &amp; shared values</div><h2 id="mutation-title">References can share one mutable object.</h2><p class="lede">Reassigning a variable and changing an object are different operations in both languages.</p><h3>Aliases observe the same list updates</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>val first = mutableListOf(1, 2)
+val alias = first
+val copy = first.toMutableList()
+alias.add(3)
+println(first) // [1, 2, 3]
+println(copy)  // [1, 2]</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>// import java.util.ArrayList;
+// import java.util.List;
+final List&lt;Integer&gt; first = new ArrayList&lt;&gt;(List.of(1, 2));
+List&lt;Integer&gt; alias = first;
+List&lt;Integer&gt; copy = new ArrayList&lt;&gt;(first);
+alias.add(3);
+System.out.println(first); // [1, 2, 3]
+System.out.println(copy);  // [1, 2]</code></pre></div></div><p>The list constructor copies element references into a new container. It does not recursively copy mutable elements. Java passes arguments by value: a method receives a copy of a primitive value or a copy of an object reference. Mutating the referenced object can affect the caller; reassigning the parameter does not replace the caller’s variable.</p><h3>Mutable object fields</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>data class Player(val name: String, var points: Int)
+val player = Player("Ari", 4)
+val alias = player
+alias.points += 1
+println(player.points) // 5</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>static class Player {
+    final String name;
+    int points;
+    Player(String name, int points) {
+        this.name = name;
+        this.points = points;
+    }
+}
+// In main:
+Player player = new Player("Ari", 4);
+Player alias = player;
+alias.points += 1;
+System.out.println(player.points); // 5</code></pre></div></div><p>This small class keeps the fields visible to the enclosing example. Larger object-oriented designs often make fields private and expose methods that enforce valid changes. Ordinary Java classes do not automatically get record-style equality or a useful data-based <code>toString</code>.</p><p class="note"><strong>Model the intended effects.</strong> Use a record plus reconstruction when producing a new value. Use a mutable class or collection when shared state should change over time. Avoid adding or removing list elements during an enhanced for loop; build a new result or use an appropriate collection operation.</p><p class="sources">Official references: <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/ArrayList.html">ArrayList</a><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html">Object equality and identity</a></p></section>
+<section class="sheet" id="loops" aria-labelledby="loops-title"><div class="sheet-number">12 / Loops, ranges &amp; input</div><h2 id="loops-title">Use enhanced for for values, counting for for indices.</h2><p class="lede">Java has no built-in Kotlin range syntax. Write the initial value, continuation test, and update explicitly.</p><h3>Traverse a list and count by a step</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>val scores = listOf(2, 4, 6)
+var total = 0
+for (score in scores) {
+    total += score
+}
+for (i in 0 until scores.size) {
+    println(scores[i])
+}
+for (n in 2..10 step 2) println(n)</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>// import java.util.List;
+List&lt;Integer&gt; scores = List.of(2, 4, 6);
+int total = 0;
+for (int score : scores) {
+    total += score;
+}
+for (int i = 0; i &lt; scores.size(); i++) {
+    System.out.println(scores.get(i));
+}
+for (int n = 2; n &lt;= 10; n += 2) {
+    System.out.println(n);
+}</code></pre></div></div><p>Use <code>&lt;</code> for an excluded upper bound and <code>&lt;=</code> for an included one. A descending count can use <code>for (int n = 5; n &gt;= 1; n--)</code>. The loop variable belongs to the loop. <code>break</code> exits the nearest loop; <code>continue</code> skips to its next iteration.</p><h3>Read lines until a sentinel or end of input</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>while (true) {
+    val word = readlnOrNull() ?: break
+    if (word == "quit") break
+    if (word.isEmpty()) continue
+    println(word.uppercase())
+}</code></pre></div><div class="example java"><div class="language">Java</div><pre><code>// import java.util.Scanner;
+// import java.util.Locale;
+Scanner input = new Scanner(System.in);
+while (input.hasNextLine()) {
+    String word = input.nextLine();
+    if (word.equals("quit")) break;
+    if (word.isEmpty()) continue;
+    System.out.println(word.toUpperCase(Locale.ROOT));
+}</code></pre></div></div><p><code>nextLine()</code> returns a line without its line ending; <code>hasNextLine()</code> checks whether one is available. For numeric input, parse a complete line with <code>Integer.parseInt(input.nextLine())</code>. Invalid numeric text throws, so a user-facing program should handle that case. Closing this scanner also closes <code>System.in</code>; avoid closing shared input while other code still needs it.</p><p class="note"><strong>Choose a form that matches the task.</strong> Use a stream to transform or summarize data, a loop for repeated effects, and a recursive method when the data itself is recursive. The course’s habits—base cases, progress, helper decomposition, and tests—still apply.</p><p class="sources">Official references: <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Scanner.html">Scanner</a><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Locale.html">Locale</a></p></section>
+</main><footer class="footer"><p>CS1101 · Transfer Reference to Java · <a href="#main">Back to contents</a> · <a href="index.html">All readings</a></p></footer></body></html>
