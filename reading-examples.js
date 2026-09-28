@@ -33,25 +33,30 @@
     const shippingStages = source("l02-return").split(/\n\n(?=\/\/ [23]\.)/)
       .map(stage => stage.slice(stage.indexOf("fun shippingCost")).trim());
     const shipping = shippingStages[2];
-    const todoError = "kotlin.NotImplementedError: An operation is not implemented.";
-    definition("l02-signature", 'println(shippingCost(2.0, false))', "Run the stub to see TODO() report the unfinished implementation. Change the arguments and run again.", null, [], "", "Expected error: NotImplementedError: An operation is not implemented. TODO() stops execution, so no shipping cost is printed.");
-    readings.get("l02-signature").examples[0].expectedError = todoError;
-    example("l02-tests-stubs", source("l02-signature") + "\n\n" + main(source("l02-tests-stubs") + '\nprintln("All tests passed")'), "Run to see the TODO() error. Replace TODO() with the shipping-cost implementation, then rerun without changing the tests.", null, ["kotest-mini"], "Expected error: NotImplementedError: An operation is not implemented. The first shippingCost call stops the run before either comparison can complete; the second test is not reached.");
-    readings.get("l02-tests-stubs").examples[0].expectedError = todoError;
+    const softSuccess = "✅ All soft assertions passed cleanly!";
+    const stubFailure = "assertSoftly failed with 2 assertion(s):";
+    const shippingTests = source("l02-tests-stubs");
+    definition("l02-signature", shippingTests, "Run the tests against the 0.0 stub. Both comparisons run and fail; then replace the stub with a calculation.", null, ["kotest-mini"], "", "Expected: two failed assertions, because the stub returns 0.0 for both calls.");
+    readings.get("l02-signature").examples[0].expectedError = stubFailure;
+    example("l02-tests-stubs", source("l02-signature") + "\n\n" + main(shippingTests), "Run to see both failed comparisons. Replace the default value with the shipping-cost implementation, then rerun without changing the tests.", null, ["kotest-mini"], "assertSoftly collects both failures before reporting them. Keep the expected costs: they describe the intended behavior.");
+    readings.get("l02-tests-stubs").examples[0].expectedError = stubFailure;
     const stageGuidance = [
-      { title: "1. Name the answer", prompt: "Run to see the unfinished overallCost. Replace TODO() with a Double expression and run again.", note: "This stage names the answer before deciding how to compute it. Running reaches TODO() while defining overallCost and throws NotImplementedError: An operation is not implemented." },
-      { title: "2. Name the subcomputations", prompt: "Replace the baseCost TODO() and run again. Then replace the expressSurcharge TODO() and rerun.", note: "This stage splits the answer into two pieces. Running first throws NotImplementedError at baseCost. Once that TODO() is replaced, the next run reaches the TODO() for expressSurcharge." },
-      { title: "3. Compute from the inputs", prompt: "Change the weight and compare standard and express shipping.", note: "Both subcomputations now use the inputs, so this complete version returns and prints the shipping costs." }
+      { title: "1. Name the answer", prompt: "Run to see both tests fail. Replace the default 0.0 with a Double expression and run again.", note: "This stage names the answer before deciding how to compute it. The default value lets both comparisons run; both fail because 0.0 is not the expected cost." },
+      { title: "2. Name the subcomputations", prompt: "Replace the default value for baseCost and run again. Then implement expressSurcharge and rerun.", note: "This stage splits the answer into two pieces. Both begin at 0.0, so both tests run and fail until the calculations are implemented." },
+      { title: "3. Compute from the inputs", prompt: "Add tests for another weight, checking standard and express shipping.", note: "Both subcomputations now use the inputs, so both assertions pass." }
     ];
 
     readings.get("l02-return").examples = shippingStages.map((code, index) => ({
-      kind: index < 2 ? "text" : "kotlin", ...stageGuidance[index],
-      code: code + "\n\n" + main('assertSoftly {\n  shippingCost(2.0, false) shouldBe (6.5 plusOrMinus 0.01)\n  shippingCost(2.0, true) shouldBe (12.5 plusOrMinus 0.01)\n}'),
+      kind: "kotlin", ...stageGuidance[index],
+      code: code + "\n\n" + main(shippingTests),
+      ...(index < 2 ? { expectedError: stubFailure } : { expected: softSuccess }),
       dependencies: ["kotlin-dependencies/kotest-mini.kt"]
     }));
-    example("l02-debug-coverage", shipping + "\n\n" + main(source("l02-debug-coverage") + '\nprintln("All four tests passed")'), "Run the tests, then introduce a mistake in the weight boundary or express surcharge. Which tests catch it?", "✅ Test Passed: Got 5.0\n✅ Test Passed: Got 11.0\n✅ Test Passed: Got 6.5\n✅ Test Passed: Got 12.5\nAll four tests passed", ["kotest-mini"]);
-    definition("l02-helper", 'println(baseCost(2.0))\nprintln(shippingCost(2.0, true))', "Try weights on either side of 1.0 and watch how the helper contributes to the final answer.", "6.5\n12.5");
-    definition("l02-if-expressions", 'println(ticketLabel(21))\nprintln(ticketLabel(22))', "Change > to >= and predict which result changes.", "youth ticket\nadult ticket");
+    example("l02-debug-coverage", shipping + "\n\n" + main(source("l02-debug-coverage")), "Run the tests, then introduce a mistake in the weight boundary or express surcharge. Which tests catch it?", softSuccess, ["kotest-mini"]);
+    definition("l02-helper", 'assertSoftly {\n  baseCost(2.0) shouldBe (6.5 plusOrMinus 0.01)\n  shippingCost(2.0, true) shouldBe (12.5 plusOrMinus 0.01)\n}', "Add tests for weights on either side of 1.0 and check the helper and final answer.", softSuccess, ["kotest-mini"]);
+    definition("l02-if-expressions", 'assertSoftly {\n  ticketLabel(21) shouldBe "youth ticket"\n  ticketLabel(22) shouldBe "adult ticket"\n}', "Change > to >= and predict which test fails.", softSuccess, ["kotest-mini"]);
+    definition("l02-todo", shippingTests, "Run to see how TODO() interrupts the tests. Replace TODO() with 0.0 and rerun to see both comparisons fail; then implement the function.", null, ["kotest-mini"], "", "The first call throws NotImplementedError before shouldBe can compare values. Our playground's assertSoftly reports 'TODO() prevented tests from completing'; the second test is never reached.");
+    readings.get("l02-todo").examples[0].expectedError = "TODO() prevented tests from completing";
 
     definition("l03-enum", 'println(semesterStart)', "Replace FALL with another Season value.", "FALL");
     definition("l03-when", 'println(clothing(Season.WINTER))\nprintln(clothing(Season.SUMMER))', "Choose another season or change one branch's clothing recommendation.", "coat\nshorts", ["Season"]);

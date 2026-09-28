@@ -210,24 +210,24 @@ const CS1101_READING_SETS_DATA = (() => {
       "A function design begins by stating its purpose, promising its inputs and result, and adding a placeholder body that compiles.",
       "Write a KDoc purpose, a function signature, and a type-correct stub.",
       ["kdoc", "function-signature", "stub", "return-type"],
-      "A <strong>KDoc</strong> purpose tells a future reader what a function computes. The <strong>function signature</strong> names the function, lists its parameters and their types, and promises a return type. A <strong>stub</strong> is a temporary body for an unfinished function. Use Kotlin's <code>TODO()</code> function to mark the work that remains.",
+      "A <strong>KDoc</strong> purpose tells a future reader what a function computes. The <strong>function signature</strong> names the function, lists its parameters and their types, and promises a return type. A <strong>stub</strong> is a temporary body for an unfinished function. Return a default value of the promised type, such as <code>0</code> for <code>Int</code>, <code>0.0</code> for <code>Double</code>, <code>&quot;&quot;</code> for <code>String</code>, or <code>false</code> for <code>Boolean</code>. These are placeholders you choose, not values Kotlin inserts automatically.",
       "Writing this plan before an implementation separates the question of what the function should do from the later question of how to compute it. The stub gives the rest of the program a valid function to call while the design is still incomplete.",
-      "/**\n * Computes the cost to ship one package.\n */\nfun shippingCost(weightKg: Double, express: Boolean): Double {\n    return TODO()\n}",
-      "The purpose describes the result in ordinary language. The signature promises a decimal result from a weight and an express choice. <code>TODO()</code> lets the unfinished body compile, but calling it throws <code>NotImplementedError</code> with the message <code>An operation is not implemented.</code> No shipping cost is returned or printed.",
-      "<code>TODO()</code> works in a function with any return type because it never returns normally. Replace it with the implementation when you are ready to compute the promised result.",
-      [Q("What should the KDoc purpose explain?", "What result the function computes for its caller."), Q("What happens when the stub reaches <code>TODO()</code>?", "It throws NotImplementedError and stops the run instead of returning a value."), Q("Does the stub solve the shipping-cost problem?", "No. It only gives the unfinished function a body that compiles.")]
+      "/**\n * Computes the cost to ship one package.\n */\nfun shippingCost(weightKg: Double, express: Boolean): Double {\n    return 0.0\n}",
+      "The purpose describes the result in ordinary language. The signature promises a decimal result from a weight and an express choice. The default <code>0.0</code> lets the unfinished body compile and return a value, so tests can compare it with the expected shipping cost.",
+      "Choose a default that matches the return type. It is not the finished answer: replace it with the implementation after writing examples and planning the calculation.",
+      [Q("What should the KDoc purpose explain?", "What result the function computes for its caller."), Q("What does the stub return for any inputs?", "0.0, the temporary default value."), Q("Does the stub solve the shipping-cost problem?", "No. It only gives the unfinished function a body that compiles.")]
     ),
     R(
       "l02-tests-stubs", "lecture-02-tests-and-stubs.html", "Write Examples That Compile Before They Pass", "necessary",
       "Unit tests record the intended behavior before the real implementation exists; a stub lets those tests compile even though they should initially fail.",
       "Write example unit tests that distinguish cases and predict their eventual results.",
       ["test", "stub", "argument"],
-      "An example unit test calls a function with one particular input and states the expected result. Because a stub has the correct signature, tests can compile immediately. A <code>TODO()</code> stub stops execution with an error when called, so the tests cannot pass until the function is implemented.",
+      "An example unit test calls a function with one particular input and states the expected result. Because a stub has the correct signature, tests can compile immediately. A default-value stub returns a value that <code>shouldBe</code> can compare with the expected answer. Put the comparisons inside <code>assertSoftly</code> so all of them run before failures are reported.",
       "This is useful evidence, not a problem. Failing examples tell the programmer what the eventual implementation must make true. They also prevent the design from being shaped only by the first code idea that happens to come to mind.",
       "assertSoftly{\n  shippingCost(2.0, false) shouldBe (6.5 plusOrMinus 0.01)\n  shippingCost(2.0, true) shouldBe (12.5 plusOrMinus 0.01)\n}",
-      "Both test expressions compile because the signature accepts a <code>Double</code> and a <code>Boolean</code> and promises a <code>Double</code>. On the first call, <code>TODO()</code> throws <code>NotImplementedError</code> before <code>shouldBe</code> can compare values. The second test is not reached. Replace the stub with the calculation, then run again to check the expected costs.",
+      "Both test expressions compile because the signature accepts a <code>Double</code> and a <code>Boolean</code> and promises a <code>Double</code>. Each call returns <code>0.0</code>, so both <code>shouldBe</code> comparisons fail. <code>assertSoftly</code> collects both failures and reports them after the block finishes. Replace the stub with the calculation, then run again to check the expected costs.",
       "Examples should make a difference visible. Here, the second example changes only the express choice, showing that express shipping must affect the answer.",
-      [Q("Why can the examples compile before the function is implemented?", "The stub already has the correct signature, and TODO() is allowed in its body."), Q("Why does the run stop before the second test?", "The first call reaches TODO(), which throws NotImplementedError before returning a shipping cost."), Q("What difference do the two examples show?", "They show that the express choice changes the result.")]
+      [Q("Why can the examples compile before the function is implemented?", "The stub has the correct signature and returns a default value of the promised type."), Q("Why does the second comparison run even though the first fails?", "assertSoftly collects comparison failures and reports them after running the block."), Q("What difference do the two examples show?", "They show that the express choice changes the result.")]
     ),
     R(
       "l02-parameters-arguments", "lecture-02-parameters-and-arguments.html", "Make a Template and Input Inventory", "necessary",
@@ -250,14 +250,14 @@ const CS1101_READING_SETS_DATA = (() => {
       "Local names make the body read like the plan. They also let a programmer inspect one subresult at a time when an answer is surprising.",
       `// 1. Start with the value the function must return.
 fun shippingCost(weightKg: Double, express: Boolean): Double {
-    val overallCost: Double = TODO()
+    val overallCost: Double = 0.0
     return overallCost
 }
 
 // 2. Ask what values are needed to make that answer.
 fun shippingCost(weightKg: Double, express: Boolean): Double {
-    val baseCost: Double = TODO()
-    val expressSurcharge: Double = TODO()
+    val baseCost: Double = 0.0
+    val expressSurcharge: Double = 0.0
     val overallCost = baseCost + expressSurcharge
     return overallCost
 }
@@ -269,7 +269,7 @@ fun shippingCost(weightKg: Double, express: Boolean): Double {
     return baseCost + expressSurcharge
 }`,
       "First, name the desired answer: <code>overallCost</code>. Next, ask what values must be combined to produce it: <code>baseCost</code> and <code>expressSurcharge</code>. Finally, work backward to the inputs: <code>weightKg</code> determines the base cost, and <code>express</code> determines the surcharge. The completed version can return the final sum directly because the two intermediate values already have meaningful names.",
-      "The <code>: Double</code> annotations record the intended types while expressions are unfinished. Each <code>TODO()</code> compiles but throws <code>NotImplementedError</code> if reached. Execution stops at the first one; after replacing it, run again to discover the next unfinished step. The completed return expression must produce the type promised by the signature.",
+      "The <code>: Double</code> annotations record the intended types while expressions are unfinished. Each default <code>0.0</code> keeps the code type-correct and lets the tests run. Replace the defaults with calculations one piece at a time, rerunning the same tests to see what still needs work. The completed return expression must produce the type promised by the signature.",
       [Q("What should <code>overallCost</code> represent in the first stage?", "The total shipping cost that the function promises to return."), Q("Which two named values are combined to make <code>overallCost</code>?", "<code>baseCost</code> and <code>expressSurcharge</code>."), Q("Why use local names instead of one long expression?", "They make meaningful subcomputations easier to read, inspect, and connect back to the inputs.")],
       'This approach is a beginners-friendly, practical application of more advanced theory on effective program-design by thinking in terms of types; see Jeremy Gibbons for the research behind it, <a href="https://www.cs.ox.ac.uk/jeremy.gibbons/publications/copro.pdf"><cite>How to Design Co-Programs</cite></a> (2021).'
     ),
@@ -280,10 +280,22 @@ fun shippingCost(weightKg: Double, express: Boolean): Double {
       ["test", "code-coverage", "boolean"],
       "Debugging compares an actual result with an expected result, then traces the smallest part of the design that could explain the difference. <strong>Code coverage</strong> asks whether tests exercise the important paths through a function, not only the first path that happened to work.",
       "More examples increase confidence when they cover different kinds of input: boundaries, each Boolean choice, empty or nonempty data, and unusual but valid cases. Tests cannot prove every program correct, but they can make untested assumptions visible.",
-      "shippingCost(1.0, false) shouldBe 5.0   // weight boundary\nshippingCost(1.0, true) shouldBe 11.0    // express branch\nshippingCost(2.0, false) shouldBe 6.5   // heavier package\nshippingCost(2.0, true) shouldBe 12.5    // both differences",
+      "assertSoftly {\n  shippingCost(1.0, false) shouldBe (5.0 plusOrMinus 0.01)   // weight boundary\n  shippingCost(1.0, true) shouldBe (11.0 plusOrMinus 0.01)   // express branch\n  shippingCost(2.0, false) shouldBe (6.5 plusOrMinus 0.01)   // heavier package\n  shippingCost(2.0, true) shouldBe (12.5 plusOrMinus 0.01)   // both differences\n}",
       "The first two tests examine the boundary at one kilogram and both values of the express choice. The last two test the heavier-package calculation. Together, they exercise the important decisions in the design more thoroughly than two similar examples would.",
       "When a test fails, return to the purpose, examples, inventory, and local subcomputations. The earlier design steps give a map for finding the mistaken assumption.",
       [Q("Why test the weight <code>1.0</code>?", "It is the boundary where the base-cost rule changes."), Q("What does the final example test at once?", "A heavier package and the express choice."), Q("Where can a debugger look after a test fails?", "At the purpose, examples, inventory, and named subcomputations.")]
+    ),
+    R(
+      "l02-todo", "lecture-02-todo-placeholders.html", "Use TODO() Only as a Temporary Placeholder", "optional",
+      "TODO() can temporarily replace a default value to remove type errors, but reaching it interrupts the tests.",
+      "Recognize when TODO() helps with unfinished code and why it must be replaced before testing behavior.",
+      ["stub", "return-type", "test"],
+      "Kotlin's <code>TODO()</code> marks an unfinished expression. It can stand where a value of any type is expected, so it can temporarily replace a default such as <code>0</code>, <code>&quot;&quot;</code>, or <code>0.0</code> while you work to make type errors go away. It does not compute a value of that type: it never returns normally.",
+      "This can help while reshaping a function and deciding how to produce a result. Use it only temporarily for the unfinished expression; it does not fix unrelated type errors or implement the function.",
+      "fun shippingCost(weightKg: Double, express: Boolean): Double {\n    return TODO()\n}",
+      "When the first test calls <code>shippingCost</code>, <code>TODO()</code> throws <code>NotImplementedError</code>. Execution stops at that expression: the function returns no cost, the first <code>shouldBe</code> comparison cannot happen, and the second test in the block is not reached. Our playground's <code>assertSoftly</code> catches that error and reports <code>TODO() prevented tests from completing</code>, but it cannot resume the interrupted block.",
+      "Unlike a default value, <code>TODO()</code> breaks the test run instead of allowing all the comparisons to report useful results. Once the types fit, replace it with a type-correct default to run the tests, or with the real implementation. Keep the <code>assertSoftly</code> block and expected <code>shouldBe</code> values unchanged.",
+      [Q("Why can TODO() stand where a Double is expected?", "It never returns normally, so Kotlin allows it in a position expecting any type."), Q("Does assertSoftly continue with the second test after TODO() is reached?", "No. It can collect comparison failures, but it cannot resume a block interrupted by TODO()."), Q("When should you use TODO()?", "Only temporarily while working to make type errors in unfinished code go away; then replace it with a default value or the implementation.")]
     ),
     R(
       "l02-helper", "lecture-02-helper-functions.html", "When the Inventory Suggests a Helper", "optional",
@@ -2559,7 +2571,7 @@ val squares = (1 until 5).map { it * it }`,
     const baseSet = set.id === "l02" ? {
       ...set,
       minutes: 13,
-      summary: "Five necessary readings follow the function design recipe from purpose and stub through examples, template and inventory, implementation, debugging, and coverage. Two optional readings explore helpers and why functions matter beyond this course.",
+      summary: "Five necessary readings follow the function design recipe from purpose and stub through examples, template and inventory, implementation, debugging, and coverage. Four optional readings explore helpers, if expressions, temporary TODO() placeholders, and why functions matter beyond this course.",
       cardSummary: "Short readings on KDocs, signatures, stubs, examples, templates, input inventories, local subcomputations, debugging, and helpers.",
       goal: "Students arrive able to follow the function design recipe before writing a complete implementation.",
       readings: lecture2Readings
