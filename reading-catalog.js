@@ -14,7 +14,8 @@ const CS1101_READING_SETS_DATA = (() => {
     walkthrough,
     notice,
     practice,
-    footnote = ""
+    footnote = "",
+    diagram = null
   ) => ({
     id,
     file,
@@ -30,7 +31,8 @@ const CS1101_READING_SETS_DATA = (() => {
     walkthrough,
     notice,
     practice,
-    footnote
+    footnote,
+    diagram
   });
 
   const W = (id, file, title, summary, microskill, vocabulary, definition, why, code, walkthrough, notice, practice) =>
@@ -2169,7 +2171,13 @@ while (command != "done") {
             Q("What is the sentinel?", "<code>\"done\"</code>."),
             Q("Why is readln called inside the loop?", "To update command for the next condition check."),
             Q("Does the body run when the first input is done?", "No.")
-          ]
+          ],
+          "",
+          {
+            src: "assets/WhileLoopDiagram.png",
+            alt: "Annotated Kotlin while loop: main starts the program; provideInput supplies help, status, and done; var command holds the current input; a priming read happens before the condition; the body prints each command and reads the next line; done is the sentinel that stops repetition.",
+            caption: "The parts of a sentinel-controlled while loop: read the first command, check the condition, process the command, and read again before the next check."
+          }
         ),
         R(
           "l21-shortcuts",

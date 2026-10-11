@@ -158,11 +158,16 @@ function renderReading(set, reading) {
           <p>${reading.definition}</p>
           <p>${reading.why}</p>
 
+
+          ${reading.diagram ? `<figure class="screenshot-card">
+            <a href="${reading.diagram.src}" aria-label="Open diagram at full size"><img src="${reading.diagram.src}" alt="${reading.diagram.alt}" loading="lazy"></a>
+            <figcaption>${reading.diagram.caption}</figcaption>
+          </figure>` : ""}
+
           <h2>${reading.examples?.some(example => example.kind === "kotlin") ? "Read, Run, and Change" : "Read This Example"}</h2>
           ${reading.examples?.some(example => example.kind === "kotlin") ? '<p>Predict the output, then select <strong>Run code</strong>. Edit the example and run it again to test your prediction. <strong>Reset</strong> restores the original program. Each example runs independently.</p>' : ""}
           ${readingExamplesMarkup(reading)}
           <p>${reading.walkthrough}</p>
-
           <div class="callout"><strong>Notice:</strong> ${reading.notice}</div>
 
           ${supplementaryResourcesMarkup(reading.id, reading.file)}
