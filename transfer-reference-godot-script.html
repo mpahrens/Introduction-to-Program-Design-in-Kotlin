@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A printable Kotlin-to-Godot Script transfer reference: functions, testing, compound data, arrays, mutation, and loops.">
+<title>Transfer Reference to Godot Script | CS1101</title><link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="transfer-reference.css"><style>.godot .language { color: #00635b; }</style></head>
+<body><div class="toolbar"><a href="transfer-references.html">← Transfer references</a><button type="button" onclick="window.print()">Print / Save as PDF</button></div>
+<main id="main"><header class="cover"><div class="eyebrow">CS1101 · Beyond Kotlin · Transfer reference 05</div>
+<h1>Transfer Reference<br>to <span>Godot Script</span></h1><p class="intro">Keep the design habits. Learn the new spelling. A reference for turning the functions, tests, and data you know from Kotlin into Godot Script programs.</p>
+<div class="metadata"><span>Godot Script · 4.x editor</span><span>Built-in features only</span><span>Kotlin first, Godot Script second</span><span>12 topic sheets</span></div>
+<p>Read each comparison from left to right (top to bottom on a phone). Examples are independent unless a note says they reuse an earlier definition. Comments show expected results. Kotlin executable statements belong inside <code>main</code>; Godot Script executable statements belong inside <code>_ready()</code> or another function. Definitions belong at file or script level.</p>
+<nav aria-label="Reference contents"><ol class="contents"><li><a href="#start"><span>01</span> Files, running &amp; debugging</a></li><li><a href="#names"><span>02</span> Names, assignment &amp; scope</a></li><li><a href="#values"><span>03</span> Numbers &amp; Booleans</a></li><li><a href="#text"><span>04</span> Strings &amp; missing values</a></li><li><a href="#decisions"><span>05</span> if, when &amp; named choices</a></li><li><a href="#functions"><span>06</span> Function design &amp; testing</a></li><li><a href="#records"><span>07</span> Compound data &amp; copies</a></li><li><a href="#variants"><span>08</span> Sum types &amp; type checks</a></li><li><a href="#lists"><span>09</span> Lists &amp; operations</a></li><li><a href="#higher-order"><span>10</span> Lambdas, map, filter &amp; fold</a></li><li><a href="#mutation"><span>11</span> Mutation &amp; shared values</a></li><li><a href="#loops"><span>12</span> Loops, ranges &amp; input</a></li></ol></nav>
+<div class="note"><strong>Carry these habits forward:</strong> state a purpose, describe inputs and outputs, write examples, inventory the data, and then implement and test. Godot Script changes how you express that plan.</div>
+<p class="screen-only">For a paper reference, use <strong>Print / Save as PDF</strong>. Choose portrait, Letter or A4, 100% scale, and turn off browser headers and footers. Each numbered topic starts on a fresh page; this overview is the cover.</p></header>
+<section class="sheet" id="start" aria-labelledby="start-title"><div class="sheet-number">01 / Files, running &amp; debugging</div><h2 id="start-title">Make a scene. Attach a script. Run it.</h2><p class="lede">Godot Script files use .gd. A script attached to a node participates in the scene’s lifecycle.</p><h3>A starting file and an entry point</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>fun main() {
+    val name = "Gompei"
+    println("Hello, $name!")
+}</code></pre></div><div class="example godot"><div class="language">Godot Script</div><pre><code>extends Node
+
+func _ready() -&gt; void:
+    var name: String = "Gompei"
+    print("Hello, %s!" % name)</code></pre></div></div><p>Save the script as <code>hello.gd</code> and attach it to the root node of a saved scene. <code>_ready()</code> runs when the node and its children are ready in the scene tree. A function named <code>main</code> has no automatic entry-point role.</p><ol class="steps"><li><strong>Create:</strong> create a project in the editor, add a Node as the root of a scene, save the scene, and attach a new script.</li><li><strong>Run:</strong> use Run Current Scene (F6). Run Project (F5) uses the project’s main scene; select this scene when prompted.</li><li><strong>Debug:</strong> click beside a line number to set a breakpoint. Run the scene, inspect variables, and use Step Over, Step Into, or Continue.</li><li><strong>Read errors:</strong> fix script errors shown in the editor first. For a runtime error, inspect the Debugger’s message and stack frames to find the failing call.</li></ol><p class="note"><strong>Remember:</strong> Use Godot Script for the 4.x editor. Each example is independent unless marked otherwise. Put executable statements inside <code>_ready()</code> or another function; put function, class, and enum definitions at script level. Use one consistent indentation style; the editor defaults to tabs.</p><p class="sources">Official reference: <a href="https://docs.godotengine.org/en/stable/tutorials/scripting/debug/overview_of_debugging_tools.html">Debugging tools</a></p></section>
+<section class="sheet" id="names" aria-labelledby="names-title"><div class="sheet-number">02 / Names, assignment &amp; scope</div><h2 id="names-title">Declare a variable; choose its type</h2><p class="lede">Use var for variables and const for compile-time constants.</p><h3>Binding, inference, and reassignment</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>val x = 3
+var count: Int = 0
+count += 1
+// x = 4 is a compile error.</code></pre></div><div class="example godot"><div class="language">Godot Script</div><pre><code>const X = 3
+var count: int = 0
+count += 1
+var score := 10
+score = 20
+# X = 4 is an error.</code></pre></div></div><p><code>:=</code> infers a static type; <code>var score = 10</code> leaves the variable dynamically typed. A type annotation constrains assignments. <code>const</code> requires a constant expression, so it does not replace every use of Kotlin <code>val</code>.</p><h3>Local names and parameters</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>fun nextCount(count: Int): Int {
+    val next = count + 1
+    return next
+}</code></pre></div><div class="example godot"><div class="language">Godot Script</div><pre><code>func next_count(count: int) -&gt; int:
+    var next: int = count + 1
+    return next</code></pre></div></div><p>Local variables belong to their enclosing block. A variable declared inside an <code>if</code> or loop body is unavailable outside that block. Script-level variables are instance properties, shared by that instance’s method calls.</p><p class="note"><strong>Remember:</strong> Use <code>snake_case</code> for Godot Script variables and functions. A colon starts an indented body. Use <code>#</code> for comments.</p><p class="sources">Official reference: <a href="https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html">Static typing</a></p></section>
+<section class="sheet" id="values" aria-labelledby="values-title"><div class="sheet-number">03 / Numbers &amp; Booleans</div><h2 id="values-title">Numbers and Boolean expressions</h2><p class="lede">Int becomes int, Double becomes float, and Boolean becomes bool.</p><h3>Arithmetic and conversions</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>val sum = 7 + 2        // 9
+val quotient = 7 / 2   // 3
+val decimal = 7.0 / 2  // 3.5
+val remainder = -7 % 2 // -1
+val converted = 7.toDouble()
+val parsed = "42".toInt()
+val text = 42.toString()</code></pre></div><div class="example godot"><div class="language">Godot Script</div><pre><code>var sum = 7 + 2        # 9
+var quotient = 7 / 2   # 3
+var decimal = 7.0 / 2  # 3.5
+var remainder = -7 % 2 # -1
+var converted = float(7)
+var parsed = "42".to_int()
+var text = str(42)</code></pre></div></div><p>With two integer operands, division truncates toward zero in both languages; use a float operand for a fractional result. Godot Script may warn about integer division. Its <code>int</code> is signed 64-bit; Kotlin <code>Int</code> is signed 32-bit.</p><h3>Comparisons and short-circuit logic</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>val age = 20
+val member = false
+val offer = age &gt;= 18 &amp;&amp; !member
+val eligible = age &gt;= 18 || member
+val teen = age &gt;= 13 &amp;&amp; age &lt; 20</code></pre></div><div class="example godot"><div class="language">Godot Script</div><pre><code>var age = 20
+var member = false
+var offer = age &gt;= 18 and not member
+var eligible = age &gt;= 18 or member
+var teen = age &gt;= 13 and age &lt; 20</code></pre></div></div><p>Both use <code>true</code>, <code>false</code>, and the familiar comparison operators. Godot Script also accepts <code>&amp;&amp;</code>, <code>||</code>, and <code>!</code>. Short-circuit logic skips an operand when the result is already decided.</p><p class="note"><strong>Remember:</strong> Validate numeric text with <code>is_valid_int()</code> before <code>to_int()</code>; conversion does not provide the same invalid-input failure behavior as Kotlin <code>toInt()</code>.</p><p class="sources">Official reference: <a href="https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html">Language reference</a></p></section>
+<section class="sheet" id="text" aria-labelledby="text-title"><div class="sheet-number">04 / Strings &amp; missing values</div><h2 id="text-title">Build text; check missing values</h2><p class="lede">String is the text type in both languages. Godot Script string indexing returns a one-character String.</p><h3>Reading and building text</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>val name = "Gompei"
+name.length             // 6
+name[0]                 // 'G'
+name.substring(0, 3)    // "Gom"
+name.lowercase()        // "gompei"
+name.startsWith("Gom")  // true
+"  hi  ".trim()         // "hi"
+"Hi, $name!"</code></pre></div><div class="example godot"><div class="language">Godot Script</div><pre><code>var name = "Gompei"
+name.length()           # 6
+name[0]                 # "G"
+name.substr(0, 3)       # "Gom"
+name.to_lower()         # "gompei"
+name.begins_with("Gom") # true
+"  hi  ".strip_edges()  # "hi"
+"Hi, %s!" % name</code></pre></div></div><p><code>substring(start, end)</code> uses an exclusive end in Kotlin; <code>substr(start, length)</code> takes a count in Godot Script. Use <code>==</code> for string contents.</p><h3>An optional value</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>val nickname: String? = null
+val label = nickname ?: "guest"
+val size = nickname?.length</code></pre></div><div class="example godot"><div class="language">Godot Script</div><pre><code>var nickname: Variant = null
+var label = nickname if nickname != null else "guest"
+var size = null
+if nickname != null:
+    size = nickname.length()</code></pre></div></div><p>Godot Script has no <code>String?</code>, safe-call operator, or Elvis operator. A typed <code>String</code> cannot hold null; <code>Variant</code> can. Object references may be null. A conditional expression can choose a fallback.</p><p class="note"><strong>Remember:</strong> Check absence explicitly. An empty string and a missing value communicate different information.</p><p class="sources">Official reference: <a href="https://docs.godotengine.org/en/stable/classes/class_string.html">String operations</a></p></section>
+<section class="sheet" id="decisions" aria-labelledby="decisions-title"><div class="sheet-number">05 / if, when &amp; named choices</div><h2 id="decisions-title">Choose a branch or a value</h2><p class="lede">Use if / elif / else for conditions and match for value patterns.</p><h3>Conditional expressions and ordered tests</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>fun label(score: Int): String {
+    return when {
+        score &gt;= 90 -&gt; "high"
+        score &gt;= 60 -&gt; "passing"
+        else -&gt; "retry"
+    }
+}
+val price = if (age &lt; 18) 5 else 10</code></pre></div><div class="example godot"><div class="language">Godot Script</div><pre><code>func label(score: int) -&gt; String:
+    if score &gt;= 90:
+        return "high"
+    elif score &gt;= 60:
+        return "passing"
+    else:
+        return "retry"
+
+# Given an age variable:
+var price = 5 if age &lt; 18 else 10</code></pre></div></div><p>The first satisfied condition wins. The conditional expression puts the selected value before <code>if</code> in Godot Script. A statement branch does not return its last expression automatically.</p><h3>Named choices</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>enum class Signal { STOP, GO }
+fun action(signal: Signal): String =
+    when (signal) {
+        Signal.STOP -&gt; "wait"
+        Signal.GO -&gt; "walk"
+    }</code></pre></div><div class="example godot"><div class="language">Godot Script</div><pre><code>enum Signal { STOP, GO }
+
+func action(signal: Signal) -&gt; String:
+    match signal:
+        Signal.STOP:
+            return "wait"
+        Signal.GO:
+            return "walk"
+        _:
+            return "unknown"</code></pre></div></div><p>Godot Script enum entries are named integer constants. <code>_</code> is the wildcard pattern. <code>match</code> is a statement rather than a value-producing expression.</p><p class="note"><strong>Remember:</strong> Do not expect the exhaustive branch checking of a Kotlin enum or sealed hierarchy. Include a deliberate fallback when your function must always return a result.</p><p class="sources">Official reference: <a href="https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html">Language reference</a></p></section>
+<section class="sheet" id="functions" aria-labelledby="functions-title"><div class="sheet-number">06 / Function design &amp; testing</div><h2 id="functions-title">Keep the purpose, examples, and tests</h2><p class="lede">Write inputs and outputs first, then implement a function that returns the result.</p><h3>A purpose and a signature</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>// Return the ticket cost for a group.
+fun cost(count: Int, price: Double): Double {
+    return count * price
+}
+fun greet(name: String = "guest"): String {
+    return "Hi, $name!"
+}</code></pre></div><div class="example godot"><div class="language">Godot Script</div><pre><code># Return the ticket cost for a group.
+func cost(count: int, price: float) -&gt; float:
+    return count * price
+
+func greet(name: String = "guest") -&gt; String:
+    return "Hi, %s!" % name</code></pre></div></div><p>Use <code>func</code>, typed parameters, and <code>-&gt;</code> for the return type. Use <code>-&gt; void</code> for a function with no returned result. Defaults are supported; call arguments are positional rather than Kotlin-style named arguments.</p><h3>Examples as executable checks</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>fun main() {
+    check(cost(3, 2.5) == 7.5)
+    check(cost(0, 2.5) == 0.0)
+    check(greet() == "Hi, guest!")
+}</code></pre></div><div class="example godot"><div class="language">Godot Script</div><pre><code>func _ready() -&gt; void:
+    assert(cost(3, 2.5) == 7.5)
+    assert(cost(0, 2.5) == 0.0)
+    assert(greet() == "Hi, guest!")
+    print("Checks passed")</code></pre></div></div><p>These checks reuse the functions above. Run the scene in a debug build. A failing assertion stops execution for inspection. Test ordinary cases, boundaries, and every data variant.</p><p class="note"><strong>Remember:</strong> Godot Script assertions are omitted in release builds. Keep necessary work outside <code>assert</code>; use explicit validation for conditions that must be checked in a released program.</p><p class="sources">Official reference: <a href="https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html">Language reference</a></p></section>
+<section class="sheet" id="records" aria-labelledby="records-title"><div class="sheet-number">07 / Compound data &amp; copies</div><h2 id="records-title">Represent related fields with a class</h2><p class="lede">A small class can carry the same information as a Kotlin data class.</p><h3>Define, construct, and select fields</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>data class Point(val x: Int, val y: Int)
+val start = Point(2, 3)
+val moved = start.copy(x = 5)
+// start.x is 2; moved.x is 5.</code></pre></div><div class="example godot"><div class="language">Godot Script</div><pre><code>class Point extends RefCounted:
+    var x: int
+    var y: int
+
+    func _init(px: int, py: int) -&gt; void:
+        x = px
+        y = py
+
+# Inside a function:
+var start = Point.new(2, 3)
+var moved = Point.new(5, start.y)
+# start.x is 2; moved.x is 5.</code></pre></div></div><p>The inner class definition belongs at script level. <code>_init</code> initializes a new instance; <code>.new(...)</code> constructs it. There is no automatic data-class <code>copy</code>, destructuring, or field-based equality.</p><h3>Compare the data explicitly</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>val a = Point(2, 3)
+val b = Point(2, 3)
+println(a == b) // true</code></pre></div><div class="example godot"><div class="language">Godot Script</div><pre><code>var a = Point.new(2, 3)
+var b = Point.new(2, 3)
+print(a == b) # false: different objects
+print(a.x == b.x and a.y == b.y) # true</code></pre></div></div><p>These examples reuse Point. Object equality compares identity in Godot Script. Write a comparison function when the meaning of equality depends on fields.</p><p class="note"><strong>Remember:</strong> RefCounted instances are released when no references remain. Their fields are mutable here; preserve a functional design by constructing a new result rather than updating an input.</p><p class="sources">Official reference: <a href="https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html">Language reference</a></p></section>
+<section class="sheet" id="variants" aria-labelledby="variants-title"><div class="sheet-number">08 / Sum types &amp; type checks</div><h2 id="variants-title">Model alternatives; inspect their data</h2><p class="lede">Use a shared base class and subclasses to represent different shapes of data.</p><h3>Define the alternatives</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>sealed interface Result
+data class Success(val value: Int) : Result
+data class Failure(val message: String) : Result</code></pre></div><div class="example godot"><div class="language">Godot Script</div><pre><code>class Result extends RefCounted:
+    pass
+
+class Success extends Result:
+    var value: int
+    func _init(v: int) -&gt; void:
+        value = v
+
+class Failure extends Result:
+    var message: String
+    func _init(m: String) -&gt; void:
+        message = m</code></pre></div></div><p>Definitions belong at script level. Use <code>Success.new(42)</code> or <code>Failure.new("missing")</code> to construct an alternative in Godot Script. This hierarchy is open; it does not have the closed-set promise of Kotlin <code>sealed</code>.</p><h3>Follow the data definition</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>fun describe(result: Result): String =
+    when (result) {
+        is Success -&gt; "Value: ${result.value}"
+        is Failure -&gt; result.message
+    }</code></pre></div><div class="example godot"><div class="language">Godot Script</div><pre><code>func describe(result: Result) -&gt; String:
+    if result is Success:
+        return "Value: %d" % result.value
+    elif result is Failure:
+        return result.message
+    return "unknown result"</code></pre></div></div><p>These functions reuse the alternatives above. <code>is</code> checks an object’s type. Handle each alternative’s fields in its branch; choose how to handle unknown alternatives or null.</p><p class="note"><strong>Remember:</strong> A Godot Script <code>Variant</code> is a general value container, not a declaration of a specific closed sum type. Use a clear data definition and tests for each alternative.</p><p class="sources">Official reference: <a href="https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html">Types and type checks</a></p></section>
+<section class="sheet" id="lists" aria-labelledby="lists-title"><div class="sheet-number">09 / Lists &amp; operations</div><h2 id="lists-title">List&lt;T&gt; becomes Array[T]</h2><p class="lede">Array stores an ordered, resizable sequence. Typed arrays constrain the element type.</p><h3>Construct, index, and combine</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>val scores: List&lt;Int&gt; = listOf(10, 20, 30)
+val empty: List&lt;Int&gt; = emptyList()
+scores.size          // 3
+scores[0]            // 10
+scores.last()        // 30
+scores.take(2)       // [10, 20]
+scores.drop(1)       // [20, 30]
+20 in scores         // true
+val more = scores + listOf(40)</code></pre></div><div class="example godot"><div class="language">Godot Script</div><pre><code>var scores: Array[int] = [10, 20, 30]
+var empty: Array[int] = []
+scores.size()        # 3
+scores[0]            # 10
+scores[-1]           # 30
+scores.slice(0, 2)   # [10, 20]
+scores.slice(1)      # [20, 30]
+20 in scores         # true
+var more = scores + [40]</code></pre></div></div><p>Both start indexing at zero. Godot Script also accepts negative indices from the end; a slice excludes its end. Addition creates a new array.</p><h3>Search, order, and compare</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>val scores = listOf(30, 10, 20)
+val index = scores.indexOf(10) // 1
+val ordered = scores.sorted()
+val same = listOf(1, 2) == listOf(1, 2)</code></pre></div><div class="example godot"><div class="language">Godot Script</div><pre><code>var scores = [30, 10, 20]
+var index = scores.find(10) # 1
+var ordered = scores.duplicate()
+ordered.sort()
+var same = [1, 2] == [1, 2] # true</code></pre></div></div><p>Search returns -1 if absent. Duplicate before sorting to preserve the input. Array equality compares elements in order.</p><p class="note"><strong>Remember:</strong> Array is mutable. Kotlin List exposes read-only operations; keep that design habit by producing new arrays when transforming inputs.</p><p class="sources">Official reference: <a href="https://docs.godotengine.org/en/stable/classes/class_array.html">Array operations</a></p></section>
+<section class="sheet" id="higher-order" aria-labelledby="higher-order-title"><div class="sheet-number">10 / Lambdas, map, filter &amp; fold</div><h2 id="higher-order-title">Transform, select, and summarize</h2><p class="lede">Use nums = [1, 2, 3, 4] in Godot Script and val nums = listOf(1, 2, 3, 4) in Kotlin.</p><h3>Map and filter</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>val squares = nums.map { n -&gt; n * n }
+val evens = nums.filter { it % 2 == 0 }
+val evenSquares = nums
+    .filter { it % 2 == 0 }
+    .map { it * it }
+// [1, 4, 9, 16]; [2, 4]; [4, 16]</code></pre></div><div class="example godot"><div class="language">Godot Script</div><pre><code>var squares = nums.map(func(n): return n * n)
+var evens = nums.filter(func(n): return n % 2 == 0)
+var even_squares = nums.filter(
+    func(n): return n % 2 == 0
+).map(func(n): return n * n)
+# [1, 4, 9, 16]; [2, 4]; [4, 16]</code></pre></div></div><p>Both operations build new collections. Godot Script uses an anonymous <code>func</code>; name the parameter explicitly and write <code>return</code>.</p><h3>Predicates and a left fold</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>val hasEven = nums.any { it % 2 == 0 }
+val allPositive = nums.all { it &gt; 0 }
+val total = nums.fold(0) { acc, n -&gt; acc + n }
+val product = nums.fold(1) { acc, n -&gt; acc * n }
+// true, true, 10, 24</code></pre></div><div class="example godot"><div class="language">Godot Script</div><pre><code>var has_even = nums.any(func(n): return n % 2 == 0)
+var all_positive = nums.all(func(n): return n &gt; 0)
+var total = nums.reduce(func(acc, n): return acc + n, 0)
+var product = nums.reduce(func(acc, n): return acc * n, 1)
+# true, true, 10, 24</code></pre></div></div><p>The accumulator comes first in the callback. Supply an initial value deliberately. Empty-input <code>any</code> is false and <code>all</code> is true.</p><h3>Pass a function; call a function value</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>fun double(n: Int): Int = n * 2
+val operation: (Int) -&gt; Int = ::double
+val answer = operation(4) // 8</code></pre></div><div class="example godot"><div class="language">Godot Script</div><pre><code>func double(n: int) -&gt; int:
+    return n * 2
+
+# Inside a function:
+var operation: Callable = double
+var answer = operation.call(4) # 8</code></pre></div></div><p>Use the function name to obtain a Callable and <code>.call(...)</code> to invoke a stored function value.</p><p class="note"><strong>Remember:</strong> Pass <code>double</code> to <code>map</code>; <code>double(4)</code> calls it immediately. Godot Script has no implicit <code>it</code> parameter.</p><p class="sources">Official reference: <a href="https://docs.godotengine.org/en/stable/classes/class_array.html">Array callbacks</a></p></section>
+<section class="sheet" id="mutation" aria-labelledby="mutation-title"><div class="sheet-number">11 / Mutation &amp; shared values</div><h2 id="mutation-title">Rebinding versus changing an object</h2><p class="lede">An alias refers to the same collection. Copy deliberately when changes should be independent.</p><h3>Update elements and size</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>var count = 1
+count += 2
+count++
+val scores = mutableListOf(10, 20)
+scores[0] = 11
+scores.add(30)
+scores.addAll(listOf(40, 50))
+val removed = scores.removeAt(1)
+// removed: 20; scores: [11, 30, 40, 50]</code></pre></div><div class="example godot"><div class="language">Godot Script</div><pre><code>var count = 1
+count += 2
+count += 1 # no ++ operator
+var scores = [10, 20]
+scores[0] = 11
+scores.append(30)
+scores.append_array([40, 50])
+var removed = scores.pop_at(1)
+# removed: 20; scores: [11, 30, 40, 50]</code></pre></div></div><p>Use <code>pop_at</code> when you need the removed value. <code>remove_at</code> removes without returning it. Mutation methods such as <code>append</code> do not return a replacement array.</p><h3>Aliases and shallow copies</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>val original = mutableListOf(1, 2)
+val alias = original
+val separate = original.toMutableList()
+alias.add(3)
+// original: [1, 2, 3]; separate: [1, 2]</code></pre></div><div class="example godot"><div class="language">Godot Script</div><pre><code>var original = [1, 2]
+var alias = original
+var separate = original.duplicate()
+alias.append(3)
+# original: [1, 2, 3]; separate: [1, 2]</code></pre></div></div><p>A function receiving an array can mutate the caller’s array. Reassigning its local parameter does not rebind the caller’s variable. A shallow copy shares nested values.</p><p class="note"><strong>Remember:</strong> For nested arrays and dictionaries, <code>duplicate(true)</code> recursively copies those containers. Object elements remain shared; it is not a universal independent copy of every object.</p><p class="sources">Official reference: <a href="https://docs.godotengine.org/en/stable/classes/class_array.html">Array copying and mutation</a></p></section>
+<section class="sheet" id="loops" aria-labelledby="loops-title"><div class="sheet-number">12 / Loops, ranges &amp; input</div><h2 id="loops-title">Loop over values or a range</h2><p class="lede">Use for for a sequence and while for a changing condition.</p><h3>Elements and indices</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>val scores = listOf(10, 20, 30)
+var total = 0
+for (score in scores) {
+    total += score
+}
+for ((index, score) in scores.withIndex()) {
+    println("$index: $score")
+}
+// total is 60.</code></pre></div><div class="example godot"><div class="language">Godot Script</div><pre><code>var scores = [10, 20, 30]
+var total = 0
+for score in scores:
+    total += score
+for index in range(scores.size()):
+    print("%d: %d" % [index, scores[index]])
+# total is 60.</code></pre></div></div><p>Loop over values when the index is unnecessary. Avoid adding or removing elements from the array being traversed.</p><h3>Range boundaries and steps</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>for (i in 1..3) println(i) // 1, 2, 3
+for (i in 0 until 3) println(i) // 0, 1, 2
+for (i in 1..7 step 2) println(i) // 1, 3, 5, 7
+for (i in 3 downTo 1) println(i) // 3, 2, 1</code></pre></div><div class="example godot"><div class="language">Godot Script</div><pre><code>for i in range(1, 4):
+    print(i) # 1, 2, 3
+for i in range(3):
+    print(i) # 0, 1, 2
+for i in range(1, 8, 2):
+    print(i) # 1, 3, 5, 7
+for i in range(3, 0, -1):
+    print(i) # 3, 2, 1</code></pre></div></div><p><code>range(start, stop, step)</code> excludes stop, including when counting down. <code>break</code> exits the nearest loop; <code>continue</code> skips to its next iteration.</p><h3>Receive text from an interface</h3><div class="pair"><div class="example kotlin"><div class="language">Kotlin</div><pre><code>fun main() {
+    val word = readln()
+    if (word.isNotEmpty()) {
+        println(word.uppercase())
+    }
+}</code></pre></div><div class="example godot"><div class="language">Godot Script</div><pre><code>func _on_text_submitted(word: String) -&gt; void:
+    if not word.is_empty():
+        print(word.to_upper())</code></pre></div></div><p>Add a LineEdit node and connect its <code>text_submitted</code> signal to this method on the scripted node. Submitting text calls the method with a String; do not block the scene with a terminal-input loop.</p><p class="note"><strong>Remember:</strong> Scenes respond to callbacks and signals. Keep calculation in small returning functions, and call those functions from input handlers. Use <code>_process(delta)</code> for per-frame work rather than an endless loop inside <code>_ready()</code>.</p><p class="sources">Official reference: <a href="https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html">Language reference</a></p></section>
+</main><footer class="footer"><p>CS1101 · Transfer Reference to Godot Script · <a href="#main">Back to contents</a> · <a href="index.html">All readings</a></p></footer></body></html>
