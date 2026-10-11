@@ -71,6 +71,10 @@ import io.kotest.matchers.shouldBe</code></pre>
 
         <h2>Try It: Find and Fix Two Failing Expectations</h2>
         <p>This example has three <code>shouldBe</code> statements inside one <code>assertSoftly</code> block. The first passes, but the other two deliberately do not meet their expectations. The editor already includes the testing helpers, so you can run it here without installing or importing anything.</p>
+        <figure class="screenshot-card">
+          <img src="assets/ShouldBeDiagram.png" alt="Annotated Kotlin tests: main starts the program and assertSoftly groups three checks. 4 * 3 shouldBe 12 passes. 7 - 2 produces 5, so expecting 6 fails. 9.0 / 4.0 produces 2.25, outside the range 1.99 to 2.01 accepted by 2.0 plusOrMinus 0.01. Both failures are reported together.">
+          <figcaption>Read each check as actual value on the left, expected value on the right. <code>assertSoftly</code> reports both failures; <code>plusOrMinus</code> gives the decimal expectation an acceptable range.</figcaption>
+        </figure>
         <figure class="kotlin-example" aria-label="Three grouped tests with two expectations to fix">
           <figcaption>Your turn <span>Run the tests, observe the error reports, then fix the expressions on the left to meet the expected answers.</span></figcaption>
           <pre data-kotlin-editor data-kotlin-dependencies="kotlin-dependencies/kotest-mini.kt" aria-label="Fix failing expectations"><code>fun main() {
