@@ -215,9 +215,15 @@ const CS1101_READING_SETS_DATA = (() => {
       "A <strong>KDoc</strong> purpose tells a future reader what a function computes. The <strong>function signature</strong> names the function, lists its parameters and their types, and promises a return type. A <strong>stub</strong> is a temporary body for an unfinished function. Return a default value of the promised type, such as <code>0</code> for <code>Int</code>, <code>0.0</code> for <code>Double</code>, <code>&quot;&quot;</code> for <code>String</code>, or <code>false</code> for <code>Boolean</code>. These are placeholders you choose, not values Kotlin inserts automatically.",
       "Writing this plan before an implementation separates the question of what the function should do from the later question of how to compute it. The stub gives the rest of the program a valid function to call while the design is still incomplete.",
       "/**\n * Computes the cost to ship one package.\n */\nfun shippingCost(weightKg: Double, express: Boolean): Double {\n    return 0.0\n}",
-      "The purpose describes the result in ordinary language. The signature promises a decimal result from a weight and an express choice. The default <code>0.0</code> lets the unfinished body compile and return a value, so tests can compare it with the expected shipping cost.",
+      "The purpose describes the result in ordinary language. The signature promises a decimal result from a weight and an express choice. The placeholder <code>0.0</code> gives the unfinished body a value of the promised <code>Double</code> type. It is not yet a shipping-cost calculation.",
       "Choose a default that matches the return type. It is not the finished answer: replace it with the implementation after writing examples and planning the calculation.",
-      [Q("What should the KDoc purpose explain?", "What result the function computes for its caller."), Q("What does the stub return for any inputs?", "0.0, the temporary default value."), Q("Does the stub solve the shipping-cost problem?", "No. It only gives the unfinished function a body that compiles.")]
+      [Q("What should the KDoc purpose explain?", "What result the function computes for its caller."), Q("What does the stub return for any inputs?", "0.0, the temporary default value."), Q("Does the stub solve the shipping-cost problem?", "No. It only gives the unfinished function a body that compiles.")],
+      "",
+      {
+        src: "assets/FunctionSignatureDiagram.svg",
+        alt: "Annotated shippingCost definition: the KDoc comment states its purpose; the signature contains the fun keyword, function name shippingCost, parameter list weightKg: Double and express: Boolean, and return type Double; the stubbed return statement returns the placeholder 0.0.",
+        caption: "A function plan: describe its purpose, write its signature, and add a stub that returns a placeholder of the promised type."
+      }
     ),
     R(
       "l02-tests-stubs", "lecture-02-tests-and-stubs.html", "Write Examples That Compile Before They Pass", "necessary",

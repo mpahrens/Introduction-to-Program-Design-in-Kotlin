@@ -36,8 +36,7 @@
     const softSuccess = "✅ All soft assertions passed cleanly!";
     const stubFailure = "assertSoftly failed with 2 assertion(s):";
     const shippingTests = source("l02-tests-stubs");
-    definition("l02-signature", shippingTests, "Run the tests against the 0.0 stub. Both comparisons run and fail; then replace the stub with a calculation.", null, ["kotest-mini"], "", "Expected: two failed assertions, because the stub returns 0.0 for both calls.");
-    readings.get("l02-signature").examples[0].expectedError = stubFailure;
+    readings.get("l02-signature").examples = [{ kind: "text", title: "Purpose, signature, and stub", code: source("l02-signature") }];
     example("l02-tests-stubs", source("l02-signature") + "\n\n" + main(shippingTests), "Run to see both failed comparisons. Replace the default value with the shipping-cost implementation, then rerun without changing the tests.", null, ["kotest-mini"], "assertSoftly collects both failures before reporting them. Keep the expected costs: they describe the intended behavior.");
     readings.get("l02-tests-stubs").examples[0].expectedError = stubFailure;
     const stageGuidance = [
