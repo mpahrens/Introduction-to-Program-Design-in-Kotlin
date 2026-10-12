@@ -10,6 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const tagline = card.querySelector(".tagline");
 
     if (description) description.textContent = set.cardSummary;
-    if (tagline) tagline.textContent = `${necessary} necessary readings + ${optional} optional reading${optional === 1 ? "" : "s"}`;
+    if (tagline) tagline.textContent = `${necessary} pre-lecture readings + ${optional} follow-up reading${optional === 1 ? "" : "s"}`;
   }
 });

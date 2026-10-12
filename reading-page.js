@@ -16,7 +16,7 @@ function findReadingContext() {
 }
 
 function readingBadge(status) {
-  const label = status === "necessary" ? "Necessary" : "Optional";
+  const label = status === "necessary" ? "Pre-lecture" : "Follow-up";
   const className = status === "necessary" ? "required" : "optional";
   return `<span class="status-badge ${className}">${label}</span>`;
 }
@@ -27,12 +27,12 @@ function renderReadingSet(set) {
   const groups = [
     {
       status: "necessary",
-      heading: "Before class",
+      heading: "Read before class",
       readings: set.readings.filter((reading) => reading.status === "necessary")
     },
     {
       status: "optional",
-      heading: "Look closer",
+      heading: "Read soon after class",
       readings: set.readings.filter((reading) => reading.status === "optional")
     }
   ].filter((group) => group.readings.length > 0);
@@ -61,9 +61,9 @@ function renderReadingSet(set) {
         <h1>${set.title}</h1>
         <p class="subtitle">${set.summary}</p>
         <div class="meta">
-          <span class="pill">${groups[0].readings.length} necessary</span>
-          <span class="pill">${groups.find((group) => group.status === "optional")?.readings.length || 0} optional</span>
-          <span class="pill">About ${set.minutes} minutes necessary</span>
+          <span class="pill">${groups[0].readings.length} pre-lecture</span>
+          <span class="pill">${groups.find((group) => group.status === "optional")?.readings.length || 0} follow-up</span>
+          <span class="pill">About ${set.minutes} minutes pre-lecture</span>
         </div>
       </div>
     </header>
@@ -134,14 +134,14 @@ function renderReading(set, reading) {
   const nextLinks = showNextOptions ? `
           <div class="lesson-nav-next">
             <a href="${set.nextHref}">${set.nextHref === "index.html" ? set.nextLabel : `Next: ${set.nextLabel}`}</a>
-            <a href="${firstOptional.file}">Next optional: ${firstOptional.shortTitle || firstOptional.title}</a>
+            <a href="${firstOptional.file}">Next follow-up: ${firstOptional.shortTitle || firstOptional.title}</a>
           </div>` : `<a href="${nextHref}">${nextLabel}</a>`;
 
   document.getElementById("reading-app").innerHTML = `
     <header class="site-header">
       <div class="header-inner">
         <a class="crumb" href="${set.hub}">Back to ${set.lecture} readings</a>
-        <p class="topic-kicker">${set.lecture} | ${reading.status === "necessary" ? `Reading ${set.readings.filter((item) => item.status === "necessary").indexOf(reading) + 1}` : "Optional reading"} | ${reading.status === "necessary" ? "Necessary" : "Optional"}</p>
+        <p class="topic-kicker">${set.lecture} | ${reading.status === "necessary" ? `Reading ${set.readings.filter((item) => item.status === "necessary").indexOf(reading) + 1} | Pre-lecture` : "Follow-up reading"}</p>
         <h1>${reading.title}</h1>
         <p class="subtitle">${reading.summary}</p>
         <div class="meta">
@@ -166,7 +166,7 @@ function renderReading(set, reading) {
 
           <h2>${reading.examples?.some(example => example.kind === "kotlin") ? "Read, Run, and Change" : "Read This Example"}</h2>
           ${reading.examples?.some(example => example.kind === "kotlin") ? '<p>Predict the output, then select <strong>Run code</strong>. Edit the example and run it again to test your prediction. <strong>Reset</strong> restores the original program. Each example runs independently.</p>' : ""}
-          ${readingExamplesMarkup(reading)}
+          ${readingExamplesMarkup({ ...reading, examples: reading.examples?.filter(example => !example.advanced) })}
           <p>${reading.walkthrough}</p>
           <div class="callout"><strong>Notice:</strong> ${reading.notice}</div>
 
@@ -184,6 +184,16 @@ function renderReading(set, reading) {
               </div>
             </details>
           </div>
+          ${reading.advanced ? `<section class="advanced-example">
+            <h2>${reading.advanced.title}</h2>
+            <p>${reading.advanced.introduction}</p>
+            ${readingExamplesMarkup({ code: escapeExample(reading.advanced.code), examples: reading.examples?.filter(example => example.advanced) })}
+            <p>${reading.advanced.explanation}</p>
+            <figure class="screenshot-card">
+              <a href="${reading.advanced.diagram.src}" aria-label="Open advanced diagram at full size"><img src="${reading.advanced.diagram.src}" alt="${reading.advanced.diagram.alt}" loading="lazy"></a>
+              <figcaption>${reading.advanced.diagram.caption}</figcaption>
+            </figure>
+          </section>` : ""}
           ${reading.footnote ? `<p class="reading-footnote"><small>${reading.footnote}</small></p>` : ""}
         </article>
 

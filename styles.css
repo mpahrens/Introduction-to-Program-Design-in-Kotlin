@@ -537,6 +537,25 @@ pre code {
   color: inherit;
 }
 
+.code-comparison {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.comparison-card {
+  min-width: 0;
+}
+
+.reading-block .comparison-card h3 {
+  margin-top: 0;
+}
+
+.comparison-card pre {
+  margin: 0;
+}
+
 .callout {
   border-left: 4px solid var(--gold);
   margin: 18px 0 0;

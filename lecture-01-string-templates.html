@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <title>Lecture 1 Follow-up: Build Strings with Templates</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="kotlin-editor.css">
+  <script src="glossary.js" defer></script>
+  <script src="https://unpkg.com/kotlin-playground@1" defer></script>
+  <script src="kotlin-editor.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="crumb" href="lecture-01-expressions-values.html">Back to Lecture 1 readings</a>
+      <p class="topic-kicker">Lecture 1 | Follow-up reading</p>
+      <h1>Build Strings with Templates</h1>
+      <p class="subtitle">Put values and expressions inside a String instead of joining many pieces with <code>+</code>.</p>
+      <div class="meta">
+        <span class="status-badge optional">Follow-up</span>
+        <span class="pill">2-3 minutes</span>
+        <span class="pill">Microskill: use $name and ${expression}</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page layout">
+    <section>
+      <article class="reading-block">
+        <h2>Insert a Named Value with $</h2>
+        <p>A <strong>String template</strong> includes a value inside text. Put <code>$</code> before a simple variable name: <code>$name</code>. Kotlin replaces that part with the variable's current value when it builds the String.</p>
+        <figure class="kotlin-example" aria-label="String template examples you can change and run">
+          <figcaption>Try it <span>Predict the three lines, then run. Change the name and numbers and run again.</span></figcaption>
+          <pre data-kotlin-editor aria-label="String templates"><code>fun main() {
+    val name = "Mina"
+    val completed = 3
+    val total = 5
+
+    println("Hello, $name!")
+    println("$name completed $completed of $total tasks.")
+    println("${name.uppercase()} has ${total - completed} tasks left.")
+}</code></pre>
+        </figure>
+        <p>The first line prints <code>Hello, Mina!</code>. The second inserts three values into one String. The values are converted to text for the finished String; <code>completed</code> and <code>total</code> are still numbers in the program.</p>
+
+        <h2>Use ${...} for an Expression</h2>
+        <p>Use braces when you want to compute something rather than insert only a variable. In the example, <code>${name.uppercase()}</code> produces <code>MINA</code>, and <code>${total - completed}</code> produces <code>2</code>. The third line prints <code>MINA has 2 tasks left.</code></p>
+        <p>Braces also show where a variable name ends if letters follow immediately. For example, with <code>val place = "Worcester"</code>, <code>"${place}shire"</code> produces <code>Worcestershire</code>.</p>
+
+        <h2>Compare a Template with +</h2>
+        <p>With <code>name = "Mina"</code> and <code>completed = 3</code>, these two expressions build the same String:</p>
+        <div class="code-comparison" aria-label="Side-by-side String building examples">
+          <div class="comparison-card">
+            <h3>String template</h3>
+            <pre><code>val message = "$name completed $completed tasks."</code></pre>
+          </div>
+          <div class="comparison-card">
+            <h3>Using +</h3>
+            <pre><code>val message = name + " completed " + completed + " tasks."</code></pre>
+          </div>
+        </div>
+        <p>Both make <code>Mina completed 3 tasks.</code> The template keeps the words and spaces together, making the finished sentence easier to read. Either result can be given a name, passed to a function, or printed with <code>println(message)</code>.</p>
+        <p>Use <code>$name</code> for a simple name and <code>${...}</code> for a longer expression or a clear boundary before more letters.</p>
+
+        <div class="practice">
+          <h2>Practice</h2>
+          <ol>
+            <li>If <code>val course = "CS1101"</code>, what does <code>"Welcome to $course"</code> produce?</li>
+            <li>If <code>val score = 7</code>, what does <code>"Next: ${score + 1}"</code> produce?</li>
+            <li>Why use braces in <code>"${place}shire"</code>?</li>
+          </ol>
+          <details class="answer">
+            <summary>Check your answers</summary>
+            <div>
+              <p>1. <code>Welcome to CS1101</code>.</p>
+              <p>2. <code>Next: 8</code>.</p>
+              <p>3. The braces mark the end of <code>place</code>; <code>shire</code> is ordinary text after the value.</p>
+            </div>
+          </details>
+        </div>
+      </article>
+
+      <nav class="lesson-nav lesson-nav-with-options">
+        <a href="lecture-01-comparing-strings.html">Previous: Comparing Strings</a>
+        <div class="lesson-nav-next">
+          <a href="lecture-02-functions-tests-helpers.html">Next: Lecture 2 reading set</a>
+          <a href="lecture-01-why-foundations-matter.html">Next follow-up: Programming Foundations</a>
+        </div>
+      </nav>
+    </section>
+
+    <aside class="panel">
+      <h2>Microskill</h2>
+      <p>Build a String with a simple value using <code>$name</code> or a computed value using <code>${expression}</code>.</p>
+    </aside>
+  </main>
+</body>
+</html>

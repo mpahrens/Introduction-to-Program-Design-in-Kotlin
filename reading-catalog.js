@@ -15,7 +15,8 @@ const CS1101_READING_SETS_DATA = (() => {
     notice,
     practice,
     footnote = "",
-    diagram = null
+    diagram = null,
+    advanced = null
   ) => ({
     id,
     file,
@@ -32,7 +33,8 @@ const CS1101_READING_SETS_DATA = (() => {
     notice,
     practice,
     footnote,
-    diagram
+    diagram,
+    advanced
   });
 
   const W = (id, file, title, summary, microskill, vocabulary, definition, why, code, walkthrough, notice, practice) =>
@@ -322,7 +324,7 @@ fun shippingCost(weightKg: Double, express: Boolean): Double {
       "An if expression chooses one result when a Boolean condition is true and another when it is false.",
       "Read and write an if expression with a simple Boolean condition.",
       ["if-expression", "boolean", "expression"],
-      "An <strong>if expression</strong> asks a Boolean question and chooses a result. It is most useful when a program has two branching cases: one result when the condition is true and one result when it is false.",
+      "An <strong>if expression</strong> asks a Boolean question and chooses a result. Because <code>if</code> is an expression in Kotlin, it can produce a value to be stored in a <code>val</code> or returned from a function. It is most useful when a program has two branching cases: one result when the condition is true and one result when it is false.",
       "For example, <code>age &gt; 21</code> is a simple Boolean expression. Kotlin chooses the first branch when it is true and the <code>else</code> branch when it is false. An <code>if - else if - else</code> chain can handle more than two cases, but a <code>when</code> expression is often cleaner for multiple cases. Later readings introduce <code>when</code> in detail.",
       `fun ticketLabel(age: Int): String {
     return if (age &gt; 21) {
@@ -333,7 +335,24 @@ fun shippingCost(weightKg: Double, express: Boolean): Double {
 }`,
       "The condition is <code>age &gt; 21</code>. When it is true, the whole <code>if</code> expression produces <code>\"adult ticket\"</code>; otherwise, it produces <code>\"youth ticket\"</code>. Because both branches produce Strings, the function can return the entire if expression.",
       "Use one <code>if</code> and <code>else</code> for two cases. An <code>else if</code> chain is possible when there are several cases, but do not add branches that the problem does not need.",
-      [Q("What result does <code>ticketLabel(25)</code> return?", "<code>\"adult ticket\"</code>, because <code>25 &gt; 21</code> is true."), Q("Which branch runs for <code>ticketLabel(18)</code>?", "The <code>else</code> branch."), Q("What Kotlin form will later provide a cleaner structure for several cases?", "A <code>when</code> expression.")]
+      [Q("What result does <code>ticketLabel(25)</code> return?", "<code>\"adult ticket\"</code>, because <code>25 &gt; 21</code> is true."), Q("Which branch runs for <code>ticketLabel(18)</code>?", "The <code>else</code> branch."), Q("What Kotlin form will later provide a cleaner structure for several cases?", "A <code>when</code> expression.")],
+      "",
+      {
+        src: "assets/IfExpressionDiagram.svg",
+        alt: "Annotated if expression: age greater than 21 is the Boolean condition; the true branch produces adult ticket; else selects youth ticket when the condition is false, including age 21. The whole expression produces the selected String value.",
+        caption: "An if expression checks a condition and produces the value from exactly one of its two branches."
+      },
+      {
+        title: "Advanced Example: Choose among Three Results",
+        introduction: "An <code>if–else if–else</code> chain checks conditions in order. Kotlin chooses the first branch whose condition is true and skips the remaining branches. If neither condition is true, it chooses the final <code>else</code> branch.",
+        code: "fun ticketCategory(age: Int): String {\n    return if (age > 21) {\n        \"adult ticket\"\n    } else if (age >= 13) {\n        \"teen ticket\"\n    } else {\n        \"child ticket\"\n    }\n}",
+        explanation: "For <code>ticketCategory(25)</code>, the first condition is true, so the result is <code>&quot;adult ticket&quot;</code> and the second condition is never checked. For <code>ticketCategory(21)</code>, the first condition is false and <code>age &gt;= 13</code> is true, producing <code>&quot;teen ticket&quot;</code>. For <code>ticketCategory(12)</code>, both conditions are false, so the result is <code>&quot;child ticket&quot;</code>. Age 13 gets a teen ticket; age 22 gets an adult ticket. The whole chain is one expression producing a <code>String</code> that the function returns.",
+        diagram: {
+          src: "assets/IfElseIfElseDiagram.svg",
+          alt: "Annotated if–else if–else expression: first check age greater than 21 for adult ticket; only if false, check age at least 13 for teen ticket; otherwise produce child ticket. Exactly one branch supplies the String result.",
+          caption: "Check conditions from top to bottom; the first true condition wins, and else handles the remaining case."
+        }
+      }
     )
   ];
 
@@ -344,7 +363,7 @@ fun shippingCost(weightKg: Double, express: Boolean): Double {
       lecture: "Lecture 2",
       title: "Designing Functions",
       minutes: 11,
-      summary: "Five necessary readings guide a function from purpose and examples through implementation and debugging. Optional readings introduce helpers and simple Boolean branches.",
+      summary: "Five pre-lecture readings guide a function from purpose and examples through implementation and debugging. Follow-up readings introduce helpers and simple Boolean branches.",
       cardSummary: "Short readings on function design, tests, stubs, helpers, and simple if expressions.",
       goal: "Students arrive able to read a function design and understand what each design-recipe step contributes.",
       nextHref: "lecture-03-04-enums-data-classes.html",
@@ -472,7 +491,7 @@ fun boxLabelArea(width: Double, height: Double): Double {
       lecture: "Lectures 3-4",
       title: "Choices and Compound Data",
       minutes: 13,
-      summary: "Five necessary readings introduce fixed choices, case analysis, and values that carry several fields. Optional readings explore structural equality, named arguments, data-class copy, and Compound data in wider computing.",
+      summary: "Five pre-lecture readings introduce fixed choices, case analysis, and values that carry several fields. Follow-up readings explore structural equality, named arguments, data-class copy, and Compound data in wider computing.",
       cardSummary: "Short readings on enums, exhaustive when expressions, data classes, fields, named arguments, copy, and Compound data.",
       goal: "Students arrive able to define small data types and follow functions that consume or produce those values.",
       nextHref: "lecture-05-conditions-nested-data.html",
@@ -689,7 +708,7 @@ val expanded = original.copy(pages = 96)`,
       lecture: "Lecture 5",
       title: "Conditions and Nested Data",
       minutes: 11,
-      summary: "Four necessary readings cover guarded decisions, Boolean combinations, String questions, and fields inside fields. The optional reading explains short-circuiting.",
+      summary: "Four pre-lecture readings cover guarded decisions, Boolean combinations, String questions, and fields inside fields. The follow-up reading explains short-circuiting.",
       cardSummary: "Short readings on ordered conditions, Boolean operators, String predicates, and nested field selection.",
       goal: "Students arrive able to read a multi-branch decision and build conditions from data inside nested objects.",
       nextHref: "lecture-06-07-sum-types.html",
@@ -819,7 +838,7 @@ val city = learner.address.city`,
       lecture: "Lectures 6-7",
       title: "Sum Types",
       minutes: 11,
-      summary: "Four necessary readings introduce sealed interfaces, variants, smart casts, and exhaustive case analysis. Optional readings compare sum and compound data, explain a common variant-field compiler error, and connect sum types to common program states.",
+      summary: "Four pre-lecture readings introduce sealed interfaces, variants, smart casts, and exhaustive case analysis. Follow-up readings compare three forms of when, compare sum and compound data, explain a common variant-field compiler error, and connect sum types to common program states.",
       cardSummary: "Short readings on sealed interfaces, variants, type checks, smart casts, functions over sum data, and program states.",
       goal: "Students arrive able to represent data that comes in several forms and write one branch for each form.",
       nextHref: "lecture-08-09-recursion-lists.html",
@@ -921,6 +940,48 @@ val supplies = CardPayment("4821")`,
           ]
         ),
         R(
+          "l07-when-forms",
+          "lecture-07-three-forms-of-when.html",
+          "Compare Three Forms of when",
+          "optional",
+          "A when can match a subject, test Boolean conditions without a subject, or match a subject with an extra if guard.",
+          "Choose the appropriate form of when and trace its first matching branch.",
+          ["when", "enum", "guard", "boolean-expression"],
+          "A <code>when (value)</code> compares one <strong>subject</strong> with its branches, as in enum case analysis. A subjectless <code>when { ... }</code> checks Boolean expressions in order; it works like an <code>if</code>/<code>else if</code>/<code>else</code> expression. A subject-based branch may also add an <code>if</code> <strong>guard</strong>: its result is chosen only when both the subject matches and the guard is true.",
+          "All three forms choose the first matching branch. Use a subject when the branches describe cases of one value, a subjectless when for different Boolean questions, and a guarded subject when one case needs an additional test. If a when is used to produce a value, its branches must cover every possible input.",
+          `enum class Season { WINTER, SPRING, SUMMER, FALL }
+
+// 1. Match cases of one subject.
+fun seasonName(season: Season): String = when (season) {
+    Season.WINTER -> "winter"
+    Season.SPRING -> "spring"
+    Season.SUMMER -> "summer"
+    Season.FALL -> "fall"
+}
+
+// 2. Check Boolean expressions, like if / else if / else.
+fun temperatureLabel(celsius: Int): String = when {
+    celsius < 0 -> "freezing"
+    celsius >= 30 -> "hot"
+    else -> "mild"
+}
+
+// 3. Match a subject, then check an extra condition.
+fun outing(season: Season, celsius: Int): String = when (season) {
+    Season.SUMMER if celsius >= 30 -> "swim"
+    Season.SUMMER -> "walk"
+    Season.WINTER -> "skate"
+    Season.SPRING, Season.FALL -> "hike"
+}`,
+          "<code>seasonName</code> matches an enum value directly. <code>temperatureLabel</code> asks ordered Boolean questions, just as an if/else-if/else chain would. In <code>outing</code>, the first branch needs both summer and a temperature of at least 30; a cooler summer reaches the next Summer branch. The remaining branches cover every other Season.",
+          "The <code>if</code> after <code>Season.SUMMER</code> is a guard on that subject-based branch. It differs from the Boolean conditions in <code>when { ... }</code>, which has no subject.",
+          [
+            Q("Which form would you use to handle every Season value?", "<code>when (season)</code> with a branch for each enum case."),
+            Q("Which branch does <code>temperatureLabel(30)</code> choose?", "<code>\"hot\"</code>: the second Boolean condition is true."),
+            Q("What does <code>outing(Season.SUMMER, 24)</code> return?", "<code>\"walk\"</code>: the guarded Summer branch fails, so the next Summer branch matches.")
+          ]
+        ),
+        R(
           "l07-smart-cast-error",
           "lecture-07-smart-cast-variant-field-error.html",
           "Why a Variant Field Needs a Smart Cast",
@@ -999,7 +1060,7 @@ sealed interface Result {
       lecture: "Lectures 8-9",
       title: "Recursion and Recursive Lists",
       minutes: 11,
-      summary: "Four necessary readings introduce base cases, recursive data, templates, and common list patterns. The optional reading traces calls step by step.",
+      summary: "Four pre-lecture readings introduce base cases, recursive data, templates, and common list patterns. The follow-up reading traces calls step by step.",
       cardSummary: "Short readings on recursive progress, custom list data, templates, and reusable list patterns.",
       goal: "Students arrive able to follow the shape of recursive data into the shape of a recursive function.",
       nextHref: "lecture-10-helper-functions-list-averages.html",
@@ -1137,7 +1198,7 @@ val twoWords = SLNode("design", SLNode("data", SLEmpty))`,
       lecture: "Lecture 10",
       title: "List Helpers and Averages",
       minutes: 8,
-      summary: "Three necessary readings decompose averages into totals and counts, use focused helpers, and make an explicit decision for empty input. The optional reading explores decimal conversion and filtered averages.",
+      summary: "Three pre-lecture readings decompose averages into totals and counts, use focused helpers, and make an explicit decision for empty input. The follow-up reading explores decimal conversion and filtered averages.",
       cardSummary: "Short readings on decomposing averages, helper functions, empty input, numeric conversion, and filtered list calculations.",
       goal: "Students arrive able to work backward from an average and name the helper results needed to compute it.",
       nextHref: "lecture-11-13-built-in-lists.html",
@@ -1240,7 +1301,7 @@ val warmAverage = warmTotal.toDouble() / warmCount`,
       lecture: "Lectures 11-13",
       title: "Kotlin's Immutable Lists",
       minutes: 16,
-      summary: "Six necessary readings introduce List types and the core list functions. Three optional readings introduce function types, lambda syntax, and multi-step list pipelines.",
+      summary: "Six pre-lecture readings introduce List types and the core list functions. Three follow-up readings introduce function types, lambda syntax, and multi-step list pipelines.",
       cardSummary: "Short readings on function types, List<T>, function references, predicates, map, fold, nullable searches, and lambda syntax.",
       goal: "Students arrive able to choose a built-in list operation from the desired input and output types.",
       nextHref: "lecture-14-binary-trees.html",
@@ -1460,7 +1521,7 @@ val labelsWithIt = heights.map {
       lecture: "Lecture 14",
       title: "Binary Trees",
       minutes: 11,
-      summary: "Four necessary readings introduce binary tree data, its template, two recursive answers, and immutable rebuilding.",
+      summary: "Four pre-lecture readings introduce binary tree data, its template, two recursive answers, and immutable rebuilding.",
       cardSummary: "Short readings on leaf/node data, two recursive calls, combining answers, and rebuilding trees.",
       goal: "Students arrive able to follow a recursive design where every node contains two recursive subtrees.",
       nextHref: "lecture-15-16-binary-search-trees.html",
@@ -1580,7 +1641,7 @@ data class Question(
       lecture: "Lectures 15-16",
       title: "Binary Search Trees",
       minutes: 11,
-      summary: "Four necessary readings cover ordering invariants, directed search, compound keys, nullable results, and insertion. The optional reading prunes a count.",
+      summary: "Four pre-lecture readings cover ordering invariants, directed search, compound keys, nullable results, and insertion. The follow-up reading prunes a count.",
       cardSummary: "Short readings on search-tree invariants, ordered recursion, compound keys, null, and insertion.",
       goal: "Students arrive able to use a stated ordering rule to choose one branch rather than traverse an entire tree.",
       nextHref: "lecture-17-18-arbitrary-arity-trees.html",
@@ -1743,7 +1804,7 @@ data class Question(
       lecture: "Lectures 17-18",
       title: "Trees with Any Number of Children",
       minutes: 11,
-      summary: "Four necessary readings cover list-valued children, descendants, recursive maps, and child-result folds. The optional reading collects unique answers.",
+      summary: "Four pre-lecture readings cover list-valued children, descendants, recursive maps, and child-result folds. The follow-up reading collects unique answers.",
       cardSummary: "Short readings on arbitrary-arity trees, descendants, recursive map/fold patterns, and Sets.",
       goal: "Students arrive able to combine one tree-level step with one List-level step over any number of children.",
       nextHref: "lecture-19-20-search-paths-accumulators.html",
@@ -1879,7 +1940,7 @@ fun totalItemCount(item: MenuItem): Int {
       lecture: "Lectures 19-20",
       title: "Search Paths and Accumulators",
       minutes: 11,
-      summary: "Four necessary readings cover nullable tree search, return-path construction, local accumulator helpers, and Pair results. The optional reading compares recursive styles.",
+      summary: "Four pre-lecture readings cover nullable tree search, return-path construction, local accumulator helpers, and Pair results. The follow-up reading compares recursive styles.",
       cardSummary: "Short readings on nullable search, Elvis, path building, accumulator helpers, and Pair.",
       goal: "Students arrive able to represent failed searches and carry context downward or combine context on the return path.",
       nextHref: "lecture-21-23-mutation-loops.html",
@@ -2032,7 +2093,7 @@ return visit(child, totalSoFar + itemCost)`,
       lecture: "Lectures 21-23",
       title: "Mutation and Loops",
       minutes: 16,
-      summary: "Six necessary readings introduce reassignable state, mutable objects and lists, effects, lookup, and loops. Two optional readings cover assignment shortcuts and counting with ranges.",
+      summary: "Six pre-lecture readings introduce reassignable state, mutable objects and lists, effects, lookup, and loops. Two follow-up readings cover assignment shortcuts and counting with ranges.",
       cardSummary: "Short readings on var, mutable fields and lists, effects, find, for loops, and while loops.",
       goal: "Students arrive able to distinguish values that change over time from functional results and trace the order of state-changing steps.",
       nextHref: "lecture-24-25-graphs-cycles.html",
@@ -2245,7 +2306,7 @@ for (countdown in 5 downTo 1) {
       lecture: "Lectures 24-25",
       title: "Graphs and Cycles",
       minutes: 16,
-      summary: "Six necessary readings introduce graph representation, mutable edges, cycles, visited sets, DFS, BFS, and path results. The optional reading compares search strategies.",
+      summary: "Six pre-lecture readings introduce graph representation, mutable edges, cycles, visited sets, DFS, BFS, and path results. The follow-up reading compares search strategies.",
       cardSummary: "Short readings on graph edges, cycles, visited sets, depth-first and breadth-first search, and paths.",
       goal: "Students arrive able to traverse linked data safely even when an edge leads back to an earlier node.",
       nextHref: "extra-graphs-loops-matrices.html",
@@ -2438,7 +2499,7 @@ while (queue.isNotEmpty()) {
       lecture: "Extra Graph Lesson",
       title: "Graph Matrices and Nested Loops",
       minutes: 13,
-      summary: "Five necessary readings cover arrays, two-dimensional matrices, indexing, nested loops, and edge updates. The optional reading explores numeric ranges.",
+      summary: "Five pre-lecture readings cover arrays, two-dimensional matrices, indexing, nested loops, and edge updates. The follow-up reading explores numeric ranges.",
       cardSummary: "Short readings on Arrays, adjacency matrices, indices, nested loops, and range pipelines.",
       goal: "Students arrive able to locate and update a directed edge in a fixed-size Boolean matrix.",
       nextHref: "index.html",
@@ -2585,7 +2646,7 @@ val squares = (1 until 5).map { it * it }`,
     const baseSet = set.id === "l02" ? {
       ...set,
       minutes: 13,
-      summary: "Five necessary readings follow the function design recipe from purpose and stub through examples, template and inventory, implementation, debugging, and coverage. Four optional readings explore helpers, if expressions, temporary TODO() placeholders, and why functions matter beyond this course.",
+      summary: "Five pre-lecture readings follow the function design recipe from purpose and stub through examples, template and inventory, implementation, debugging, and coverage. Four follow-up readings explore helpers, if expressions, temporary TODO() placeholders, and why functions matter beyond this course.",
       cardSummary: "Short readings on KDocs, signatures, stubs, examples, templates, input inventories, local subcomputations, debugging, and helpers.",
       goal: "Students arrive able to follow the function design recipe before writing a complete implementation.",
       readings: lecture2Readings
@@ -2594,8 +2655,8 @@ val squares = (1 until 5).map { it * it }`,
     if (!whyMatters) return baseSet;
     return {
       ...baseSet,
-      summary: baseSet.id === "l02" ? baseSet.summary : `${baseSet.summary} An additional optional reading looks ahead to this topic's broader uses in computer science.`,
-      cardSummary: baseSet.id === "l02" ? baseSet.cardSummary : `${baseSet.cardSummary} Includes an optional why-this-matters reading.`,
+      summary: baseSet.id === "l02" ? baseSet.summary : `${baseSet.summary} An additional follow-up reading looks ahead to this topic's broader uses in computer science.`,
+      cardSummary: baseSet.id === "l02" ? baseSet.cardSummary : `${baseSet.cardSummary} Includes an follow-up why-this-matters reading.`,
       readings: [...baseSet.readings, whyMatters]
     };
   });

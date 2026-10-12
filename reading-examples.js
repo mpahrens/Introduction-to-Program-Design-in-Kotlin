@@ -54,6 +54,14 @@
     example("l02-debug-coverage", shipping + "\n\n" + main(source("l02-debug-coverage")), "Run the tests, then introduce a mistake in the weight boundary or express surcharge. Which tests catch it?", softSuccess, ["kotest-mini"]);
     definition("l02-helper", 'assertSoftly {\n  baseCost(2.0) shouldBe (6.5 plusOrMinus 0.01)\n  shippingCost(2.0, true) shouldBe (12.5 plusOrMinus 0.01)\n}', "Add tests for weights on either side of 1.0 and check the helper and final answer.", softSuccess, ["kotest-mini"]);
     definition("l02-if-expressions", 'assertSoftly {\n  ticketLabel(21) shouldBe "youth ticket"\n  ticketLabel(22) shouldBe "adult ticket"\n}', "Change > to >= and predict which test fails.", softSuccess, ["kotest-mini"]);
+    const advancedIf = readings.get("l02-if-expressions");
+    advancedIf.examples.push({
+      kind: "kotlin", advanced: true, title: advancedIf.advanced.title,
+      code: advancedIf.advanced.code + "\n\n" + main('println(ticketCategory(25))\nprintln(ticketCategory(21))\nprintln(ticketCategory(12))\nprintln(ticketCategory(13))\nprintln(ticketCategory(22))'),
+      prompt: "Predict each ticket category, then run. Change an age or a condition and run again.",
+      expected: "adult ticket\nteen ticket\nchild ticket\nteen ticket\nadult ticket",
+      dependencies: []
+    });
     definition("l02-todo", shippingTests, "Run to see how TODO() interrupts the tests. Replace TODO() with 0.0 and rerun to see both comparisons fail; then implement the function.", null, ["kotest-mini"], "", "The first call throws NotImplementedError before shouldBe can compare values. Our playground's assertSoftly reports 'TODO() prevented tests from completing'; the second test is never reached.");
     readings.get("l02-todo").examples[0].expectedError = "TODO() prevented tests from completing";
 
@@ -76,6 +84,7 @@
     definition("l06-construct-variants", 'println(lunch)\nprintln(supplies)', "Construct a GiftCode value and print it too.", "Cash(dollars=12)\nCard(lastFour=4821)", ["Payment"]);
     definition("l07-smart-casts", 'println(receiptLabel(Payment.Cash(12)))\nprintln(receiptLabel(Payment.Card("4821")))\nprintln(receiptLabel(Payment.GiftCode("WELCOME")))', "Change a payment variant and watch which branch selects its fields.", "$12\ncard 4821\ngift WELCOME", ["Payment"]);
     definition("l07-sum-template", 'println(redact(Payment.Cash(12)))\nprintln(redact(Payment.Card("4821")))\nprintln(redact(Payment.GiftCode("WELCOME")))', "Change the placeholder values while preserving the variant of each payment.", "Cash(dollars=12)\nCard(lastFour=0000)\nGiftCode(code=hidden)", ["Payment"]);
+    readings.get("l07-when-forms").examples = [{ kind: "text", title: "Three ways to choose a branch", code: source("l07-when-forms") }];
     definition("l07-smart-cast-error", 'println(amountLabel(Payment.Cash(12)))\nprintln(amountLabel(Payment.Card("4821")))', "First run the working version. Uncomment payment.dollars to see the compiler error; comment it again to repair it.", "$12\nnot cash", ["Payment"], "", "With payment.dollars uncommented before the type check, expect an unresolved reference to dollars: Payment does not guarantee that field.");
     definition("l06-sum-product", 'println(Coordinate(3, 4))\nprintln(Result.Success("Saved"))\nprintln(Result.Failure("Missing file"))', "Change both coordinate fields, then choose a different Result variant.", "Coordinate(x=3, y=4)\nSuccess(message=Saved)\nFailure(reason=Missing file)");
 
