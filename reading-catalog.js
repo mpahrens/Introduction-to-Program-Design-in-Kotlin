@@ -2030,8 +2030,8 @@ fun totalItemCount(item: MenuItem): Int {
     }
     return visit(root, 0)
 }`,
-          "<code>depth</code> records the current level. Recursive calls receive one larger depth, and the fold keeps the largest answer.",
-          "Identify the accumulator's meaning in one sentence and preserve that meaning in every recursive call.",
+          "The parameter <code>depth</code> <strong>is the accumulator</strong>: it carries the number of edges traversed from the root to the current item. The initial call <code>visit(root, 0)</code> starts it at zero. Each recursive call <code>visit(child, depth + 1)</code> accumulates one more step down the tree, so the child receives its own depth. The fold's <code>best</code> value keeps the largest depth returned by the child calls.",
+          "An accumulator can record progress along a path, not just a sum or a collection. Here, <code>depth</code> accumulates the number of steps from the root, increasing by one for each recursive call to a child.",
           [
             Q("What is the initial depth?", "<code>0</code>."),
             Q("What value is passed to a child?", "<code>depth + 1</code>."),

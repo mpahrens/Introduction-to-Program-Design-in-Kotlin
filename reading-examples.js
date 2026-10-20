@@ -231,6 +231,14 @@ ${main(menu + '\nprintln(labelsReturning(drinks, "Tea"))\nprintln(labelsReturnin
       dependencies: ["kotlin-dependencies/MenuItem.kt"]
     });
 
+    // Annotated diagrams accompany their matching runnable examples.
+    readings.get("l19-null-elvis").examples[0].diagram = {"src":"assets/lecture-19-nullable-search.png","alt":"Annotated findLabel search: null marks failure, and Elvis keeps the first found item.","caption":"Keep a found answer with ?:; search the next child only while the answer is null."};
+    readings.get("l19-build-return").examples[0].diagram = {"src":"assets/lecture-19-return-path.png","alt":"Annotated labelsTo search showing the base case, child search, and prepending the current label after a successful return.","caption":"Build the path on return by adding the current label in front of a successful child path."};
+    readings.get("l20-accumulator").examples[0].diagram = {"src":"assets/lecture-20-local-accumulator.png","alt":"Annotated deepestLevel function with a local visit helper, initial depth zero, and depth plus one for each child.","caption":"Carry depth downward through the local helper and keep the greatest level found."};
+    readings.get("l20-pair").examples[0].diagram = {"src":"assets/lecture-20-pair.png","alt":"Annotated labelAndDepth function returning Pair<String, Int> and a call producing (Drinks, 0).","caption":"Pair packages the label and depth into one two-value result."};
+    readings.get("l20-styles").examples[0].diagram = {"src":"assets/lecture-20-styles-explicit.png","alt":"Four highlights compare the two path-building + expressions, the singleton target path returned by labelsReturning, and the empty initial path passed to labelsAccumulating.","caption":"Compare when the path grows: after the child returns, or before the recursive call."};
+    readings.get("l20-styles").examples[2].diagram = {"src":"assets/lecture-20-styles-concise.png","alt":"Two callouts highlight found ?:, which keeps a non-null answer or searches the next child, and ?.let, which extends a child path only when it is non-null.","caption":"Use ?: to keep a found path and ?.let to extend a non-null child path."};
+
     statements("l21-var", "", "Change the starting score and predict the final value.", "26");
     example("l21-mutable-data", 'data class Player(val name: String, var points: Int)\n\n' + main(source("l21-mutable-data").split("\n\n")[1] + '\nprintln(roster)'), "Change ari.points after adding Ari and inspect the player in the roster.", "[Player(name=Ari, points=7)]");
     definition("l22-find", 'roster.add(Player("Ari", 4))\nprintln(lookupPlayer("Ari").points)', "Try looking up a name that is absent. Then restore Ari or add the missing player.", "4", [], "", "lookupPlayer assumes the name is present. An absent name produces a NullPointerException at !!.");

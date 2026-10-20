@@ -115,7 +115,10 @@ function readingExamplesMarkup(reading) {
     return `${reading.examples.length > 1 ? `<h3>${title}</h3>` : ""}${note}<figure class="kotlin-example" aria-label="${title}">
       <figcaption>Try it <span>${escapeExample(example.prompt)}</span></figcaption>
       <pre data-kotlin-editor aria-label="${title}"${dependencies}><code>${escapeExample(example.code)}</code></pre>
-    </figure>${expected}`;
+    </figure>${expected}${example.diagram ? `<figure class="screenshot-card">
+      <a href="${escapeExample(example.diagram.src)}" aria-label="Open diagram at full size"><img src="${escapeExample(example.diagram.src)}" alt="${escapeExample(example.diagram.alt)}" loading="lazy"></a>
+      <figcaption>${escapeExample(example.diagram.caption)}</figcaption>
+    </figure>` : ""}`;
   }).join("\n");
 }
 
