@@ -1,0 +1,1 @@
+Lecture notes mascarading as a Textbook for WPI's CS1101 Introduction to Program Design. Based on How to Design Programs (htdp.org) and Systematic Program Design (UBC) ideas and methodology, transformed with novel examples using Kotlin as a base language
