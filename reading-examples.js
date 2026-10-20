@@ -211,7 +211,7 @@ if(!found.isEmpty()) {...}`
     })
     readings.get("l20-styles").examples.push({
       kind: "kotlin",
-      title: "Simplify null handling with ?: and ?.let",
+      title: "Advanced Kotlin: Simplify null handling with ?: and ?.let",
       note: "We can shorten the null checks in <code>labelsReturning</code> above. The Elvis operator ?: keeps <code>found</code> when it is non-null; However, when it <em>is</em> null, the expression on the right side searches the next child.<br> The safe call <code>?.let</code> checks if the function called produces null and <em>only</em> runs its lambda when the result is non-null, like finding a path amongst the children nodes. We give this non-null value a parameter name in the lambda, <code>childPath</code>; have the lambda continue the computation; and returns the extended path. <br>If searching the child returned null, the whole safe-call expression produces null. These two operators make the same return-path algorithm easier to read (no nested-ifs) without changing when it searches or builds the answer path.",
       code: `fun labelsReturning(item: MenuItem, target: String): List<String>? {
     if (item.label == target) return listOf(item.label)
